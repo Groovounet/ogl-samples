@@ -7,6 +7,7 @@
 #add_subdirectory(ogl-buffer-texture)
 add_subdirectory(ogl-buffer-type)
 add_subdirectory(ogl-buffer-update)
+add_subdirectory(ogl-buffer-uniform)
 
 add_subdirectory(ogl-draw-elements)
 add_subdirectory(ogl-draw-range)
@@ -20,8 +21,6 @@ add_subdirectory(ogl-fbo-mipmaps)
 add_subdirectory(ogl-fbo-srgb)
 add_subdirectory(ogl-fbo-multiple-output)
 add_subdirectory(ogl-fbo-multisample)
-
-add_subdirectory(ogl-glsl-uniform-buffer)
 
 add_subdirectory(ogl-image-2d)
 add_subdirectory(ogl-image-2d-compressed)
