@@ -12,6 +12,10 @@
 #	define GL_GLEXT_PROTOTYPES 1
 #	include <GL/gl.h>
 #	include <GL/glext.h>
+#elif defined(__APPLE__)
+#	include <OpenGL/gl.h>
+#else
+#	error "System unsuported..."
 #endif
 
 // GLF libraries

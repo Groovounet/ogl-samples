@@ -344,9 +344,10 @@ inline bool checkError(const char* Title)
 		case GL_INVALID_OPERATION:
 			ErrorString = "GL_INVALID_OPERATION";
 			break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:
+/*		case GL_INVALID_FRAMEBUFFER_OPERATION:
 			ErrorString = "GL_INVALID_FRAMEBUFFER_OPERATION";
 			break;
+*/
 		case GL_OUT_OF_MEMORY:
 			ErrorString = "GL_OUT_OF_MEMORY";
 			break;
