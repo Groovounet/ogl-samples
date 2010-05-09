@@ -15,10 +15,6 @@ add_executable(
 	${SOURCE_FILES} 
 	${SHADER_FILES})
 
-add_dependencies(
-	${NAME} 
-	${TARGET_DATA_COPY})
-
 target_link_libraries(
 	${NAME}
-	${BINARY_FILES})
+	GL SDL)
