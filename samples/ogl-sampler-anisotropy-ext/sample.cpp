@@ -14,10 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL sampler anisotropy";	
-	GLint const SAMPLE_MAJOR_VERSION = 2;
-	GLint const SAMPLE_MINOR_VERSION = 1;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 
 	struct vertex
@@ -253,11 +251,11 @@ int main(int argc, char* argv[])
 {
 	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
 
-	sample * Sample = new sample(
+	sample* Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION);
+		glf::SAMPLE_MAJOR,
+		glf::SAMPLE_MINOR);
 
 	if(Sample->check())
 	{

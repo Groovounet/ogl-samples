@@ -1,7 +1,8 @@
 set(NAME ogl-image-2d)
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/210/image-2d.vert)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/210/image-2d.frag)
+set(SHADER_VERT ../../data/image-2d.vert)
+set(SHADER_FRAG ../../data/image-2d.frag)
+set(IMAGE_FILE ../../data/kueken256-rgb8.dds)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 
