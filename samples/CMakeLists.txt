@@ -1,3 +1,5 @@
+# OpenGL Samples Pack
+
 add_subdirectory(ogl-buffer-type)
 add_subdirectory(ogl-buffer-update)
 
