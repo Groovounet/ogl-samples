@@ -14,8 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL viewport";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.frag");
+	GLint const SAMPLE_MAJOR_VERSION = 2;
+	GLint const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -176,11 +178,11 @@ int main(int argc, char* argv[])
 {
 	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
 
-	sample* Sample = new sample(
+	sample * Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		glf::SAMPLE_MAJOR,
-		glf::SAMPLE_MINOR);
+		SAMPLE_MAJOR_VERSION,
+		SAMPLE_MINOR_VERSION);
 
 	if(Sample->check())
 	{
