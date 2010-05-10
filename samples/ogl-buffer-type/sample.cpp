@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL buffer type
-// 11/08/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL buffer type";
-	GLint const SAMPLE_MAJOR_VERSION = 3;
-	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "331/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "331/flat-color.frag");
+	GLint const SAMPLE_MAJOR_VERSION = 2;
+	GLint const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);

@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL occlusion query
-// 26/03/2010
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com

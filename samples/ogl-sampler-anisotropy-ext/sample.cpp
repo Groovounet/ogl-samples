@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL sampler anisotropy
-// 12/11/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
