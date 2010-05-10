@@ -1,7 +1,7 @@
 set(NAME ogl-draw-instanced-array)
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/instanced-array.vert)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/instanced-array.frag)
+set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/instanced-array.vert)
+set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/instanced-array.frag)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 

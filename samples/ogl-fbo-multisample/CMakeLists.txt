@@ -1,7 +1,7 @@
 set(NAME ogl-fbo-multisample)
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/image-2d.vert)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/image-2d.frag)
+set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/image-2d.vert)
+set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/image-2d.frag)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 
