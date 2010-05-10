@@ -14,8 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL images 2d compressed";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.frag");
+	GLint const SAMPLE_MAJOR_VERSION = 2;
+	GLint const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_RGB8(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-dxt1.dds");
 	std::string const TEXTURE_DIFFUSE_DXT3(glf::DATA_DIRECTORY + "kueken256-dxt3.dds");
@@ -312,11 +314,11 @@ int main(int argc, char* argv[])
 {
 	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
 
-	sample* Sample = new sample(
+	sample * Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		glf::SAMPLE_MAJOR,
-		glf::SAMPLE_MINOR);
+		SAMPLE_MAJOR_VERSION,
+		SAMPLE_MINOR_VERSION);
 
 	if(Sample->check())
 	{

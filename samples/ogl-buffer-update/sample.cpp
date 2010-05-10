@@ -190,11 +190,11 @@ int main(int argc, char* argv[])
 {
 	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
 
-	sample* Sample = new sample(
+	sample * Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		glf::SAMPLE_MAJOR,
-		glf::SAMPLE_MINOR);
+		SAMPLE_MAJOR_VERSION,
+		SAMPLE_MINOR_VERSION);
 
 	if(Sample->check())
 	{
