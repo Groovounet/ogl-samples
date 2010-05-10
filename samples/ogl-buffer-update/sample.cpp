@@ -14,10 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL buffer update";	
-	GLint const SAMPLE_MAJOR_VERSION = 2;
-	GLint const SAMPLE_MINOR_VERSION = 1;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -48,7 +46,12 @@ sample::~sample()
 
 bool sample::check() const
 {
-	return glf::checkError("sample::check");
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
+	return Version && glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
@@ -60,6 +63,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 		Validated = this->initProgram();
 	if(Validated)
 		Validated = this->initArrayBuffer();
+	if(Validated)
+		Validated = this->initVertexArray();
 
 	return Validated && glf::checkError("sample::begin");
 }
@@ -69,6 +74,7 @@ bool sample::end()
 	// Delete objects
 	glDeleteBuffers(1, &this->BufferName);
 	glDeleteProgram(this->ProgramName);
+	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -96,11 +102,7 @@ void sample::render()
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
-	glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(this->VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
 	glf::checkError("sample::render");
@@ -162,7 +164,7 @@ bool sample::initArrayBuffer()
 	return glf::checkError("sample::initArrayBuffer");
 }
 */
-
+/*
 // Buffer update using glMapBuffer
 bool sample::initArrayBuffer()
 {
@@ -184,6 +186,58 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
+}
+*/
+
+// Buffer update using glMapBufferRange
+bool sample::initArrayBuffer()
+{
+	// Generate a buffer object
+	glGenBuffers(1, &BufferName);
+
+	// Bind the buffer for use
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+
+	// Reserve buffer memory but don't copy the values
+    glBufferData(
+		GL_ARRAY_BUFFER, 
+		PositionSize, 
+		0, 
+		GL_STATIC_DRAW);
+
+	// Copy the vertex data in the buffer, in this sample for the whole range of data.
+	// It doesn't required to be the buffer size but pointers require no memory overlapping.
+    GLvoid* Data = glMapBufferRange(
+		GL_ARRAY_BUFFER, 
+		0,				// Offset
+		PositionSize,	// Size,
+		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
+	memcpy(Data, PositionData, PositionSize);
+
+	// Explicitly send the data to the graphic card.
+	glFlushMappedBufferRange(GL_ARRAY_BUFFER, 0, PositionSize);
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	// Unbind the buffer
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return glf::checkError("sample::initArrayBuffer");
+}
+
+bool sample::initVertexArray()
+{
+	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
+	glGenVertexArrays(1, &this->VertexArrayName);
+    glBindVertexArray(this->VertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])

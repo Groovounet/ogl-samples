@@ -75,7 +75,7 @@ set(GL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GL_VERSION})
 ###########
 # Add GLM 
 
-set(GLM_VERSION "glm-0.9.B.2")
+set(GLM_VERSION "glm-0.9.B.1")
 set(GLM_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLM_VERSION})
 
 include_directories("${GLM_DIRECTORY}")

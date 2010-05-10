@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL buffer type
-// 08/05/2010
+// 11/08/2009
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,11 +13,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL buffer type";
-	GLint const SAMPLE_MAJOR_VERSION = 2;
-	GLint const SAMPLE_MINOR_VERSION = 1;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
+	std::string const SAMPLE_NAME = "OpenGL buffer type";	
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
@@ -81,7 +79,12 @@ sample::~sample()
 
 bool sample::check() const
 {
-	return glf::checkError("sample::check");
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
+	return Version && glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
@@ -97,6 +100,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 
 	bool Validated = true;
 	if(Validated)
+		Validated = this->initVertexArray();
+	if(Validated)
 		Validated = this->initProgram();
 	if(Validated)
 		Validated = this->initArrayBuffer();
@@ -109,6 +114,7 @@ bool sample::end()
 	// Delete objects
 	glDeleteBuffers(BUFFER_COUNT, this->BufferName);
 	glDeleteProgram(this->ProgramName);
+	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -218,6 +224,15 @@ bool sample::initArrayBuffer()
 	return glf::checkError("sample::initArrayBuffer");
 }
 
+bool sample::initVertexArray()
+{
+	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
+	glGenVertexArrays(1, &this->VertexArrayName);
+    glBindVertexArray(this->VertexArrayName);
+
+	return glf::checkError("sample::initVertexArray");
+}
+
 int main(int argc, char* argv[])
 {
 	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
@@ -225,8 +240,8 @@ int main(int argc, char* argv[])
 	sample* Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION);
+		glf::SAMPLE_MAJOR,
+		glf::SAMPLE_MINOR);
 
 	if(Sample->check())
 	{
