@@ -5,11 +5,11 @@
 
 enum buffer_index
 {
-	BUFFER_F16,
+	BUFFER_F64,
 	BUFFER_F32,
 	BUFFER_I8,
 	BUFFER_I32,
-	BUFFER_COUNT
+	BUFFER_MAX
 };
 
 class sample : public glf::window
