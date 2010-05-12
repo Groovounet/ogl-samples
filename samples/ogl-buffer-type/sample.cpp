@@ -20,15 +20,15 @@ namespace
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
-	glm::hvec2 const PositionDataF16[VertexCount] =
+	GLsizeiptr const PositionSizeD64 = VertexCount * sizeof(glm::dvec2);
+	glm::dvec2 const PositionDataD64[VertexCount] =
 	{
-		glm::hvec2(-1.0f, -1.0f),
-		glm::hvec2( 1.0f, -1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2(-1.0f,  1.0f),
-		glm::hvec2(-1.0f, -1.0f)
+		glm::dvec2(-1.0f, -1.0f),
+		glm::dvec2( 1.0f, -1.0f),
+		glm::dvec2( 1.0f,  1.0f),
+		glm::dvec2( 1.0f,  1.0f),
+		glm::dvec2(-1.0f,  1.0f),
+		glm::dvec2(-1.0f, -1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
@@ -81,20 +81,15 @@ sample::~sample()
 
 bool sample::check() const
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
-	return Version && glf::checkError("sample::check");
+	return glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
 {
-	this->Viewport[BUFFER_F16] = glm::ivec4(0, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F16] = GL_HALF_FLOAT;
-	this->Viewport[BUFFER_F32] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F32] = GL_FLOAT;
+	this->Viewport[BUFFER_D64] = glm::ivec4(0, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_D64] = GL_HALF_FLOAT;
+	this->Viewport[BUFFER_D64] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_D64] = GL_FLOAT;
 	this->Viewport[BUFFER_I8]  = glm::ivec4(this->WindowSize.x >> 1, this->WindowSize.y >> 1, this->WindowSize >> 1);
 	this->BufferType[BUFFER_I8]  = GL_BYTE;
 	this->Viewport[BUFFER_I32] = glm::ivec4(0, this->WindowSize.y >> 1, this->WindowSize >> 1);
@@ -114,7 +109,6 @@ bool sample::end()
 	// Delete objects
 	glDeleteBuffers(BUFFER_COUNT, this->BufferName);
 	glDeleteProgram(this->ProgramName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -207,8 +201,8 @@ bool sample::initArrayBuffer()
 	glGenBuffers(BUFFER_COUNT, this->BufferName);
 
 	// Allocate and copy buffers memory
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F16]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_D64]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeD64, PositionDataD64, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
