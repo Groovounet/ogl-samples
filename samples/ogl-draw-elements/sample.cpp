@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL draw elements
-// 04/12/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -71,8 +71,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 		Validated = this->initProgram();
 	if(Validated)
 		Validated = this->initArrayBuffer();
-	if(Validated)
-		Validated = this->initVertexArray();
 	return Validated && glf::checkError("sample::begin");
 }
 
@@ -82,7 +80,6 @@ bool sample::end()
 	glDeleteBuffers(1, &this->ArrayBufferName);
 	glDeleteBuffers(1, &this->ElementBufferName);
 	glDeleteProgram(this->ProgramName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -111,8 +108,16 @@ void sample::render()
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glBindVertexArray(this->VertexArrayName);
+	glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
+
+	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+
 	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0);
+
+	glDisableVertexAttribArray(glf::semantic::attr::POSITION);
 
 	// Unbind program
 	glUseProgram(0);
@@ -167,22 +172,6 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
-}
-
-bool sample::initVertexArray()
-{
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-	glBindVertexArray(0);
-
-	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])

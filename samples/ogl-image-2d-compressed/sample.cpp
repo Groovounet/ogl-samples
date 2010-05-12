@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL image 2d compressed
-// 27/08/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -68,12 +68,7 @@ sample::~sample()
 
 bool sample::check() const
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
-	return Version && glf::checkError("sample::check");
+	return glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
@@ -90,8 +85,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 	if(Validated)
 		Validated = this->initArrayBuffer();
 	if(Validated)
-		Validated = this->initVertexArray();
-	if(Validated)
 		Validated = this->initTexture2D();
 
 	return Validated && glf::checkError("sample::begin");
@@ -102,7 +95,6 @@ bool sample::end()
 	glDeleteBuffers(1, &this->BufferName);
 	glDeleteProgram(this->ProgramName);
 	glDeleteTextures(TEXTURE_MAX, this->Texture2DName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -126,7 +118,13 @@ void sample::render()
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(this->UniformDiffuse, 0);
 
-	glBindVertexArray(this->VertexArrayName);
+	glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+	glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
+	glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 
 	glActiveTexture(GL_TEXTURE0);
 	for(std::size_t Index = 0; Index < TEXTURE_MAX; ++Index)
@@ -141,6 +139,9 @@ void sample::render()
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
+
+	glDisableVertexAttribArray(glf::semantic::attr::POSITION);
+	glDisableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -291,23 +292,6 @@ bool sample::initTexture2D()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glf::checkError("initTexture2D");
-}
-
-bool sample::initVertexArray()
-{
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
-	glBindVertexArray(0);
-
-	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])

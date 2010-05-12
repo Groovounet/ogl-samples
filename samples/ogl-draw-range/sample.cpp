@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL draw range
-// 04/12/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
