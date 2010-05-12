@@ -223,7 +223,7 @@ bool sample::initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
-	glBindVertexArray(this->VertexArrayName);
+	glBindVertexArray(0);
 
 	return glf::checkError("sample::initVertexArray");
 }

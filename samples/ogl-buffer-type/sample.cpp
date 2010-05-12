@@ -88,8 +88,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 {
 	this->Viewport[BUFFER_F64] = glm::ivec4(0, 0, this->WindowSize >> 1);
 	this->BufferType[BUFFER_F64] = GL_DOUBLE;
-	this->Viewport[BUFFER_F64] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F64] = GL_FLOAT;
+	this->Viewport[BUFFER_F32] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_F32] = GL_FLOAT;
 	this->Viewport[BUFFER_I8]  = glm::ivec4(this->WindowSize.x >> 1, this->WindowSize.y >> 1, this->WindowSize >> 1);
 	this->BufferType[BUFFER_I8]  = GL_BYTE;
 	this->Viewport[BUFFER_I32] = glm::ivec4(0, this->WindowSize.y >> 1, this->WindowSize >> 1);
