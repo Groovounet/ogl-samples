@@ -49,12 +49,7 @@ sample::~sample()
 
 bool sample::check() const
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
-	return Version && glf::checkError("sample::check");
+	return glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
