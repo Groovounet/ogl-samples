@@ -131,7 +131,7 @@ bool sample::initProgram()
 	
 	{
 		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		// Bind fragment output to color buffer 0
+		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}

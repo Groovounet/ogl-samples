@@ -158,6 +158,8 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
+		glBindAttribLocation(this->ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}

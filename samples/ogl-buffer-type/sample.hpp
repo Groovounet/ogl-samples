@@ -34,12 +34,12 @@ private:
 
 	GLuint VertexArrayName;
 	GLuint ProgramName;
-	GLuint BufferName[BUFFER_COUNT];
+	GLuint BufferName[BUFFER_MAX];
 	GLint UniformMVP;
 	GLint UniformDiffuse;
 
-	glm::ivec4 Viewport[BUFFER_COUNT];
-	GLenum BufferType[BUFFER_COUNT];
+	glm::ivec4 Viewport[BUFFER_MAX];
+	GLenum BufferType[BUFFER_MAX];
 };
 
 #endif//GLF_SAMPLE_INCLUDED

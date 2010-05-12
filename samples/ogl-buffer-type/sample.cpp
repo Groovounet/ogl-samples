@@ -20,8 +20,8 @@ namespace
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSizeD64 = VertexCount * sizeof(glm::dvec2);
-	glm::dvec2 const PositionDataD64[VertexCount] =
+	GLsizeiptr const PositionSizeF64 = VertexCount * sizeof(glm::dvec2);
+	glm::dvec2 const PositionDataF64[VertexCount] =
 	{
 		glm::dvec2(-1.0f, -1.0f),
 		glm::dvec2( 1.0f, -1.0f),
@@ -86,10 +86,10 @@ bool sample::check() const
 
 bool sample::begin(glm::ivec2 const & WindowSize)
 {
-	this->Viewport[BUFFER_D64] = glm::ivec4(0, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_D64] = GL_HALF_FLOAT;
-	this->Viewport[BUFFER_D64] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_D64] = GL_FLOAT;
+	this->Viewport[BUFFER_F64] = glm::ivec4(0, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_F64] = GL_DOUBLE;
+	this->Viewport[BUFFER_F64] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_F64] = GL_FLOAT;
 	this->Viewport[BUFFER_I8]  = glm::ivec4(this->WindowSize.x >> 1, this->WindowSize.y >> 1, this->WindowSize >> 1);
 	this->BufferType[BUFFER_I8]  = GL_BYTE;
 	this->Viewport[BUFFER_I32] = glm::ivec4(0, this->WindowSize.y >> 1, this->WindowSize >> 1);
@@ -107,7 +107,7 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 bool sample::end()
 {
 	// Delete objects
-	glDeleteBuffers(BUFFER_COUNT, this->BufferName);
+	glDeleteBuffers(BUFFER_MAX, this->BufferName);
 	glDeleteProgram(this->ProgramName);
 
 	return glf::checkError("sample::end");
@@ -134,7 +134,7 @@ void sample::render()
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	for(std::size_t Index = 0; Index < BUFFER_COUNT; ++Index)
+	for(std::size_t Index = 0; Index < BUFFER_MAX; ++Index)
 	{
 		// Set the display viewport
 		glViewport(
@@ -168,6 +168,7 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}
@@ -198,11 +199,11 @@ bool sample::initProgram()
 bool sample::initArrayBuffer()
 {
 	// Generate a buffer object
-	glGenBuffers(BUFFER_COUNT, this->BufferName);
+	glGenBuffers(BUFFER_MAX, this->BufferName);
 
 	// Allocate and copy buffers memory
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_D64]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeD64, PositionDataD64, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F64]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeF64, PositionDataF64, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
