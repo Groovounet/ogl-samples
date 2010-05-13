@@ -16,8 +16,8 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL buffer type";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "331/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "331/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);

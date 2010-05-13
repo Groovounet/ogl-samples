@@ -13,9 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL image rectangle";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "texture-rect.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "texture-rect.frag");
+	std::string const SAMPLE_NAME = "OpenGL image rectangle";
+	GLint const SAMPLE_MAJOR_VERSION = 3;
+	GLint const SAMPLE_MINOR_VERSION = 3;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 
 	struct vertex

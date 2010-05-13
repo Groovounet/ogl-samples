@@ -13,9 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL draw instanced array";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "instanced-array.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "instanced-array.frag");
+	std::string const SAMPLE_NAME = "OpenGL draw instanced array";
+	GLint const SAMPLE_MAJOR_VERSION = 3;
+	GLint const SAMPLE_MINOR_VERSION = 3;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-array.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-array.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);

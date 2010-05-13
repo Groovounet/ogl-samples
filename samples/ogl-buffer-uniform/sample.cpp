@@ -13,9 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL uniform buffer";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "uniform-buffer.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "uniform-buffer.frag");
+	std::string const SAMPLE_NAME = "OpenGL uniform buffer";
+	GLint const SAMPLE_MAJOR_VERSION = 3;
+	GLint const SAMPLE_MINOR_VERSION = 3;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.frag");
 
 	GLsizei const VertexCount = 4;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);

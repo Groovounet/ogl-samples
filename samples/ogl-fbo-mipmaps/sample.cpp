@@ -13,9 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL framebuffer mipmaps";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "image-2d.frag");
+	std::string const SAMPLE_NAME = "OpenGL framebuffer mipmaps";
+	GLint const SAMPLE_MAJOR_VERSION = 3;
+	GLint const SAMPLE_MINOR_VERSION = 3;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(512, 512);
 
