@@ -58,7 +58,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION}/include
 ############
 # Add GLEW 
 
-set(GLEW_VERSION "glew-1.5.3") 
+set(GLEW_VERSION "glew-1.5.4") 
 set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
 if(MSVC)
