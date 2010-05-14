@@ -229,7 +229,7 @@ namespace detail
 #ifdef WIN32
 		glewInit();
 		glGetError();
-
+/*
 		// Load OpenGL 3.0 functions
 		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)glfGetProcAddress("glBindBufferBase");
 		glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)glfGetProcAddress("glBindFragDataLocation");
@@ -285,9 +285,9 @@ namespace detail
 		glGetSamplerParameteriv = (PFNGLGETSAMPLERPARAMETERIVPROC)glfGetProcAddress("glGetSamplerParameteriv");
 		glGetSamplerParameterIiv = (PFNGLGETSAMPLERPARAMETERIIVPROC)glfGetProcAddress("glGetSamplerParameterIiv");
 		glGetSamplerParameterfv = (PFNGLGETSAMPLERPARAMETERFVPROC)glfGetProcAddress("glGetSamplerParameterfv");
-		glGetSamplerParameterIfv = (PFNGLGETSAMPLERPARAMETERIFVPROC)glfGetProcAddress("glGetSamplerParameterIfv");
+		glGetSamplerParameterIuiv = (PFNGLGETSAMPLERPARAMETERIFVPROC)glfGetProcAddress("glGetSamplerParameterIfv");
 		glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORARBPROC)glfGetProcAddress("glVertexAttribDivisor");
-
+*/
 		// Load OpenGL 4.0 functions
 #endif
 	}
