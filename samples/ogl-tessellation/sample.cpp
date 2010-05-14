@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL vertex Array
-// 26/08/2009
+// OpenGL tessellation
+// 14/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,11 +13,13 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL vertex array";	
-	GLint const SAMPLE_MAJOR_VERSION = 3;
-	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const SAMPLE_NAME = "OpenGL tessellation";	
+	GLint const SAMPLE_MAJOR_VERSION = 4;
+	GLint const SAMPLE_MINOR_VERSION = 0;
+	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "400/tess.vert");
+	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "400/tess.cont");
+	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "400/tess.eval");
+	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "400/tess.frag");
 
 	GLsizei const VertexCount = 4;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -129,7 +131,21 @@ bool sample::initProgram()
 	// Create program
 	if(Validated)
 	{
-		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
+		GLuint ControlShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
+		GLuint EvaluationShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
+		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
+
+		this->ProgramName = glCreateProgram();
+		glAttachShader(this->ProgramName, VertexShader);
+		glAttachShader(this->ProgramName, ControlShader);
+		glAttachShader(this->ProgramName, EvaluationShader);
+		glAttachShader(this->ProgramName, FragmentShader);
+		glDeleteShader(VertexShader);
+		glDeleteShader(ControlShader);
+		glDeleteShader(EvaluationShader);
+		glDeleteShader(FragmentShader);
+
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}

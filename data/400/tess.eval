@@ -1,0 +1,7 @@
+#version 400 core
+
+void main()
+{	
+	gl_PerVertex.gl_Position = gl_in[0].gl_Position;
+}
+

@@ -417,6 +417,28 @@ inline bool checkShader(GLuint ShaderName, const char* Source)
 	return Result == GL_TRUE;
 }
 
+inline GLuint createShader
+(
+	GLenum Type,
+	std::string const & Source
+)
+{
+	bool Validated = true;
+	GLuint Name = 0;
+
+	if(Source.empty())
+	{
+		std::string SourceContent = glf::loadFile(Source);
+		char const * SourcePointer = SourceContent.c_str();
+		Name = glCreateShader(Type);
+		glShaderSource(Name, 1, &SourcePointer, NULL);
+		glCompileShader(Name);
+		Validated = glf::checkShader(Name, SourcePointer);
+	}
+
+	return Name;
+}
+
 inline GLuint createProgram
 (
 	std::string const & VertShader, 

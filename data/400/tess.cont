@@ -1,0 +1,10 @@
+#version 400 core
+
+void main()
+{	
+	for(int i = 0; i < gl_VerticesOut; ++i)
+	{
+		gl_out[i].gl_Position = gl_in[i].gl_Position;
+	}
+}
+
