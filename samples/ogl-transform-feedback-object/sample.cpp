@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL transform feedback
-// 06/04/2010
+// OpenGL transform feedback object
+// 20/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,13 +13,13 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL transform feedback";
+	std::string const SAMPLE_NAME = "OpenGL transform feedback object";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.frag");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
+	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -73,6 +73,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 		Validated = this->initArrayBuffer();
 	if(Validated)
 		Validated = this->initVertexArray();
+	//if(Validated)
+	//	Validated = this->initFeedback();
 
 	return Validated && glf::checkError("sample::begin");
 }
@@ -118,6 +120,7 @@ void sample::render()
 		glUniformMatrix4fv(this->TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 		glUniform4fv(this->TransformUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
+		//glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->FeedbackName);
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->FeedbackArrayBufferName); 
 
 		glBindVertexArray(this->TransformVertexArrayName);
@@ -127,8 +130,6 @@ void sample::render()
 			glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 		glEndTransformFeedback();
 		glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN); 
-
-		glDisable(GL_RASTERIZER_DISCARD);
 	}
 
 	// Second draw, reuse the captured attributes
@@ -141,6 +142,7 @@ void sample::render()
 
 		glBindVertexArray(this->FeedbackVertexArrayName);
 		glDrawArrays(GL_TRIANGLES, 0, PrimitivesWritten * 3);
+		//glDrawTransformFeedback(GL_TRIANGLES, this->FeedbackName);
 	}
 
 	glf::checkError("sample::render");
@@ -221,6 +223,17 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
+}
+
+bool sample::initFeedback()
+{
+	// Generate a buffer object
+	glGenTransformFeedbacks(1, &this->FeedbackName);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, this->FeedbackName);
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, this->FeedbackArrayBufferName); 
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+
+	return glf::checkError("sample::initFeedback");
 }
 
 int main(int argc, char* argv[])

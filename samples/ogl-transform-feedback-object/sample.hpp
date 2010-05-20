@@ -22,6 +22,9 @@ private:
 	bool initProgram();
 	bool initArrayBuffer();
 	bool initVertexArray();
+	bool initFeedback();
+
+	GLuint FeedbackName;
 
 	GLuint TransformProgramName;
 	GLuint TransformArrayBufferName;
