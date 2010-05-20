@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL tessellation";	
-	GLint const SAMPLE_MAJOR_VERSION = 4;
-	GLint const SAMPLE_MINOR_VERSION = 0;
+	GLint const SAMPLE_MAJOR_VERSION = 3;
+	GLint const SAMPLE_MINOR_VERSION = 3;
 	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "400/tess.vert");
 	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "400/tess.cont");
 	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "400/tess.eval");
@@ -102,20 +102,25 @@ void sample::render()
 
 	// Set the display viewport
 	glViewport(0, 0, this->WindowSize.x, this->WindowSize.y);
+	glf::checkError("sample::render 2");
 
 	// Clear color buffer with black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glf::checkError("sample::render 5");
 
 	// Bind program
 	glUseProgram(this->ProgramName);
+	glf::checkError("sample::render 6");
 
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glf::checkError("sample::render 7");
 
 	// Bind vertex array & draw 
 	glBindVertexArray(this->VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_PATCHES, ElementCount, GL_UNSIGNED_SHORT, 0);
+	glf::checkError("sample::render 8");
 	glBindVertexArray(0);
 
 	// Unbind program
@@ -132,9 +137,13 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
+		glf::checkError("VertexShader");
 		GLuint ControlShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
+		glf::checkError("ControlShader");
 		GLuint EvaluationShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
+		glf::checkError("EvaluationShader");
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
+		glf::checkError("FragmentShader");
 
 		this->ProgramName = glCreateProgram();
 		glAttachShader(this->ProgramName, VertexShader);

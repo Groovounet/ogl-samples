@@ -1,7 +1,9 @@
 #version 400 core
 
+layout(point_mode) in;
+
 void main()
 {	
-	gl_PerVertex.gl_Position = gl_in[0].gl_Position;
+	gl_Position = vec4(gl_TessCoord - 0.5, 1.0);//;gl_in[gl_PrimitiveID].gl_Position;
 }
 

@@ -229,7 +229,7 @@ namespace detail
 #ifdef WIN32
 		glewInit();
 		glGetError();
-/*
+
 		// Load OpenGL 3.0 functions
 		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)glfGetProcAddress("glBindBufferBase");
 		glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)glfGetProcAddress("glBindFragDataLocation");
@@ -284,10 +284,9 @@ namespace detail
 		glSamplerParameterIuiv = (PFNGLSAMPLERPARAMETERIUIVPROC)glfGetProcAddress("glSamplerParameterIuiv");
 		glGetSamplerParameteriv = (PFNGLGETSAMPLERPARAMETERIVPROC)glfGetProcAddress("glGetSamplerParameteriv");
 		glGetSamplerParameterIiv = (PFNGLGETSAMPLERPARAMETERIIVPROC)glfGetProcAddress("glGetSamplerParameterIiv");
-		glGetSamplerParameterfv = (PFNGLGETSAMPLERPARAMETERFVPROC)glfGetProcAddress("glGetSamplerParameterfv");
-		glGetSamplerParameterIuiv = (PFNGLGETSAMPLERPARAMETERIFVPROC)glfGetProcAddress("glGetSamplerParameterIfv");
+		glGetSamplerParameterfv =   (PFNGLGETSAMPLERPARAMETERFVPROC)glfGetProcAddress("glGetSamplerParameterfv");
+		glGetSamplerParameterIuiv = (PFNGLGETSAMPLERPARAMETERIUIVPROC)glfGetProcAddress("glGetSamplerParameterIuiv");
 		glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORARBPROC)glfGetProcAddress("glVertexAttribDivisor");
-*/
 		// Load OpenGL 4.0 functions
 #endif
 	}
@@ -426,7 +425,7 @@ inline GLuint createShader
 	bool Validated = true;
 	GLuint Name = 0;
 
-	if(Source.empty())
+	if(!Source.empty())
 	{
 		std::string SourceContent = glf::loadFile(Source);
 		char const * SourcePointer = SourceContent.c_str();
