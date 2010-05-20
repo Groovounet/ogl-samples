@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 // Declare all the semantics
 #define ATTR_POSITION	0
