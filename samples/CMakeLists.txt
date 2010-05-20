@@ -42,6 +42,7 @@ add_subdirectory(ogl-sampler-object)
 add_subdirectory(ogl-test-scissor)
 
 add_subdirectory(ogl-transform-feedback)
+add_subdirectory(ogl-transform-feedback-object)
 add_subdirectory(ogl-tessellation)
 
 add_subdirectory(ogl-vao)
