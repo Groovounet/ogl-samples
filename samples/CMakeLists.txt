@@ -27,6 +27,8 @@ add_subdirectory(ogl-image-2d-compressed)
 add_subdirectory(ogl-image-array)
 add_subdirectory(ogl-image-rect)
 
+add_subdirectory(ogl-primitive-quad)
+
 add_subdirectory(ogl-query-occlusion)
 add_subdirectory(ogl-query-conditional)
 add_subdirectory(ogl-query-timer)
