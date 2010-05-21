@@ -31,12 +31,12 @@ namespace
 		glm::vec2(-1.0f, 1.0f)
 	};
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount = 4;
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
 	GLushort const ElementData[ElementCount] =
 	{
-		0, 1, 2, 
-		2, 3, 0
+		0, 1, 2, 3
+		//2, 3, 0
 	};
 
 }//namespace
