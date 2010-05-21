@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL transform feedback
+// OpenGL Transform Feedback
 // 06/04/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL transform feedback";
+	std::string const SAMPLE_NAME = "OpenGL Transform Feedback";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
