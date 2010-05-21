@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL tessellation";	
+	std::string const SAMPLE_NAME = "OpenGL Tessellation";	
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
 	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "400/tess.vert");
@@ -29,14 +29,6 @@ namespace
 		glm::vec2( 1.0f,-1.0f),
 		glm::vec2( 1.0f, 1.0f),
 		glm::vec2(-1.0f, 1.0f)
-	};
-
-	GLsizei const ElementCount = 4;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
-	{
-		0, 1, 2, 3
-		//2, 3, 0
 	};
 
 }//namespace
@@ -92,6 +84,8 @@ bool sample::end()
 
 void sample::render()
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
@@ -102,25 +96,21 @@ void sample::render()
 
 	// Set the display viewport
 	glViewport(0, 0, this->WindowSize.x, this->WindowSize.y);
-	glf::checkError("sample::render 2");
 
 	// Clear color buffer with black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glf::checkError("sample::render 5");
 
 	// Bind program
 	glUseProgram(this->ProgramName);
-	glf::checkError("sample::render 6");
 
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glf::checkError("sample::render 7");
 
 	// Bind vertex array & draw 
 	glBindVertexArray(this->VertexArrayName);
-		glDrawElements(GL_PATCHES, ElementCount, GL_UNSIGNED_SHORT, 0);
-	glf::checkError("sample::render 8");
+		glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+		glDrawArrays(GL_PATCHES, 0, VertexCount);
 	glBindVertexArray(0);
 
 	// Unbind program
@@ -191,8 +181,6 @@ bool sample::initVertexArray()
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
 	glBindVertexArray(0);
 
 	return glf::checkError("sample::initVertexArray");
@@ -201,11 +189,6 @@ bool sample::initVertexArray()
 bool sample::initArrayBuffer()
 {
 	// Generate a buffer object
-	glGenBuffers(1, &this->ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	glGenBuffers(1, &this->ArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, this->ArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
