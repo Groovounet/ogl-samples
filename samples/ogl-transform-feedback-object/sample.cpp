@@ -16,10 +16,10 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Object";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.frag");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
+	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.frag");
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -118,7 +118,7 @@ void sample::render()
 
 		glUseProgram(this->TransformProgramName);
 		glUniformMatrix4fv(this->TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(this->TransformUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+		glUniform4fv(this->TransformUniformDiffuse, 1, &glm::vec4(1.00f, 0.50f, 0.00f, 1.0f)[0]);
 
 		glBindVertexArray(this->TransformVertexArrayName);
 
@@ -134,13 +134,13 @@ void sample::render()
 	// Second draw, reuse the captured attributes
 	{
 		glUseProgram(this->FeedbackProgramName);
-		glUniform4fv(this->FeedbackUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
-
-		glFinish();
+		glUniformMatrix4fv(this->TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+		glUniform4fv(this->FeedbackUniformDiffuse, 1, &glm::vec4(0.00f, 0.50f, 1.00f, 1.00f)[0]);
 
 		glBindVertexArray(this->FeedbackVertexArrayName);
-		//glDrawTransformFeedback(GL_TRIANGLES, this->FeedbackName);
-		glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
+		glDrawTransformFeedback(GL_TRIANGLES, this->FeedbackName);
+		//glFinish();
+		//glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
 	}
 
 	glf::checkError("sample::render");
