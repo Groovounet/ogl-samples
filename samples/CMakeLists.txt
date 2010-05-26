@@ -23,6 +23,7 @@ add_subdirectory(ogl-fbo-multiple-output)
 add_subdirectory(ogl-fbo-multisample)
 
 add_subdirectory(ogl-primitive-shader)
+add_subdirectory(ogl-primitive-instancing)
 
 add_subdirectory(ogl-image-2d)
 add_subdirectory(ogl-image-2d-compressed)

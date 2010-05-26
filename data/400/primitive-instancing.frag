@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -14,16 +14,17 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform sampler2D Diffuse;
+uniform vec4 Diffuse;
 
-in vert
+in geom
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-} Vert;
+	vec3 Color;
+} Geom;
 
 layout(location = FRAG_COLOR) out vec4 Color;
 
 void main()
 {
-	Color = texture(Diffuse, Vert.Texcoord);
+	Color = vec4(Geom.Color, 1.0) * Diffuse;
 }
+

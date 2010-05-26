@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Primitive shading
-// 26/08/2009
+// OpenGL Primitive instancing
+// 26/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,12 +13,12 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Primitive shading";	
+	std::string const SAMPLE_NAME = "OpenGL Primitive instancing";	
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.geom");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/primitive-instancing.vert");
+	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/primitive-instancing.geom");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/primitive-instancing.frag");
 
 	GLsizei const VertexCount = 4;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -68,6 +68,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 {
 	this->WindowSize = WindowSize;
 
+	glEnable(GL_DEPTH_TEST);
+
 	bool Validated = true;
 	if(Validated)
 		Validated = this->initProgram();
@@ -103,8 +105,9 @@ void sample::render()
 	glViewport(0, 0, this->WindowSize.x, this->WindowSize.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Bind program
 	glUseProgram(this->ProgramName);

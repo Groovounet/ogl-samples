@@ -14,16 +14,13 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform sampler2D Diffuse;
-
-in vert
-{
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-} Vert;
-
-layout(location = FRAG_COLOR) out vec4 Color;
-
 void main()
-{
-	Color = texture(Diffuse, Vert.Texcoord);
+{	
+	for(int i = 0; i < gl_VerticesIn; ++i)
+	{
+		gl_Position = gl_PositionIn[i];
+		EmitVertex();
+	}
+	EndPrimitive();
 }
+
