@@ -21,11 +21,13 @@ public:
 private:
 	bool initProgram();
 	bool initArrayBuffer();
+	bool initIndirectBuffer();
 	bool initVertexArray();
 
 	GLuint VertexArrayName;
 	GLuint ProgramName;
 	GLuint ArrayBufferName;
+	GLuint IndirectBufferName;
 	GLuint ElementBufferName;
 	GLint UniformMVP;
 	GLint UniformDiffuse;

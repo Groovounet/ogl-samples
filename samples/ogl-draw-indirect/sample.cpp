@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL draw elements
-// 04/12/2009
+// OpenGL draw indirect
+// 26/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,11 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL draw elements";
+	std::string const SAMPLE_NAME = "OpenGL draw indirect";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/flat-color.frag");
 
 	GLsizei const ElementCount = 6;
 	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);
@@ -36,6 +36,23 @@ namespace
 		glm::vec2( 1.0f, 1.0f),
 		glm::vec2(-1.0f, 1.0f)
 	};
+
+    struct DrawArraysIndirectCommand
+	{
+		GLuint count;
+		GLuint primCount;
+		GLuint first;
+		GLuint reservedMustBeZero;
+    };
+
+    struct DrawElementsIndirectCommand
+	{
+		GLuint count;
+		GLuint primCount;
+		GLuint firstIndex;
+		GLint  baseVertex;
+		GLuint reservedMustBeZero;
+    };
 }
 
 sample::sample
@@ -72,6 +89,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 	if(Validated)
 		Validated = this->initArrayBuffer();
 	if(Validated)
+		Validated = this->initIndirectBuffer();
+	if(Validated)
 		Validated = this->initVertexArray();
 	return Validated && glf::checkError("sample::begin");
 }
@@ -80,6 +99,7 @@ bool sample::end()
 {
 	// Delete objects
 	glDeleteBuffers(1, &this->ArrayBufferName);
+	glDeleteBuffers(1, &this->IndirectBufferName);
 	glDeleteBuffers(1, &this->ElementBufferName);
 	glDeleteProgram(this->ProgramName);
 	glDeleteVertexArrays(1, &this->VertexArrayName);
@@ -112,7 +132,8 @@ void sample::render()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindVertexArray(this->VertexArrayName);
-	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->IndirectBufferName);
+	glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0);
 
 	// Unbind program
 	glUseProgram(0);
@@ -169,6 +190,23 @@ bool sample::initArrayBuffer()
 	return glf::checkError("sample::initArrayBuffer");
 }
 
+bool sample::initIndirectBuffer()
+{
+	DrawElementsIndirectCommand Command;
+	Command.count = ElementCount;
+	Command.primCount = 1;
+	Command.firstIndex = 0;
+	Command.baseVertex = 0;
+	Command.reservedMustBeZero = 0;
+
+	glGenBuffers(1, &this->IndirectBufferName);
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->IndirectBufferName);
+    glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(Command), &Command, GL_STATIC_READ);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
+	return glf::checkError("sample::initIndirectBuffer");
+}
+
 bool sample::initVertexArray()
 {
 	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
@@ -177,6 +215,7 @@ bool sample::initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
