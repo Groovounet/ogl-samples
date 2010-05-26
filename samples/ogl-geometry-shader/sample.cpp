@@ -130,7 +130,25 @@ bool sample::initProgram()
 	// Create program
 	if(Validated)
 	{
-		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER);
+		glf::checkError("VertShader");
+		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER);
+		glf::checkError("GeomShader");
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER);
+		glf::checkError("FragShader");
+
+		this->ProgramName = glCreateProgram();
+		glAttachShader(this->ProgramName, VertShader);
+		glAttachShader(this->ProgramName, GeomShader);
+		glAttachShader(this->ProgramName, FragShader);
+		glDeleteShader(VertShader);
+		glDeleteShader(GeomShader);
+		glDeleteShader(FragShader);
+
+		glLinkProgram(this->ProgramName);
+		Validated = glf::checkProgram(this->ProgramName);
+
+		this->ProgramName = glf::createProgram(VERT_SHADER_SOURCE, FRAG_SHADER_SOURCE);
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}
