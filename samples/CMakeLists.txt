@@ -15,6 +15,7 @@ add_subdirectory(ogl-draw-multiple)
 add_subdirectory(ogl-draw-instanced)
 add_subdirectory(ogl-draw-instanced-array)
 add_subdirectory(ogl-draw-base-vertex)
+add_subdirectory(ogl-draw-indirect)
 
 add_subdirectory(ogl-fbo-blit)
 add_subdirectory(ogl-fbo-mipmaps)
