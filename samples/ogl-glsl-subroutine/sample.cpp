@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL vertex Array
-// 26/08/2009
+// OpenGL Subroutine
+// 26/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,11 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL vertex array";	
+	std::string const SAMPLE_NAME = "OpenGL Subroutine";	
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/subroutine.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/subroutine.frag");
 
 	GLsizei const VertexCount = 4;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -110,6 +110,8 @@ void sample::render()
 
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexOrange);
+	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexBlue);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(this->VertexArrayName);
@@ -138,7 +140,9 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(this->ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(this->ProgramName, "Diffuse");
+		UniformDiffuse = glGetSubroutineUniformLocation(this->ProgramName, GL_FRAGMENT_SHADER, "diffuse");
+		IndexOrange = glGetSubroutineIndex(this->ProgramName, GL_FRAGMENT_SHADER, "orange");
+		IndexBlue = glGetSubroutineIndex(this->ProgramName, GL_FRAGMENT_SHADER, "blue");
 	}
 
 	// Set some variables 

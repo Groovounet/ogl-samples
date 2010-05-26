@@ -29,6 +29,8 @@ private:
 	GLuint VertexArrayName;
 	GLint UniformMVP;
 	GLint UniformDiffuse;
+	GLuint IndexOrange;
+	GLuint IndexBlue;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

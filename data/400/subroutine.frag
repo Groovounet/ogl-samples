@@ -18,8 +18,21 @@ uniform vec4 Diffuse;
 
 layout(location = FRAG_COLOR) out vec4 Color;
 
-void main()
+subroutine vec4 diffuse();
+
+subroutine(diffuse)
+vec4 orange()
 {
-	Color = Diffuse;
+	return vec4(1.0, 0.5, 0.0, 1.0);
 }
 
+subroutine(diffuse)
+vec4 blue()
+{
+	return vec4(0.0, 0.5, 1.0, 1.0);
+}
+
+void main()
+{
+	Color = diffuse();
+}

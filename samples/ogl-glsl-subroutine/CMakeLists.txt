@@ -1,4 +1,4 @@
-set(NAME ogl-subroutine)
+set(NAME ogl-glsl-subroutine)
 
 set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/subroutine.vert)
 set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/subroutine.frag)
