@@ -22,7 +22,7 @@ add_subdirectory(ogl-fbo-srgb)
 add_subdirectory(ogl-fbo-multiple-output)
 add_subdirectory(ogl-fbo-multisample)
 
-add_subdirectory(ogl-geometry-shader)
+add_subdirectory(ogl-primitive-shader)
 
 add_subdirectory(ogl-image-2d)
 add_subdirectory(ogl-image-2d-compressed)
