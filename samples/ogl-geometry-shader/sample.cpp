@@ -130,11 +130,11 @@ bool sample::initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER);
+		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		glf::checkError("VertShader");
-		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER);
+		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
 		glf::checkError("GeomShader");
-		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER);
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 		glf::checkError("FragShader");
 
 		this->ProgramName = glCreateProgram();

@@ -14,12 +14,13 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
-
-layout(location = ATTR_POSITION) in vec3 Position;
-
 void main()
 {	
-	gl_Position = MVP * vec4(Position, 1.0);
+	for(int i = 0; i < gl_VerticesIn; ++i)
+	{
+		gl_Position = gl_PositionIn[i];
+		EmitVertex();
+	}
+	EndPrimitive();
 }
 

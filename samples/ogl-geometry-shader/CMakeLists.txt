@@ -1,4 +1,4 @@
-set(NAME ogl-geometry-shader)
+set(NAME ogl-primitive-shader)
 
 set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/flat-color.vert)
 set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/flat-color.frag)
