@@ -66,7 +66,7 @@ bool sample::check() const
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (glf::SAMPLE_MAJOR * 10 + glf::SAMPLE_MINOR);
+	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
 	return Version && glf::checkError("sample::check");
 }
 
@@ -204,8 +204,8 @@ int main(int argc, char* argv[])
 	sample* Sample = new sample(
 		SAMPLE_NAME, 
 		ScreenSize, 
-		glf::SAMPLE_MAJOR,
-		glf::SAMPLE_MINOR);
+		SAMPLE_MAJOR_VERSION,
+		SAMPLE_MINOR_VERSION);
 
 	if(Sample->check())
 	{

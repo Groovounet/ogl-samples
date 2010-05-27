@@ -32,8 +32,6 @@
 
 namespace glf
 {
-	static GLint const SAMPLE_MAJOR = 3;
-	static GLint const SAMPLE_MINOR = 3;
 	static std::string const DATA_DIRECTORY("../../data/");
 
 	enum mouse_button

@@ -44,6 +44,7 @@ add_subdirectory(ogl-sampler-filter)
 add_subdirectory(ogl-sampler-wrap)
 add_subdirectory(ogl-sampler-swizzle)
 add_subdirectory(ogl-sampler-object)
+add_subdirectory(ogl-sampler-gather)
 
 add_subdirectory(ogl-test-scissor)
 
