@@ -5,11 +5,11 @@
 
 enum buffer_index
 {
-	BUFFER_F16,
+	BUFFER_F64,
 	BUFFER_F32,
 	BUFFER_I8,
 	BUFFER_I32,
-	BUFFER_COUNT
+	BUFFER_MAX
 };
 
 class sample : public glf::window
@@ -34,12 +34,12 @@ private:
 
 	GLuint VertexArrayName;
 	GLuint ProgramName;
-	GLuint BufferName[BUFFER_COUNT];
+	GLuint BufferName[BUFFER_MAX];
 	GLint UniformMVP;
 	GLint UniformDiffuse;
 
-	glm::ivec4 Viewport[BUFFER_COUNT];
-	GLenum BufferType[BUFFER_COUNT];
+	glm::ivec4 Viewport[BUFFER_MAX];
+	GLenum BufferType[BUFFER_MAX];
 };
 
 #endif//GLF_SAMPLE_INCLUDED

@@ -1,5 +1,5 @@
 set(GL_VERSION "330")
-set(NAME ogl-query-timer-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-query-timer)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 

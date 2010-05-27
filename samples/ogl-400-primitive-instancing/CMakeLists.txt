@@ -1,5 +1,5 @@
 set(GL_VERSION "400")
-set(NAME ogl-primitive-instancing-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-primitive-instancing)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 

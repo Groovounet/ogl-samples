@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL buffer type
-// 11/08/2009
+// 10/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,21 +14,21 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL buffer type";
-	GLint const SAMPLE_MAJOR_VERSION = 3;
-	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	GLint const SAMPLE_MAJOR_VERSION = 2;
+	GLint const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
 
 	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
-	glm::hvec2 const PositionDataF16[VertexCount] =
+	GLsizeiptr const PositionSizeF64 = VertexCount * sizeof(glm::dvec2);
+	glm::dvec2 const PositionDataF64[VertexCount] =
 	{
-		glm::hvec2(-1.0f, -1.0f),
-		glm::hvec2( 1.0f, -1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2(-1.0f,  1.0f),
-		glm::hvec2(-1.0f, -1.0f)
+		glm::dvec2(-1.0f, -1.0f),
+		glm::dvec2( 1.0f, -1.0f),
+		glm::dvec2( 1.0f,  1.0f),
+		glm::dvec2( 1.0f,  1.0f),
+		glm::dvec2(-1.0f,  1.0f),
+		glm::dvec2(-1.0f, -1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
@@ -81,18 +81,13 @@ sample::~sample()
 
 bool sample::check() const
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	return Version && glf::checkError("sample::check");
+	return glf::checkError("sample::check");
 }
 
 bool sample::begin(glm::ivec2 const & WindowSize)
 {
-	this->Viewport[BUFFER_F16] = glm::ivec4(0, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F16] = GL_HALF_FLOAT;
+	this->Viewport[BUFFER_F64] = glm::ivec4(0, 0, this->WindowSize >> 1);
+	this->BufferType[BUFFER_F64] = GL_DOUBLE;
 	this->Viewport[BUFFER_F32] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
 	this->BufferType[BUFFER_F32] = GL_FLOAT;
 	this->Viewport[BUFFER_I8]  = glm::ivec4(this->WindowSize.x >> 1, this->WindowSize.y >> 1, this->WindowSize >> 1);
@@ -101,8 +96,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 	this->BufferType[BUFFER_I32] = GL_INT;
 
 	bool Validated = true;
-	if(Validated)
-		Validated = this->initVertexArray();
 	if(Validated)
 		Validated = this->initProgram();
 	if(Validated)
@@ -114,9 +107,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 bool sample::end()
 {
 	// Delete objects
-	glDeleteBuffers(BUFFER_COUNT, this->BufferName);
+	glDeleteBuffers(BUFFER_MAX, this->BufferName);
 	glDeleteProgram(this->ProgramName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -142,7 +134,7 @@ void sample::render()
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	for(std::size_t Index = 0; Index < BUFFER_COUNT; ++Index)
+	for(std::size_t Index = 0; Index < BUFFER_MAX; ++Index)
 	{
 		// Set the display viewport
 		glViewport(
@@ -176,6 +168,7 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
 		glLinkProgram(this->ProgramName);
 		Validated = glf::checkProgram(this->ProgramName);
 	}
@@ -206,11 +199,11 @@ bool sample::initProgram()
 bool sample::initArrayBuffer()
 {
 	// Generate a buffer object
-	glGenBuffers(BUFFER_COUNT, this->BufferName);
+	glGenBuffers(BUFFER_MAX, this->BufferName);
 
 	// Allocate and copy buffers memory
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F16]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F64]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeF64, PositionDataF64, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
@@ -224,15 +217,6 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
-}
-
-bool sample::initVertexArray()
-{
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-
-	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])

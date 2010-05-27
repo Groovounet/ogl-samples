@@ -1,5 +1,5 @@
 set(GL_VERSION "330")
-set(NAME ogl-sampler-filter-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-sampler-filter)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 

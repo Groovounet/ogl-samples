@@ -1,5 +1,5 @@
 set(GL_VERSION "330")
-set(NAME ogl-image-2d-array-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-image-2d-array)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 

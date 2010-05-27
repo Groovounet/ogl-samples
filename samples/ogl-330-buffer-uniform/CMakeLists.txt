@@ -1,5 +1,5 @@
 set(GL_VERSION "330")
-set(NAME ogl-buffer-uniform-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-buffer-uniform)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 

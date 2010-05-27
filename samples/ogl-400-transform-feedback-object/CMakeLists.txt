@@ -1,5 +1,5 @@
 set(GL_VERSION "400")
-set(NAME ogl-transform-feedback-object-${GL_VERSION})
+set(NAME ogl-${GL_VERSION}-transform-feedback-object)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 
