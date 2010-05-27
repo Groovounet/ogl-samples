@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Gather
+// OpenGL Fetch
 // 27/05/2010
 //**********************************
 // Christophe Riccio
@@ -13,11 +13,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Gather";
+	std::string const SAMPLE_NAME = "OpenGL Fetch";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/gather.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/gather.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/fetch.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/fetch.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 
 	struct vertex
