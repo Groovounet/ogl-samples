@@ -1,9 +1,12 @@
-set(NAME ogl-tessellation)
+set(GL_VERSION "400")
+set(NAME ogl-primitive-tessellation-${GL_VERSION})
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/tess.vert)
-set(SHADER_CONT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/tess.cont)
-set(SHADER_EVAL ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/tess.eval)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/tess.frag)
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
+
+set(SHADER_VERT ${SHADER_DIR}/tess.vert)
+set(SHADER_CONT ${SHADER_DIR}/tess.cont)
+set(SHADER_EVAL ${SHADER_DIR}/tess.eval)
+set(SHADER_FRAG ${SHADER_DIR}/tess.frag)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_CONT} ${SHADER_EVAL} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 

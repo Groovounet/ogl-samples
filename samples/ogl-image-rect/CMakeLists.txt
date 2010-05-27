@@ -1,7 +1,10 @@
-set(NAME ogl-image-rect)
+set(GL_VERSION "330")
+set(NAME ogl-image-rect-${GL_VERSION})
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/texture-rect.vert)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/330/texture-rect.frag)
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
+
+set(SHADER_VERT ${SHADER_DIR}/texture-rect.vert)
+set(SHADER_FRAG ${SHADER_DIR}/texture-rect.frag)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 

@@ -1,8 +1,11 @@
-set(NAME ogl-primitive-instancing)
+set(GL_VERSION "400")
+set(NAME ogl-primitive-instancing-${GL_VERSION})
 
-set(SHADER_VERT ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/primitive-instancing.vert)
-set(SHADER_GEOM ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/primitive-instancing.geom)
-set(SHADER_FRAG ${CMAKE_CURRENT_SOURCE_DIR}/../../data/400/primitive-instancing.frag)
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
+
+set(SHADER_VERT ${SHADER_DIR}/primitive-instancing.vert)
+set(SHADER_GEOM ${SHADER_DIR}/primitive-instancing.geom)
+set(SHADER_FRAG ${SHADER_DIR}/primitive-instancing.frag)
 set(SHADER_FILES ${SHADER_VERT} ${SHADER_GEOM} ${SHADER_FRAG})
 set(SOURCE_FILES sample.hpp sample.cpp)
 
