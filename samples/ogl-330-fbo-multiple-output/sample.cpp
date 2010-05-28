@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL FBO multiple output
+// OpenGL FBO Multiple Render Target
 // 20/10/2009
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL FBO multiple output";
+	std::string const SAMPLE_NAME = "OpenGL FBO Multiple Render Target";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
 	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
