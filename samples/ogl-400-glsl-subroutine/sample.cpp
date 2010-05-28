@@ -110,8 +110,8 @@ void sample::render()
 
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexOrange);
-	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexBlue);
+	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexOrange);
+	//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexBlue);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(this->VertexArrayName);
@@ -140,22 +140,9 @@ bool sample::initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(this->ProgramName, "MVP");
-		UniformDiffuse = glGetSubroutineUniformLocation(this->ProgramName, GL_FRAGMENT_SHADER, "diffuse");
+		UniformDiffuse = glGetSubroutineUniformLocation(this->ProgramName, GL_FRAGMENT_SHADER, "Diffuse");
 		IndexOrange = glGetSubroutineIndex(this->ProgramName, GL_FRAGMENT_SHADER, "orange");
 		IndexBlue = glGetSubroutineIndex(this->ProgramName, GL_FRAGMENT_SHADER, "blue");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(this->ProgramName);
-
-		// Set uniform value
-		glUniform4fv(this->UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return Validated && glf::checkError("sample::initProgram");
