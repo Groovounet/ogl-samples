@@ -21,9 +21,11 @@ in vert
 	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
 } Vert;
 
-layout(location = FRAG_COLOR) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color0;
+layout(location = FRAG_COLOR, index = 1) out vec4 Color1;
 
 void main()
 {
-	Color = texture(Diffuse, Vert.Texcoord);
+	Color0 = texture(Diffuse, Vert.Texcoord).rgba;
+	Color1 = texture(Diffuse, Vert.Texcoord).bgra;
 }
