@@ -21,30 +21,32 @@ in vert
 	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
 } Vert;
 
-layout(location = FRAG_COLOR) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec3 Color;
+
+vec3 texelAverage(in ivec2 Offset)
+{
+	vec4 Red = textureGatherOffset(Diffuse, Vert.Texcoord, Offset, 0);
+	vec4 Green = textureGatherOffset(Diffuse, Vert.Texcoord, Offset, 1);
+	vec4 Blue = textureGatherOffset(Diffuse, Vert.Texcoord, Offset, 2);
+
+	vec3 Texel0 = vec3(Red[0], Green[0], Blue[0]); 
+	vec3 Texel1 = vec3(Red[1], Green[1], Blue[1]); 
+	vec3 Texel2 = vec3(Red[2], Green[2], Blue[2]); 
+	vec3 Texel3 = vec3(Red[3], Green[3], Blue[3]); 
+
+	return (Texel0 + Texel1 + Texel2 + Texel3) * 0.25;
+}
 
 void main()
 {
-	vec2 Level = textureQueryLOD(Diffuse, Vert.Texcoord);
+	vec2 Size = textureSize(Diffuse, 0) - 1;
+	vec2 Texcoord = Vert.Texcoord * Size;
+	ivec2 Coord = ivec2(Vert.Texcoord * Size);
 	
-	ivec2 SizeMax = textureSize(Diffuse, floor(Level.x));
-	ivec2 SizeMin = textureSize(Diffuse, ceil(Level.x));
-	vec2 StepMax = 1.0 / vec2(SizeMax);
-	vec2 StepMin = 1.0 / vec2(SizeMin);
-	vec2 Step = mix(StepMax, StepMin, frac(Level.x));
-	vec2 Coord = Vert.Texcoord
-	
-	vec4 R = textureGather(Diffuse, Vert.Texcoord, 0);
-	vec4 G = textureGather(Diffuse, Vert.Texcoord, 1);
-	vec4 B = textureGather(Diffuse, Vert.Texcoord, 2);
-	
-	vec3 Texel00(R.x, G.x, B.x); 
-	vec3 Texel10(R.y, G.y, B.y); 
-	vec3 Texel11(R.z, G.z, B.z); 
-	vec3 Texel01(R.w, G.w, B.w); 
-	vec3 Texel0(mix(Texel00, Texel01), Offset.y);
-	vec3 Texel1(mix(Texel10, Texel11), Offset.y);
-	
-	Color = vec4(mix(Texel0, Texel1), Offset.x);
-	//Color = vec4((R.x + R.y + R.z + R.w) * 0.25, (G.x + G.y + G.z + G.w) * 0.25, (B.x + B.y + B.z + B.w) * 0.25, 1.0);
+	Color = vec3(0);
+	Color += texelAverage(ivec2( 8, 0));
+	Color += texelAverage(ivec2( 0, 8));
+	Color += texelAverage(ivec2(-8, 0));
+	Color += texelAverage(ivec2( 0,-8));
+	Color *= 0.25f;
 }

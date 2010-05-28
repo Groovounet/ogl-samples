@@ -14,7 +14,7 @@
 #define FRAG_ALPHA		3
 
 /*layout(location = VERT_COLOR)*/ in vec4 VertColor;
-layout(location = FRAG_COLOR) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {

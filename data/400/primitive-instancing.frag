@@ -21,7 +21,7 @@ in geom
 	vec3 Color;
 } Geom;
 
-layout(location = FRAG_COLOR) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {

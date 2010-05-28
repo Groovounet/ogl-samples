@@ -21,9 +21,9 @@ in vert
 	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
 } Vert;
 
-layout(location = FRAG_RED) out float Red;
-layout(location = FRAG_GREEN) out float Green;
-layout(location = FRAG_BLUE) out float Blue;
+layout(location = FRAG_RED, index = 0) out float Red;
+layout(location = FRAG_GREEN, index = 0) out float Green;
+layout(location = FRAG_BLUE, index = 0) out float Blue;
 
 void main()
 {
