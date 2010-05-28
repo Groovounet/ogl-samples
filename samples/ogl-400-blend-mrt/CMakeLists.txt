@@ -1,12 +1,12 @@
-set(GL_VERSION "330")
-set(NAME ogl-${GL_VERSION}-fbo-mrt)
+set(GL_VERSION "400")
+set(NAME ogl-${GL_VERSION}-blend-mrt)
 
 set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION})
 
 set(SHADER_VERT1 ${SHADER_DIR}/image-2d.vert)
 set(SHADER_FRAG1 ${SHADER_DIR}/image-2d.frag)
-set(SHADER_VERT2 ${SHADER_DIR}/multiple-output.vert)
-set(SHADER_FRAG2 ${SHADER_DIR}/multiple-output.frag)
+set(SHADER_VERT2 ${SHADER_DIR}/mrt.vert)
+set(SHADER_FRAG2 ${SHADER_DIR}/mrt.frag)
 set(SHADER_FILES ${SHADER_VERT1} ${SHADER_FRAG1} ${SHADER_VERT2} ${SHADER_FRAG2})
 set(SOURCE_FILES sample.hpp sample.cpp)
 
