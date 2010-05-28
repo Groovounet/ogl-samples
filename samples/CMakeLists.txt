@@ -20,6 +20,8 @@ add_subdirectory(ogl-210-sampler-filter)
 add_subdirectory(ogl-210-sampler-wrap)
 add_subdirectory(ogl-210-test-scissor)
 
+add_subdirectory(ogl-330-blend-index)
+add_subdirectory(ogl-330-blend-mrt)
 add_subdirectory(ogl-330-buffer-type)
 add_subdirectory(ogl-330-buffer-uniform)
 add_subdirectory(ogl-330-buffer-update)

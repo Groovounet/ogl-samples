@@ -16,10 +16,10 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Blend MRT";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/mrt.vert");
-	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/mrt.frag");
-	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.vert");
+	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.frag");
+	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(640, 480);
 
@@ -365,25 +365,18 @@ bool sample::initVertexArray()
 
 bool sample::initBlend()
 {
+	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparate(GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+
 	glEnablei(GL_BLEND, 0);
-	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
-	glBlendEquationSeparatei(0, GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
-	glBlendFuncSeparatei(0, GL_SRC_COLOR, GL_ONE, GL_ZERO, GL_ZERO);
-
 	glEnablei(GL_BLEND, 1);
-	glColorMaski(1, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparatei(1, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparatei(1, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
-
 	glEnablei(GL_BLEND, 2);
-	glColorMaski(2, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparatei(2, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparatei(2, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
-
 	glEnablei(GL_BLEND, 3);
+
+	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+	glColorMaski(1, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glColorMaski(2, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glColorMaski(3, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparatei(3, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparatei(3, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	return glf::checkError("sample::initBlend");
 }
