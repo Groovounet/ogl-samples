@@ -139,8 +139,6 @@ void sample::render()
 
 		glBindVertexArray(this->FeedbackVertexArrayName);
 		glDrawTransformFeedback(GL_TRIANGLES, this->FeedbackName);
-		//glFinish();
-		//glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
 	}
 
 	glf::checkError("sample::render");
