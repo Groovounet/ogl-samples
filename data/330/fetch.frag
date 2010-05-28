@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -25,33 +25,16 @@ layout(location = FRAG_COLOR) out vec4 Color;
 
 void main()
 {
-	vec2 Level = textureQueryLOD(Diffuse, Vert.Texcoord);
-	int LevelMin = int(ceil(Level.x));
-	int LevelMax = int(floor(Level.x));
-	vec2 SizeMin = textureSize(Diffuse, LevelMin) - 1;
-	vec2 SizeMax = textureSize(Diffuse, LevelMax) - 1;	
-	vec2 TexcoordMin = Vert.Texcoord * SizeMin;
-	vec2 TexcoordMax = Vert.Texcoord * SizeMax;	
-	ivec2 CoordMin = ivec2(Vert.Texcoord * SizeMin);
-	ivec2 CoordMax = ivec2(Vert.Texcoord * SizeMax);
+	vec2 Size = textureSize(Diffuse, 0) - 1;
+	vec2 Texcoord = Vert.Texcoord * Size;
+	ivec2 Coord = ivec2(Vert.Texcoord * Size);
 	
-	vec4 TexelMin00 = texelFetch(Diffuse, CoordMin + ivec2(0, 0), LevelMin);
-	vec4 TexelMin10 = texelFetch(Diffuse, CoordMin + ivec2(1, 0), LevelMin);
-	vec4 TexelMin11 = texelFetch(Diffuse, CoordMin + ivec2(1, 1), LevelMin);
-	vec4 TexelMin01 = texelFetch(Diffuse, CoordMin + ivec2(0, 1), LevelMin);
+	vec4 Texel00 = texelFetch(Diffuse, Coord + ivec2(0, 0), 0);
+	vec4 Texel10 = texelFetch(Diffuse, Coord + ivec2(1, 0), 0);
+	vec4 Texel11 = texelFetch(Diffuse, Coord + ivec2(1, 1), 0);
+	vec4 Texel01 = texelFetch(Diffuse, Coord + ivec2(0, 1), 0);
 	
-	vec4 TexelMax00 = texelFetch(Diffuse, CoordMax + ivec2(0, 0), LevelMax);
-	vec4 TexelMax10 = texelFetch(Diffuse, CoordMax + ivec2(1, 0), LevelMax);
-	vec4 TexelMax11 = texelFetch(Diffuse, CoordMax + ivec2(1, 1), LevelMax);
-	vec4 TexelMax01 = texelFetch(Diffuse, CoordMax + ivec2(0, 1), LevelMax);
-	
-	vec4 TexelMin0 = mix(TexelMin00, TexelMin01, fract(TexcoordMin.y));
-	vec4 TexelMin1 = mix(TexelMin10, TexelMin11, fract(TexcoordMin.y));
-	vec4 TexelMin  = mix(TexelMin0, TexelMin1, fract(TexcoordMin.x));
-	
-	vec4 TexelMax0 = mix(TexelMax00, TexelMax01, fract(TexcoordMax.y));
-	vec4 TexelMax1 = mix(TexelMax10, TexelMax11, fract(TexcoordMax.y));
-	vec4 TexelMax  = mix(TexelMax0, TexelMax1, fract(TexcoordMax.x));
-
-	Color = mix(TexelMax, TexelMin, fract(Level.x));
+	vec4 Texel0 = mix(Texel00, Texel01, fract(Texcoord.y));
+	vec4 Texel1 = mix(Texel10, Texel11, fract(Texcoord.y));
+	Color  = mix(Texel0, Texel1, fract(Texcoord.x));
 }
