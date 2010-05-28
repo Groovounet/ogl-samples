@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL FBO multiple output
-// 20/10/2009
+// OpenGL Blend MRT
+// 28/05/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,13 +13,13 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL FBO multiple output";
+	std::string const SAMPLE_NAME = "OpenGL Blend MRT";
 	GLint const SAMPLE_MAJOR_VERSION = 3;
 	GLint const SAMPLE_MINOR_VERSION = 3;
-	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
-	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.frag");
-	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/mrt.vert");
+	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/mrt.frag");
+	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(640, 480);
 
@@ -87,6 +87,8 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 
 	bool Validated = true;
 	if(Validated)
+		Validated = this->initBlend();
+	if(Validated)
 		Validated = this->initProgram();
 	if(Validated)
 		Validated = this->initArrayBuffer();
@@ -143,7 +145,6 @@ void sample::render()
 
 	// Pass 2
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(this->ProgramNameSingle);
@@ -360,6 +361,31 @@ bool sample::initVertexArray()
 	glBindVertexArray(0);
 
 	return glf::checkError("sample::initVertexArray");
+}
+
+bool sample::initBlend()
+{
+	glEnablei(GL_BLEND, 0);
+	glBlendEquationSeparatei(0, GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
+	glBlendFuncSeparatei(0, GL_SRC_COLOR, GL_ONE, GL_ZERO, GL_ZERO);
+	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+
+	glEnablei(GL_BLEND, 1);
+	glBlendEquationSeparatei(1, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(1, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glColorMaski(1, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+
+	glEnablei(GL_BLEND, 2);
+	glBlendEquationSeparatei(2, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(2, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glColorMaski(2, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+
+	glEnablei(GL_BLEND, 3);
+	glBlendEquationSeparatei(3, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(3, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glColorMaski(3, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+
+	return glf::checkError("sample::initBlend");
 }
 
 int main(int argc, char* argv[])

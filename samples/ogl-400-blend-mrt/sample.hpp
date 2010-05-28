@@ -33,6 +33,7 @@ private:
 	bool initTexture2D();
 	bool initFramebuffer();
 	bool initVertexArray();
+	bool initBlend();
 
 	GLuint FramebufferName;
 	GLuint VertexArrayName;
