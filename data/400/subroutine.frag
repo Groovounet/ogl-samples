@@ -14,9 +14,7 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform vec4 Diffuse;
-
-layout(location = FRAG_COLOR) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 subroutine vec4 diffuse();
 
@@ -32,7 +30,9 @@ vec4 blue()
 	return vec4(0.0, 0.5, 1.0, 1.0);
 }
 
+subroutine uniform diffuse Diffuse;
+
 void main()
 {
-	Color = diffuse();
+	Color = Diffuse();
 }
