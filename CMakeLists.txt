@@ -3,6 +3,16 @@ cmake_policy(VERSION 2.6)
 
 project(ogl-samples-pack-4.0.0)
 
+message("Variables:")
+message("CMAKE_FIND_LIBRARY_SUFFIXES", ${CMAKE_FIND_LIBRARY_SUFFIXES})
+message("CMAKE_IMPORT_LIBRARY_SUFFIX", ${CMAKE_IMPORT_LIBRARY_SUFFIX})
+message("CMAKE_LINK_LIBRARY_SUFFIX", ${CMAKE_LINK_LIBRARY_SUFFIX})
+message("CMAKE_SHARED_LIBRARY_SUFFIX", ${CMAKE_SHARED_LIBRARY_SUFFIX})
+message("CMAKE_SHARED_MODULE_SUFFIX", ${CMAKE_SHARED_MODULE_SUFFIX})
+message("CMAKE_STATIC_LIBRARY_SUFFIX", ${CMAKE_STATIC_LIBRARY_SUFFIX})
+message("CMAKE_DEBUG_POSTFIX", ${CMAKE_DEBUG_POSTFIX})
+message("end")
+
 ##########################
 # Setup binary directory
 
@@ -28,7 +38,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 ###########
 # Add SDL 
 
-set(SDL_VERSION "sdl-1.3.0-5206") 
+set(SDL_VERSION "SDL-1.3.0-4429")
 set(SDL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION})
 
 if(MSVC)
@@ -58,10 +68,10 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION}/include
 ############
 # Add GLEW 
 
-set(GLEW_VERSION "glew-1.5.4") 
-set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
-
 if(MSVC)
+    set(GLEW_VERSION "glew-1.5.4")
+    set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
+
 	include_directories("${GLEW_DIRECTORY}/include")
 	link_directories("${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY}")
 endif(MSVC)
@@ -69,11 +79,13 @@ endif(MSVC)
 ############
 # Add GLEXT 
 
-set(GL_VERSION "GL") 
-set(GL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GL_VERSION})
+if(APPLE)
+    set(GL_VERSION "GL")
+    set(GL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/OpenGL.framework)
 
-find_library(OPENGL_LIBRARY OpenGL)
-mark_as_advanced(OPENGL_LIBRARY)
+        include_directories("${GL_DIRECTORY}/Headers")
+        link_directories("${GL_DIRECTORY}/Libraries/")
+endif(APPLE)
 
 ###########
 # Add GLM 
@@ -96,10 +108,12 @@ include_directories("${GLI_DIRECTORY}")
 
 if(MSVC)
 	set(BINARY_FILES "SDL" "SDLmain" "glew32s" "OpenGL32")
-else(MSVC)
-	set(BINARY_FILES "SDL" "SDLmain" "GL")
+elif(APPLE)
+    set(BINARY_FILES "SDL" "SDLmain" "../libGL.dylib")
+#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
+else(UNIX and not APPLE)
+#	set(BINARY_FILES "SDL" "SDLmain" "GL")
 endif(MSVC)
-
 
 ################################
 # Add output directory
