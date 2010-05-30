@@ -6,6 +6,25 @@
 #add_subdirectory(ogl-buffer-streaming)
 #add_subdirectory(ogl-buffer-texture)
 
+
+if(APPLE)
+
+add_subdirectory(ogl-210-buffer-type)
+add_subdirectory(ogl-210-buffer-update)
+add_subdirectory(ogl-210-draw-elements)
+add_subdirectory(ogl-210-draw-multiple)
+add_subdirectory(ogl-210-draw-range)
+add_subdirectory(ogl-210-image-2d)
+add_subdirectory(ogl-210-image-2d-compressed)
+add_subdirectory(ogl-210-query-occlusion)
+add_subdirectory(ogl-210-rasterizer-viewport)
+add_subdirectory(ogl-210-sampler-anisotropy-ext)
+add_subdirectory(ogl-210-sampler-filter)
+add_subdirectory(ogl-210-sampler-wrap)
+add_subdirectory(ogl-210-test-scissor)
+
+else(APPLE)
+
 add_subdirectory(ogl-210-buffer-type)
 add_subdirectory(ogl-210-buffer-update)
 add_subdirectory(ogl-210-draw-elements)
@@ -63,3 +82,4 @@ add_subdirectory(ogl-400-primitive-tessellation)
 add_subdirectory(ogl-400-sampler-fetch)
 add_subdirectory(ogl-400-sampler-gather)
 add_subdirectory(ogl-400-transform-feedback-object)
+endif(APPLE)

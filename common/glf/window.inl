@@ -353,16 +353,16 @@ namespace glf
 		glm::ivec2 const & WindowSize
 	) :
 		MouseButtonFlags(0),
-		MouseCurrent(WindowSize / 2),
-		MouseOrigin(WindowSize / 2),
 		RotationCurrent(0.f),
 		RotationOrigin(0.f),
 		TranlationOrigin(0.f, 4.f),
 		TranlationCurrent(0.f, 4.f),
+		MouseCurrent(WindowSize / 2),
+		MouseOrigin(WindowSize / 2),
 		IndexCurrent(0),
 		IndexMax(10),
-		Title(Title),
-		WindowSize(WindowSize)
+		WindowSize(WindowSize),
+		Title(Title)
 	{
 		detail::CreateWindowSDL(
 			Title.c_str(), 
@@ -379,16 +379,16 @@ namespace glf
 		glm::uint32 VersionMinor
 	) :
 		MouseButtonFlags(0),
-		MouseCurrent(WindowSize / 2),
-		MouseOrigin(WindowSize / 2),
 		RotationCurrent(0.f),
 		RotationOrigin(0.f),
 		TranlationOrigin(0.f, 4.f),
 		TranlationCurrent(0.f, 4.f),
+		MouseCurrent(WindowSize / 2),
+		MouseOrigin(WindowSize / 2),
 		IndexCurrent(0),
 		IndexMax(10),
-		Title(Title),
-		WindowSize(WindowSize)
+		WindowSize(WindowSize),
+		Title(Title)
 	{
 		detail::CreateWindowSDL(
 			Title.c_str(), 
