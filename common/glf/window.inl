@@ -353,8 +353,8 @@ namespace glf
 		glm::ivec2 const & WindowSize
 	) :
 		MouseButtonFlags(0),
-		RotationCurrent(0.f),
 		RotationOrigin(0.f),
+		RotationCurrent(0.f),
 		TranlationOrigin(0.f, 4.f),
 		TranlationCurrent(0.f, 4.f),
 		MouseCurrent(WindowSize / 2),
@@ -379,8 +379,8 @@ namespace glf
 		glm::uint32 VersionMinor
 	) :
 		MouseButtonFlags(0),
-		RotationCurrent(0.f),
 		RotationOrigin(0.f),
+		RotationCurrent(0.f),
 		TranlationOrigin(0.f, 4.f),
 		TranlationCurrent(0.f, 4.f),
 		MouseCurrent(WindowSize / 2),

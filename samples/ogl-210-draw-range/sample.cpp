@@ -66,8 +66,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 		Result = this->initProgram();
 	if(Result)
 		Result = this->initArrayBuffer();
-	if(Result)
-		Result = this->initVertexArray();
 
 	return Result && glf::checkError("sample::begin");
 }
@@ -78,7 +76,6 @@ bool sample::end()
 	glDeleteBuffers(1, &this->ArrayBufferName);
 	glDeleteBuffers(1, &this->ElementBufferName);
 	glDeleteProgram(this->ProgramName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -107,9 +104,15 @@ void sample::render()
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glBindVertexArray(this->VertexArrayName);
-	glDrawRangeElements(GL_TRIANGLES, 0, VertexCount, ElementCount, GL_UNSIGNED_INT, 0);
-
+	glBindBuffer(GL_ARRAY_BUFFER, this->ArrayBufferName);
+	glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
+	
+	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glDrawRangeElements(GL_TRIANGLES, 0, VertexCount, ElementCount, GL_UNSIGNED_INT, 0);
+	glDisableVertexAttribArray(glf::semantic::attr::POSITION);
+	
 	// Unbind program
 	glUseProgram(0);
 
@@ -163,22 +166,6 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
-}
-
-bool sample::initVertexArray()
-{
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, this->ArrayBufferName);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ElementBufferName);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-	glBindVertexArray(0);
-
-	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])

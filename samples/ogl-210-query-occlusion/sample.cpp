@@ -62,8 +62,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 	if(Validated)
 		Validated = this->initArrayBuffer();
 	if(Validated)
-		Validated = this->initVertexArray();
-	if(Validated)
 		Validated = this->initQuery();
 
 	return Validated && glf::checkError("sample::begin");
@@ -74,7 +72,6 @@ bool sample::end()
 	// Delete objects
 	glDeleteBuffers(1, &this->BufferName);
 	glDeleteProgram(this->ProgramName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
 
 	return glf::checkError("sample::end");
 }
@@ -104,8 +101,14 @@ void sample::render()
 
 	// Beginning of the samples count query
 	glBeginQuery(GL_SAMPLES_PASSED, this->QueryName);
-
-	glBindVertexArray(this->VertexArrayName);
+	
+	// Bind vertex attribute
+	glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+	glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
 	// End of the samples count query
@@ -182,22 +185,6 @@ bool sample::initArrayBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("sample::initArrayBuffer");
-}
-
-bool sample::initVertexArray()
-{
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-		// Bind vertex attribute
-		glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-	glBindVertexArray(0);
-
-	return glf::checkError("sample::initVertexArray");
 }
 
 int main(int argc, char* argv[])
