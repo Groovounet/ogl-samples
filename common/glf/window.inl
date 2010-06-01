@@ -10,6 +10,7 @@ namespace glf
 	{
 #ifdef WIN32
 		glewInit();
+		glGetError();
 
 		// Load OpenGL 3.0 functions
 		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)glfGetProcAddress("glBindBufferBase");
