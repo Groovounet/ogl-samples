@@ -3,7 +3,6 @@
 
 // OpenGL
 #ifdef WIN32
-#	define GLEW_STATIC
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
 #	include <GL/glext.h>
@@ -46,45 +45,27 @@ namespace glf
 		MOUSE_BUTTON_MIDDLE = (1 << 2)
 	};
 
-	class window
+	struct window
 	{
-	public:
-		window(
-			std::string const & Title, 
-			glm::ivec2 const & WindowSise);
-		window(
-			std::string const & Title, 
-			glm::ivec2 const & WindowSise,
-			glm::uint32 VersionMajor,
-			glm::uint32 VersionMinor);
-		virtual ~window();
+		window(glm::ivec2 const & Size) :
+			WindowSize(Size),
+			MouseOrigin(Size >> 1),
+			MouseCurrent(Size >> 1),
+			TranlationOrigin(0, 4),
+			TranlationCurrent(0, 4),
+			RotationOrigin(0), 
+			RotationCurrent(0),
+			MouseButtonFlags(0)
+		{}
 
-		virtual bool check() const = 0;
-		virtual bool begin(glm::ivec2 const & WindowSize) = 0;
-		virtual bool end() = 0;
-		virtual void render() = 0;
-
-		bool run();
-		void onMouseMove(glm::vec2 const & MouseCurrent);
-		void onMouseDown(mouse_button MouseButton);
-		void onMouseUp(mouse_button MouseButton);
-
-		std::string title(){return Title;}
-
-	protected:
-		glm::uint MouseButtonFlags;
-		glm::vec2 RotationOrigin;
-		glm::vec2 RotationCurrent;
+		glm::ivec2 WindowSize;
+		glm::vec2 MouseOrigin;
+		glm::vec2 MouseCurrent;
 		glm::vec2 TranlationOrigin;
 		glm::vec2 TranlationCurrent;
-		glm::vec2 MouseCurrent;
-		glm::vec2 MouseOrigin;
-		int IndexCurrent;
-		int IndexMax;
-		glm::ivec2 WindowSize;
-
-	private:
-		std::string Title;
+		glm::vec2 RotationOrigin;
+		glm::vec2 RotationCurrent;
+		int MouseButtonFlags;
 	};
 
 	std::string loadFile(std::string const & Filename);
@@ -93,6 +74,7 @@ namespace glf
 	bool checkShader(GLuint ShaderName, char const* Source);
 	bool validateProgram(GLuint ProgramName);
 
+	int version(int Major, int Minor);
 	GLuint createProgram(
 		std::string const & VertShader, 
 		std::string const & FragShader);
@@ -146,6 +128,11 @@ namespace glf
 	}//namespace semantic
 
 }//namespace glf
+
+namespace 
+{
+	extern glf::window Window;
+}//namespace 
 
 #define GLF_BUFFER_OFFSET(i) ((char *)NULL + (i))
 

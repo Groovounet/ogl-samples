@@ -62,7 +62,8 @@ if(MSVC)
 	set(GLUT_VERSION "freeglut-2.6.0")
 	set(GLUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLUT_VERSION})
 
-	include_directories("${GLUT_DIRECTORY}/include")
+	add_definitions(-DFREEGLUT_STATIC)
+	include_directories("${GLUT_DIRECTORY}")
 	link_directories("${GLUT_DIRECTORY}/lib/${BINARY_DIRECTORY}")
 endif(MSVC)
 
@@ -73,6 +74,7 @@ if(MSVC)
 	set(GLEW_VERSION "glew-1.5.4")
 	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
+	add_definitions(-DGLEW_STATIC)
 	include_directories("${GLEW_DIRECTORY}/include")
 	link_directories("${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY}")
 endif(MSVC)
