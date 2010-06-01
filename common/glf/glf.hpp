@@ -48,7 +48,7 @@ namespace glf
 	struct window
 	{
 		window(glm::ivec2 const & Size) :
-			WindowSize(Size),
+			Size(Size),
 			MouseOrigin(Size >> 1),
 			MouseCurrent(Size >> 1),
 			TranlationOrigin(0, 4),
@@ -58,7 +58,7 @@ namespace glf
 			MouseButtonFlags(0)
 		{}
 
-		glm::ivec2 WindowSize;
+		glm::ivec2 Size;
 		glm::vec2 MouseOrigin;
 		glm::vec2 MouseCurrent;
 		glm::vec2 TranlationOrigin;

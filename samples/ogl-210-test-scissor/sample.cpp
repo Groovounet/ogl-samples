@@ -17,13 +17,12 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
-
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_POSITION_X = 64;
-	int const SAMPLE_POSITION_Y = 64;
 	int const SAMPLE_MAJOR_VERSION = 2;
 	int const SAMPLE_MINOR_VERSION = 1;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	struct vertex
 	{
@@ -209,7 +208,7 @@ void display()
 	glDisable(GL_SCISSOR_TEST);
 
 	glf::swapBuffers();
-	glf::checkError("render");
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])

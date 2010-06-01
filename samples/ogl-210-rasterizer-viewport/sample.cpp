@@ -14,10 +14,14 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL viewport";
-	GLint const SAMPLE_MAJOR_VERSION = 2;
-	GLint const SAMPLE_MINOR_VERSION = 1;
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
+	int const SAMPLE_SIZE_WIDTH = 640;
+	int const SAMPLE_SIZE_HEIGHT = 480;
+	int const SAMPLE_MAJOR_VERSION = 2;
+	int const SAMPLE_MINOR_VERSION = 1;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
@@ -30,55 +34,76 @@ namespace
 		glm::vec2(-1.0f, 1.0f),
 		glm::vec2(-1.0f,-1.0f)
 	};
+}//namespace
+
+bool initProgram()
+{
+	bool Validated = true;
+	
+	// Create program
+	if(Validated)
+	{
+		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
+	}
+
+	if(Validated)
+	{
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+	}
+
+	if(Validated)
+	{
+		glUseProgram(ProgramName);
+		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	}
+
+	return Validated;
 }
 
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
-
-sample::~sample()
-{}
-
-bool sample::check() const
+bool initArrayBuffer()
 {
-	return glf::checkError("sample::check");
+	glGenBuffers(1, &BufferName);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return true;
 }
 
-bool sample::begin(glm::ivec2 const & WindowSize)
+
+bool begin(glm::ivec2 const & WindowSize)
 {
-	this->WindowSize = WindowSize;
+	WindowSize = WindowSize;
 
 	bool Validated = true;
 	if(Validated)
-		Validated = this->initProgram();
+		Validated = initProgram();
 	if(Validated)
-		Validated = this->initArrayBuffer();
+		Validated = initArrayBuffer();
 
-	return Validated && glf::checkError("sample::begin");
+	return Validated && glf::checkError("begin");
 }
 
-bool sample::end()
+bool end()
 {
-	glDeleteBuffers(1, &this->BufferName);
-	glDeleteProgram(this->ProgramName);
+	glDeleteBuffers(1, &BufferName);
+	glDeleteProgram(ProgramName);
 
-	return glf::checkError("sample::end");
+	return glf::checkError("end");
 }
 
-void sample::renderScene(glm::mat4 const & MVP)
+void renderScene(glm::mat4 const & MVP)
 {
 	glm::mat4 Matrix = MVP;
 
-	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &Matrix[0][0]);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &Matrix[0][0]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+	glBindBuffer(GL_ARRAY_BUFFER, BufferName);
 	glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
@@ -87,7 +112,7 @@ void sample::renderScene(glm::mat4 const & MVP)
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 }
 
-void sample::render()
+void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -100,86 +125,32 @@ void sample::render()
 	glEnable(GL_SCISSOR_TEST);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glScissor(0, 0, this->WindowSize.x, this->WindowSize.y);
+	glScissor(0, 0, WindowSize.x, WindowSize.y);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glViewport(0, 0, this->WindowSize.x, this->WindowSize.y);
-	this->renderScene(MVP);
+	glViewport(0, 0, WindowSize.x, WindowSize.y);
+	renderScene(MVP);
 
 	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 	glScissor(64, 48, 160, 120);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(64, 48, 160, 120);
-	this->renderScene(MVP);
+	renderScene(MVP);
 
 	glDisable(GL_SCISSOR_TEST);
 
-	glf::checkError("sample::render");
-}
-
-bool sample::initProgram()
-{
-	bool Validated = true;
-	
-	// Create program
-	if(Validated)
-	{
-		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
-		glLinkProgram(this->ProgramName);
-		Validated = glf::checkProgram(this->ProgramName);
-	}
-
-	if(Validated)
-	{
-		this->UniformMVP = glGetUniformLocation(this->ProgramName, "MVP");
-		this->UniformDiffuse = glGetUniformLocation(this->ProgramName, "Diffuse");
-	}
-
-	if(Validated)
-	{
-		glUseProgram(this->ProgramName);
-		glUniform4fv(this->UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-	}
-
-	return Validated;
-}
-
-bool sample::initArrayBuffer()
-{
-	glGenBuffers(1, &this->BufferName);
-
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return true;
+	glf::swapBuffers();
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])
 {
-	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
-
-	sample * Sample = new sample(
-		SAMPLE_NAME, 
-		ScreenSize, 
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION);
-
-	if(Sample->check())
-	{
-		Sample->begin(ScreenSize);
-		Sample->run();
-		Sample->end();
-
-		delete Sample;
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
 		return 0;
-	}
-
-	fprintf(stderr, "OpenGL Error: this sample failed to run\n");
-
-	delete Sample;
-	Sample = 0;
 	return 1;
 }

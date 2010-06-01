@@ -368,7 +368,7 @@ namespace glf
 
 	static void reshape(int w, int h)
 	{
-		Window.WindowSize = glm::ivec2(w, h);
+		Window.Size = glm::ivec2(w, h);
 	}
 
 	static void idle()
@@ -406,7 +406,7 @@ namespace glf
 		glGetError();
 		//glf::init();
 
-		if(begin();)
+		if(begin())
 		{
 			glutDisplayFunc(display); 
 			glutReshapeFunc(glf::reshape);

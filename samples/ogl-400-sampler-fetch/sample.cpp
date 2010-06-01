@@ -237,7 +237,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glf::swapBuffers();
-	glf::checkError("sample::render");
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])

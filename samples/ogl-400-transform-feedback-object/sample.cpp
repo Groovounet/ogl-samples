@@ -35,6 +35,8 @@ namespace
 		glm::vec2(-1.0f,-1.0f)
 	};
 
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
+
 	GLuint FeedbackName = 0;
 
 	GLuint TransformProgramName = 0;
@@ -53,7 +55,7 @@ namespace
 
 }//namespace
 
-bool sample::initProgram()
+bool initProgram()
 {
 	bool Validated = true;
 	
@@ -91,7 +93,7 @@ bool sample::initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool sample::initVertexArray()
+bool initVertexArray()
 {
 	// Build a vertex array object
 	glGenVertexArrays(1, &TransformVertexArrayName);
@@ -114,7 +116,7 @@ bool sample::initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool sample::initFeedback()
+bool initFeedback()
 {
 	// Generate a buffer object
 	glGenTransformFeedbacks(1, &FeedbackName);
@@ -125,7 +127,7 @@ bool sample::initFeedback()
 	return glf::checkError("initFeedback");
 }
 
-bool sample::initArrayBuffer()
+bool initArrayBuffer()
 {
 	// Generate a buffer object
 	glGenBuffers(1, &TransformArrayBufferName);
@@ -173,18 +175,18 @@ bool end()
 	return glf::checkError("end");
 }
 
-void render()
+void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
 	// Set the display viewport
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -221,7 +223,7 @@ void render()
 	}
 
 	glf::swapBuffers();
-	glf::checkError("render");
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])

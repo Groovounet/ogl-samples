@@ -14,10 +14,14 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL buffer type";
-	GLint const SAMPLE_MAJOR_VERSION = 2;
-	GLint const SAMPLE_MINOR_VERSION = 1;
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
+	int const SAMPLE_SIZE_WIDTH = 640;
+	int const SAMPLE_SIZE_HEIGHT = 480;
+	int const SAMPLE_MAJOR_VERSION = 2;
+	int const SAMPLE_MINOR_VERSION = 1;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSizeF64 = VertexCount * sizeof(glm::dvec2);
@@ -65,55 +69,95 @@ namespace
 	};
 }
 
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
-
-sample::~sample()
-{}
-
-bool sample::check() const
+bool initProgram()
 {
-	return glf::checkError("sample::check");
+	bool Validated = true;
+	
+	// Create program
+	if(Validated)
+	{
+		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
+	}
+
+	// Get variables locations
+	if(Validated)
+	{
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+	}
+
+	// Set some variables 
+	if(Validated)
+	{
+		// Bind the program for use
+		glUseProgram(ProgramName);
+
+		// Set uniform value
+		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
+		// Unbind the program
+		glUseProgram(0);
+	}
+
+	return Validated && glf::checkError("initProgram");
 }
 
-bool sample::begin(glm::ivec2 const & WindowSize)
+bool initArrayBuffer()
 {
-	this->Viewport[BUFFER_F64] = glm::ivec4(0, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F64] = GL_DOUBLE;
-	this->Viewport[BUFFER_F32] = glm::ivec4(this->WindowSize.x >> 1, 0, this->WindowSize >> 1);
-	this->BufferType[BUFFER_F32] = GL_FLOAT;
-	this->Viewport[BUFFER_I8]  = glm::ivec4(this->WindowSize.x >> 1, this->WindowSize.y >> 1, this->WindowSize >> 1);
-	this->BufferType[BUFFER_I8]  = GL_BYTE;
-	this->Viewport[BUFFER_I32] = glm::ivec4(0, this->WindowSize.y >> 1, this->WindowSize >> 1);
-	this->BufferType[BUFFER_I32] = GL_INT;
+	// Generate a buffer object
+	glGenBuffers(BUFFER_MAX, BufferName);
+
+	// Allocate and copy buffers memory
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F64]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeF64, PositionDataF64, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F32]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_I8]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeI8, PositionDataI8, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_I32]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeI32, PositionDataI32, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return glf::checkError("initArrayBuffer");
+}
+
+bool begin(glm::ivec2 const & WindowSize)
+{
+	Viewport[BUFFER_F64] = glm::ivec4(0, 0, WindowSize >> 1);
+	BufferType[BUFFER_F64] = GL_DOUBLE;
+	Viewport[BUFFER_F32] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
+	BufferType[BUFFER_F32] = GL_FLOAT;
+	Viewport[BUFFER_I8]  = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
+	BufferType[BUFFER_I8]  = GL_BYTE;
+	Viewport[BUFFER_I32] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
+	BufferType[BUFFER_I32] = GL_INT;
 
 	bool Validated = true;
 	if(Validated)
-		Validated = this->initProgram();
+		Validated = initProgram();
 	if(Validated)
-		Validated = this->initArrayBuffer();
+		Validated = initArrayBuffer();
 
-	return Validated && glf::checkError("sample::begin");
+	return Validated && glf::checkError("begin");
 }
 
-bool sample::end()
+bool end()
 {
 	// Delete objects
-	glDeleteBuffers(BUFFER_MAX, this->BufferName);
-	glDeleteProgram(this->ProgramName);
+	glDeleteBuffers(BUFFER_MAX, BufferName);
+	glDeleteProgram(ProgramName);
 
-	return glf::checkError("sample::end");
+	return glf::checkError("end");
 }
 
-void sample::render()
+void display()
 {
 	// Compute the MVP (Model View Projection matrix)
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -129,23 +173,23 @@ void sample::render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Bind program
-	glUseProgram(this->ProgramName);
+	glUseProgram(ProgramName);
 
 	// Set the value of MVP uniform.
-	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	for(std::size_t Index = 0; Index < BUFFER_MAX; ++Index)
 	{
 		// Set the display viewport
 		glViewport(
-			this->Viewport[Index].x, 
-			this->Viewport[Index].y, 
-			this->Viewport[Index].z, 
-			this->Viewport[Index].w);
+			Viewport[Index].x, 
+			Viewport[Index].y, 
+			Viewport[Index].z, 
+			Viewport[Index].w);
 
 		// Bind vertex attribute
-		glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[Index]);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, this->BufferType[Index], GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[Index]);
+			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, BufferType[Index], GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		// Draw
@@ -157,92 +201,17 @@ void sample::render()
 	// Unbind program
 	glUseProgram(0);
 
-	glf::checkError("sample::render");
-}
-
-bool sample::initProgram()
-{
-	bool Validated = true;
-	
-	// Create program
-	if(Validated)
-	{
-		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		glBindAttribLocation(this->ProgramName, glf::semantic::attr::POSITION, "Position");
-		glLinkProgram(this->ProgramName);
-		Validated = glf::checkProgram(this->ProgramName);
-	}
-
-	// Get variables locations
-	if(Validated)
-	{
-		this->UniformMVP = glGetUniformLocation(this->ProgramName, "MVP");
-		this->UniformDiffuse = glGetUniformLocation(this->ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(this->ProgramName);
-
-		// Set uniform value
-		glUniform4fv(this->UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
-	return Validated && glf::checkError("sample::initProgram");
-}
-
-bool sample::initArrayBuffer()
-{
-	// Generate a buffer object
-	glGenBuffers(BUFFER_MAX, this->BufferName);
-
-	// Allocate and copy buffers memory
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F64]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF64, PositionDataF64, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_F32]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_I8]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeI8, PositionDataI8, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName[BUFFER_I32]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeI32, PositionDataI32, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return glf::checkError("sample::initArrayBuffer");
+	glf::swapBuffers();
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])
 {
-	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
-
-	sample* Sample = new sample(
-		SAMPLE_NAME, 
-		ScreenSize, 
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION);
-
-	if(Sample->check())
-	{
-		Sample->begin(ScreenSize);
-		Sample->run();
-		Sample->end();
-
-		delete Sample;
-		Sample = 0;
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
 		return 0;
-	}
-
-	fprintf(stderr, "OpenGL Error: this sample failed to run\n");
-
-	delete Sample;
-	Sample = 0;
 	return 1;
 }
