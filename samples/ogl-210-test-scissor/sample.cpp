@@ -208,39 +208,17 @@ void display()
 
 	glDisable(GL_SCISSOR_TEST);
 
-	glutSwapBuffers();
-
+	glf::swapBuffers();
 	glf::checkError("render");
 }
 
 int main(int argc, char* argv[])
 {
-	glutInitWindowSize(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT);
-	glutInitWindowPosition(::SAMPLE_POSITION_X, ::SAMPLE_POSITION_Y);
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitContextVersion(::SAMPLE_MAJOR_VERSION, ::SAMPLE_MINOR_VERSION);
-	if(glf::version(::SAMPLE_MAJOR_VERSION, ::SAMPLE_MINOR_VERSION) >= 300)
-	{
-		glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
-		glutInitContextProfile(GLUT_CORE_PROFILE);
-	}
-
-	glutCreateWindow(argv[0]);
-	glf::init();
-
-	begin();
-		glutDisplayFunc(display); 
-		glutReshapeFunc(glf::reshape);
-		glutMouseFunc(glf::mouse);
-		glutMotionFunc(glf::motion);
-		glutKeyboardFunc(glf::keyboard);
-		glutIdleFunc(glf::idle);
-
-		glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-
-		glutMainLoop();
-	end();
-
-	return 0;
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
+		return 0;
+	return 1;
 }

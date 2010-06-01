@@ -406,19 +406,19 @@ namespace glf
 		glGetError();
 		//glf::init();
 
-		if(check())
+		if(begin();)
 		{
-			begin();
-				glutDisplayFunc(display); 
-				glutReshapeFunc(glf::reshape);
-				glutMouseFunc(glf::mouse);
-				glutMotionFunc(glf::motion);
-				glutKeyboardFunc(glf::keyboard);
-				glutIdleFunc(glf::idle);
+			glutDisplayFunc(display); 
+			glutReshapeFunc(glf::reshape);
+			glutMouseFunc(glf::mouse);
+			glutMotionFunc(glf::motion);
+			glutKeyboardFunc(glf::keyboard);
+			glutIdleFunc(glf::idle);
 
-				glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+			glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-				glutMainLoop();
+			glutMainLoop();
+
 			end();
 
 			return 0;

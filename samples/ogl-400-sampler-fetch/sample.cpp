@@ -17,7 +17,6 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/fetch.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/fetch.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
-
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
@@ -65,15 +64,15 @@ namespace
 		};
 	}//namespace viewport
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
 
-	GLuint BufferName;
-	GLuint Image2DName;
-	GLuint SamplerName;
+	GLuint BufferName = 0;
+	GLuint Image2DName = 0;
+	GLuint SamplerName = 0;
 
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 
 	GLenum SwizzleR[viewport::MAX];
 	GLenum SwizzleG[viewport::MAX];
@@ -176,18 +175,15 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool check()
+bool begin()
 {
+	// Check the OpenGL version
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	return glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-}
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
-bool begin()
-{
-	bool Validated = true;
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
