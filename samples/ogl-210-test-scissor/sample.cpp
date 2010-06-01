@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include <glf/window.hpp>
+#include <glf/glf.hpp>
 
 namespace
 {

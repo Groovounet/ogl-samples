@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include <glf/window.hpp>
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -20,8 +20,6 @@ namespace
 
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_POSITION_X = 64;
-	int const SAMPLE_POSITION_Y = 64;
 	int const SAMPLE_MAJOR_VERSION = 4;
 	int const SAMPLE_MINOR_VERSION = 0;
 
@@ -65,7 +63,7 @@ namespace
 			V01,
 			MAX
 		};
-	}
+	}//namespace viewport
 
 	GLuint VertexArrayName;
 	GLuint ProgramName;
@@ -83,15 +81,6 @@ namespace
 	GLenum SwizzleA[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
-
-bool check()
-{
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	return glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-}
 
 bool initProgram()
 {
@@ -187,6 +176,15 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool check()
+{
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	return glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+}
+
 bool begin()
 {
 	bool Validated = true;
@@ -242,46 +240,17 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glutSwapBuffers();
-
+	glf::swapBuffers();
 	glf::checkError("sample::render");
 }
 
 int main(int argc, char* argv[])
 {
-	glutInitWindowSize(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT);
-	glutInitWindowPosition(::SAMPLE_POSITION_X, ::SAMPLE_POSITION_Y);
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitContextVersion(::SAMPLE_MAJOR_VERSION, ::SAMPLE_MINOR_VERSION);
-	if(glf::version(::SAMPLE_MAJOR_VERSION, ::SAMPLE_MINOR_VERSION) >= 300)
-	{
-		glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
-		glutInitContextProfile(GLUT_CORE_PROFILE);
-	}
-
-	glutCreateWindow(argv[0]);
-	//glewInit();
-	//glGetError();
-	glf::init();
-
-	if(check())
-	{
-		begin();
-			glutDisplayFunc(display); 
-			glutReshapeFunc(glf::reshape);
-			glutMouseFunc(glf::mouse);
-			glutMotionFunc(glf::motion);
-			glutKeyboardFunc(glf::keyboard);
-			glutIdleFunc(glf::idle);
-
-			glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-
-			glutMainLoop();
-		end();
-
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
 		return 0;
-	}
-
 	return 1;
 }

@@ -136,6 +136,6 @@ namespace
 
 #define GLF_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-#include "window.inl"
+#include "glf.inl"
 
 #endif//GLF_WINDOW_INCLUDED

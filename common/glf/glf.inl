@@ -4,9 +4,19 @@
 	PFNGLVERTEXATTRIBDIVISORARBPROC glVertexAttribDivisor = 0;
 #endif//WIN32
 
+bool check();
+bool begin();
+bool end();
+void display();
+
 namespace glf
 {
-	inline void init()
+	inline void swapBuffers()
+	{
+		glutSwapBuffers();
+	}
+
+	inline void initFunc()
 	{
 #ifdef WIN32
 		glewInit();
@@ -373,5 +383,48 @@ namespace glf
 		Window.RotationCurrent = Window.MouseButtonFlags & glf::MOUSE_BUTTON_RIGHT ? Window.RotationOrigin + (Window.MouseCurrent - Window.MouseOrigin) : Window.RotationOrigin;
 	}
 
+	inline bool run
+	(
+		int argc, char* argv[], 
+		glm::ivec2 const & Size, 
+		int Major, int Minor
+	)
+	{
+		glutInitWindowSize(Size.x, Size.y);
+		glutInitWindowPosition(64, 64);
+		glutInit(&argc, argv);
+		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+		glutInitContextVersion(Major, Minor);
+		if(glf::version(Major, Minor) >= 300)
+		{
+			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
+			glutInitContextProfile(GLUT_CORE_PROFILE);
+		}
+
+		glutCreateWindow(argv[0]);
+		glewInit();
+		glGetError();
+		//glf::init();
+
+		if(check())
+		{
+			begin();
+				glutDisplayFunc(display); 
+				glutReshapeFunc(glf::reshape);
+				glutMouseFunc(glf::mouse);
+				glutMotionFunc(glf::motion);
+				glutKeyboardFunc(glf::keyboard);
+				glutIdleFunc(glf::idle);
+
+				glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+
+				glutMainLoop();
+			end();
+
+			return 0;
+		}
+
+		return 1;
+	}
 
 }//namespace glf
