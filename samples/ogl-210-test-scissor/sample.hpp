@@ -22,7 +22,6 @@ private:
 	bool initProgram();
 	bool initArrayBuffer();
 	bool initTexture2D();
-	bool initVertexArray();
 
 	GLuint VertexArrayName;
 	GLuint ProgramName;

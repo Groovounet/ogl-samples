@@ -79,8 +79,6 @@ bool sample::begin(glm::ivec2 const & WindowSize)
 		Validated = this->initArrayBuffer();
 	if(Validated)
 		Validated = this->initTexture2D();
-	if(Validated)
-		Validated = this->initVertexArray();
 
 	return Validated && glf::checkError("sample::begin");
 }
@@ -145,8 +143,9 @@ void sample::render()
 	
 	glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
-	
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDisableVertexAttribArray(glf::semantic::attr::POSITION);
+	glDisableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
