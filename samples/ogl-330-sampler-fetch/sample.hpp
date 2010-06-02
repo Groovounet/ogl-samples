@@ -3,18 +3,6 @@
 
 #include <glf/window.hpp>
 
-namespace viewport
-{
-	enum type
-	{
-		V00,
-		V10,
-		V11,
-		V01,
-		MAX
-	};
-}
-
 class sample : public glf::window
 {
 public:
@@ -37,21 +25,7 @@ private:
 	bool initSampler();
 	bool initVertexArray();
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
 
-	GLuint BufferName;
-	GLuint Image2DName;
-	GLuint SamplerName;
-
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
-
-	GLenum SwizzleR[viewport::MAX];
-	GLenum SwizzleG[viewport::MAX];
-	GLenum SwizzleB[viewport::MAX];
-	GLenum SwizzleA[viewport::MAX];
-	glm::ivec4 Viewport[viewport::MAX];
 };
 
 #endif//GLF_SAMPLE_INCLUDED

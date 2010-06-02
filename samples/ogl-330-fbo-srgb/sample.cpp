@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -52,128 +52,20 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
 	};
-}
 
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
 
-sample::~sample()
-{}
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
+	GLuint ColorbufferName = 0;
+	GLuint FramebufferName = 0;
 
-bool check() const
-{
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	return Version && glf::checkError("check");
-}
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 
-bool begin(glm::ivec2 const & WindowSize)
-{
-	WindowSize = WindowSize;
-
-	bool Validated = true;
-	if(Validated)
-		Validated = initProgram();
-	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
-		Validated = initTexture2D();
-	if(Validated)
-		Validated = initFramebuffer();
-	if(Validated)
-		Validated = initVertexArray();
-
-	return Validated && glf::checkError("begin");
-}
-
-bool end()
-{
-	glDeleteTextures(1, &ColorbufferName);
-	glDeleteFramebuffers(1, &FramebufferName);
-	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Texture2DName);
-	glDeleteVertexArrays(1, &VertexArrayName);
-
-	return glf::checkError("end");
-}
-
-void sample::renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Texture2DName)
-{
-	// Bind the program for use
-	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glf::checkError("renderScene");
-}
-
-void display()
-{
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-
-	glEnable(GL_SCISSOR_TEST);
-	glDisable(GL_FRAMEBUFFER_SRGB);
-	glScissor(0, 0, WindowSize.x, WindowSize.y);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	{
-		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
-		glm::mat4 MVP = Projection * View * Model;
-
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		glDisable(GL_FRAMEBUFFER_SRGB);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		renderScene(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), MVP, Texture2DName);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	{
-		glm::mat4 Projection = glm::perspective(45.0f, float(WindowSize.x) / float(WindowSize.y), 0.1f, 100.0f);
-		glm::mat4 MVP = Projection * View * Model;
-
-		glViewport(0, 0, WindowSize.x, WindowSize.y);
-
-		// Correct display
-		glScissor(0, WindowSize.y / 2 - 1, WindowSize.x, WindowSize.y / 2);
-		glEnable(GL_FRAMEBUFFER_SRGB);
-		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
-		glDisable(GL_FRAMEBUFFER_SRGB);
-
-		// Incorrected display
-		glScissor(0, 0, WindowSize.x, WindowSize.y / 2);
-		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
-	}
-
-	glf::checkError("display");
-}
+	GLint CapableSRGB = 0;
+}//namespace
 
 bool initProgram()
 {
@@ -292,6 +184,107 @@ bool initVertexArray()
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initProgram();
+	if(Validated)
+		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initTexture2D();
+	if(Validated)
+		Validated = initFramebuffer();
+	if(Validated)
+		Validated = initVertexArray();
+
+	return Validated && glf::checkError("begin");
+}
+
+bool end()
+{
+	glDeleteTextures(1, &ColorbufferName);
+	glDeleteFramebuffers(1, &FramebufferName);
+	glDeleteBuffers(1, &BufferName);
+	glDeleteProgram(ProgramName);
+	glDeleteTextures(1, &Texture2DName);
+	glDeleteVertexArrays(1, &VertexArrayName);
+
+	return glf::checkError("end");
+}
+
+void renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Texture2DName)
+{
+	// Bind the program for use
+	glUseProgram(ProgramName);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+
+	glBindVertexArray(VertexArrayName);
+	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glf::checkError("renderScene");
+}
+
+void display()
+{
+	// Compute the MVP (Model View Projection matrix)
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 Model = glm::mat4(1.0f);
+
+	glEnable(GL_SCISSOR_TEST);
+	glDisable(GL_FRAMEBUFFER_SRGB);
+	glScissor(0, 0, Window.Size.x, Window.Size.y);
+	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		glDisable(GL_FRAMEBUFFER_SRGB);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		renderScene(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), MVP, Texture2DName);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / float(Window.Size.y), 0.1f, 100.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glViewport(0, 0, Window.Size.x, Window.Size.y);
+
+		// Correct display
+		glScissor(0, Window.Size.y / 2 - 1, Window.Size.x, Window.Size.y / 2);
+		glEnable(GL_FRAMEBUFFER_SRGB);
+		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
+		glDisable(GL_FRAMEBUFFER_SRGB);
+
+		// Incorrected display
+		glScissor(0, 0, Window.Size.x, Window.Size.y / 2);
+		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
+	}
+
+	glf::swapBuffers();
+	glf::checkError("display");
 }
 
 int main(int argc, char* argv[])

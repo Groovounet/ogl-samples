@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL blend index
+// OpenGL Blend Index
 // 28/05/2010
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL blend index";
+	std::string const SAMPLE_NAME = "OpenGL Blend Index";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/blend-index.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/blend-index.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
@@ -21,6 +21,8 @@ namespace
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
 	int const SAMPLE_MINOR_VERSION = 3;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	struct vertex
 	{
@@ -49,7 +51,17 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
-}
+
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
+
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
+
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
+
+}//namespace
 
 bool initProgram()
 {
@@ -169,13 +181,13 @@ void display()
 
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 

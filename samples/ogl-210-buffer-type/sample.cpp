@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -67,7 +67,25 @@ namespace
 		glm::i32vec2(-1, 1),
 		glm::i32vec2(-1,-1)
 	};
-}
+
+	enum buffer_index
+	{
+		BUFFER_F64,
+		BUFFER_F32,
+		BUFFER_I8,
+		BUFFER_I32,
+		BUFFER_MAX
+	};
+
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
+	GLuint BufferName[BUFFER_MAX]= {0, 0, 0, 0};
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
+
+	glm::ivec4 Viewport[BUFFER_MAX];
+	GLenum BufferType[BUFFER_MAX];
+}//namespace
 
 bool initProgram()
 {
@@ -128,15 +146,15 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");
 }
 
-bool begin(glm::ivec2 const & WindowSize)
+bool begin()
 {
-	Viewport[BUFFER_F64] = glm::ivec4(0, 0, WindowSize >> 1);
+	Viewport[BUFFER_F64] = glm::ivec4(0, 0, Window.Size >> 1);
 	BufferType[BUFFER_F64] = GL_DOUBLE;
-	Viewport[BUFFER_F32] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
+	Viewport[BUFFER_F32] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
 	BufferType[BUFFER_F32] = GL_FLOAT;
-	Viewport[BUFFER_I8]  = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
+	Viewport[BUFFER_I8]  = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
 	BufferType[BUFFER_I8]  = GL_BYTE;
-	Viewport[BUFFER_I32] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
+	Viewport[BUFFER_I32] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 	BufferType[BUFFER_I32] = GL_INT;
 
 	bool Validated = true;
@@ -161,9 +179,9 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslateZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslateZ, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 ViewRotateY = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslateZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslateZ, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 ViewRotateY = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 View = ViewRotateY;
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
@@ -201,8 +219,8 @@ void display()
 	// Unbind program
 	glUseProgram(0);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

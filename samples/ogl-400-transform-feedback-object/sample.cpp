@@ -222,8 +222,8 @@ void display()
 		glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
 	}
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

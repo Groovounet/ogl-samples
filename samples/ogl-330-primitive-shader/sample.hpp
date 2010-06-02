@@ -22,13 +22,6 @@ private:
 	bool initProgram();
 	bool initArrayBuffer();
 	bool initVertexArray();
-
-	GLuint ProgramName;
-	GLuint ElementBufferName;
-	GLuint ArrayBufferName;
-	GLuint VertexArrayName;
-	GLint UniformMVP;
-	GLint UniformDiffuse;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

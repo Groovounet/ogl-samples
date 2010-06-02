@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -36,6 +36,20 @@ namespace
 		glm::vec2(-1.0f, 1.0f),
 		glm::vec2(-1.0f,-1.0f)
 	};
+
+	GLuint TransformProgramName = 0;
+	GLuint TransformArrayBufferName = 0;
+	GLuint TransformVertexArrayName = 0;
+	GLint TransformUniformDiffuse = 0;
+	GLint TransformUniformMVP = 0;
+
+	GLuint FeedbackProgramName = 0;
+	GLuint FeedbackArrayBufferName = 0;
+	GLuint FeedbackVertexArrayName = 0;
+	GLint FeedbackUniformDiffuse = 0;
+	GLint FeedbackUniformMVP = 0;
+
+	GLuint Query = 0;
 
 }//namespace
 
@@ -155,14 +169,14 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
 	// Set the display viewport
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

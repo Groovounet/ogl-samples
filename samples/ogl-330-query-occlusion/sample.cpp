@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL occlusion query
+// OpenGL Occlusion Query
 // 26/03/2010
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL occlusion query";
+	std::string const SAMPLE_NAME = "OpenGL Occlusion Query";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -34,6 +34,14 @@ namespace
 		glm::vec2(-1.0f, 1.0f),
 		glm::vec2(-1.0f,-1.0f)
 	};
+
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
+	GLuint BufferName = 0;
+	GLuint QueryName = 0;
+	GLint UniformMVP = 0;
+	GLint UniformColor = 0;
+
 }//namespace
 
 bool initQuery()
@@ -119,6 +127,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -145,14 +154,14 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
 	// Set the display viewport
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -182,8 +191,8 @@ void display()
 	// Unbind program
 	glUseProgram(0);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

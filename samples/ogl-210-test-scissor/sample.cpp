@@ -52,16 +52,14 @@ namespace
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
 
-	GLuint BufferName;
-	GLuint Texture2DName;
-
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 }//namespace
 
 bool initProgram()
@@ -157,7 +155,7 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, ::Window.WindowSize.x, ::Window.WindowSize.y);
+	glViewport(0, 0, ::Window.Size.x, ::Window.Size.y);
 	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -171,7 +169,7 @@ void display()
 			glm::vec3(VertexData[i].Position, 0.0f), 
 			View * Model, 
 			Projection, 
-			glm::ivec4(0, 0, ::Window.WindowSize.x, ::Window.WindowSize.y));
+			glm::ivec4(0, 0, ::Window.Size.x, ::Window.Size.y));
 
 		MinScissor = glm::min(MinScissor, glm::vec3(Projected));
 		MaxScissor = glm::max(MaxScissor, glm::vec3(Projected));
@@ -207,8 +205,8 @@ void display()
 
 	glDisable(GL_SCISSOR_TEST);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

@@ -214,8 +214,8 @@ void display()
 	// Unbind program
 	glUseProgram(0);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

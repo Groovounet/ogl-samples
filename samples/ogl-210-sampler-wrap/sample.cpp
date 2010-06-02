@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -51,7 +51,33 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 3.0f))
 	};
-}
+
+	namespace viewport
+	{
+		enum type
+		{
+			V00,
+			V10,
+			V11,
+			V01,
+			MAX
+		};
+	}
+
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
+
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
+
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
+
+	GLenum WrapS[viewport::MAX];
+	GLenum WrapT[viewport::MAX];
+	glm::ivec4 Viewport[viewport::MAX];
+
+}//namespace
 
 bool initProgram()
 {
@@ -143,13 +169,12 @@ bool initTexture2D()
 	return glf::checkError("initTexture2D");
 }
 
-bool begin(glm::ivec2 const & WindowSize)
+bool begin()
 {
-	WindowSize = WindowSize;
-	Viewport[viewport::V00] = glm::ivec4(0, 0, WindowSize >> 1);
-	Viewport[viewport::V10] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
-	Viewport[viewport::V11] = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
-	Viewport[viewport::V01] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
+	Viewport[viewport::V00] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[viewport::V10] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[viewport::V11] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[viewport::V01] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	bool Validated = true;
 	if(Validated)
@@ -175,9 +200,9 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
@@ -218,8 +243,8 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

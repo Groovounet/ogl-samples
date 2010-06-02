@@ -24,12 +24,6 @@ private:
 	bool initQuery();
 	bool initVertexArray();
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
-	GLuint BufferName;
-	GLuint QueryName;
-	GLint UniformMVP;
-	GLint UniformColor;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

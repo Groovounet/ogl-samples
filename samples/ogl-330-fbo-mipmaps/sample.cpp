@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL framebuffer mipmaps
+// OpenGL Framebuffer Mipmaps
 // 27/08/2009
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL framebuffer mipmaps";
+	std::string const SAMPLE_NAME = "OpenGL Framebuffer Mipmaps";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.tga");
@@ -52,116 +52,19 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
 	};
-}
 
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
 
-sample::~sample()
-{}
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
+	GLuint ColorbufferName = 0;
+	GLuint FramebufferName = 0;
 
-bool check() const
-{
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	return Version && glf::checkError("check");
-}
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 
-bool begin(glm::ivec2 const & WindowSize)
-{
-	WindowSize = WindowSize;
-
-	bool Validated = true;
-	if(Validated)
-		Validated = initProgram();
-	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
-		Validated = initVertexArray();
-	if(Validated)
-		Validated = initTexture2D();
-	if(Validated)
-		Validated = initFramebuffer();
-
-	return Validated && glf::checkError("begin");
-}
-
-bool end()
-{
-	glDeleteTextures(1, &ColorbufferName);
-	glDeleteFramebuffers(1, &FramebufferName);
-	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Texture2DName);
-	glDeleteVertexArrays(1, &VertexArrayName);
-
-	return glf::checkError("end");
-}
-
-void sample::renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Texture2DName)
-{
-	glClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Bind the program for use
-	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glf::checkError("renderScene");
-}
-
-void display()
-{
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-
-	{
-		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
-		glm::mat4 MVP = Projection * View * Model;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		renderScene(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), MVP, Texture2DName);
-	}
-
-	{
-		glm::mat4 Projection = glm::perspective(45.0f, float(WindowSize.x) / float(WindowSize.y), 0.1f, 100.0f);
-		glm::mat4 MVP = Projection * View * Model;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, WindowSize.x, WindowSize.y);
-		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ColorbufferName);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-
-	glf::checkError("display");
-}
+}//namespace
 
 bool initProgram()
 {
@@ -213,10 +116,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	// Set filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
@@ -276,6 +175,100 @@ bool initVertexArray()
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initProgram();
+	if(Validated)
+		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initVertexArray();
+	if(Validated)
+		Validated = initTexture2D();
+	if(Validated)
+		Validated = initFramebuffer();
+
+	return Validated && glf::checkError("begin");
+}
+
+bool end()
+{
+	glDeleteTextures(1, &ColorbufferName);
+	glDeleteFramebuffers(1, &FramebufferName);
+	glDeleteBuffers(1, &BufferName);
+	glDeleteProgram(ProgramName);
+	glDeleteTextures(1, &Texture2DName);
+	glDeleteVertexArrays(1, &VertexArrayName);
+
+	return glf::checkError("end");
+}
+
+void renderScene
+(
+	glm::vec4 const & ClearColor, 
+	glm::mat4 const & MVP, 
+	GLuint Texture2DName
+)
+{
+	glClearColor(ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Bind the program for use
+	glUseProgram(ProgramName);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+
+	glBindVertexArray(VertexArrayName);
+	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glf::checkError("renderScene");
+}
+
+void display()
+{
+	// Compute the MVP (Model View Projection matrix)
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 Model = glm::mat4(1.0f);
+
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		renderScene(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), MVP, Texture2DName);
+	}
+
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / float(Window.Size.y), 0.1f, 100.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, Window.Size.x, Window.Size.y);
+		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ColorbufferName);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
+	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

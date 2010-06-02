@@ -28,21 +28,7 @@ private:
 	void renderFBO();
 	void renderFB();
 
-	GLuint VertexArrayName;
 
-	GLuint ProgramName;
-
-	GLuint BufferName;
-	GLuint Texture2DName;
-	
-	GLuint ColorRenderbufferName;
-	GLuint ColorTextureName;
-	
-	GLuint FramebufferRenderName;
-	GLuint FramebufferResolveName;
-
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

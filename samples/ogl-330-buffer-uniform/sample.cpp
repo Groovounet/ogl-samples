@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL uniform buffer
+// OpenGL Uniform Buffer
 // 06/04/2010
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL uniform buffer";
+	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -41,95 +41,16 @@ namespace
 		2, 3, 0
 	};
 
+	GLuint ProgramName = 0;
+	GLuint ElementBufferName = 0;
+	GLuint ArrayBufferName = 0;
+	GLuint VertexArrayName = 0;
+	GLuint TransformBufferName = 0;
+	GLuint MaterialBufferName = 0;
+	GLint UniformTransform = 0;
+	GLint UniformMaterial = 0;
+
 }//namespace
-
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
-
-sample::~sample()
-{}
-
-bool check() const
-{
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	return Version && glf::checkError("check");
-}
-
-bool begin(glm::ivec2 const & WindowSize)
-{
-	WindowSize = WindowSize;
-
-	bool Validated = true;
-	if(Validated)
-		Validated = initProgram();
-	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
-		Validated = initVertexArray();
-	if(Validated)
-		Validated = initUniformBuffer();
-
-	return Validated && glf::checkError("begin");
-}
-
-bool end()
-{
-	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteBuffers(1, &ArrayBufferName);
-	glDeleteBuffers(1, &ElementBufferName);
-	glDeleteBuffers(1, &TransformBufferName);
-	glDeleteBuffers(1, &MaterialBufferName);
-	glDeleteProgram(ProgramName);
-
-	return glf::checkError("end");
-}
-
-void display()
-{
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-
-	glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	// Set the display viewport
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
-
-	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Bind program
-	glUseProgram(ProgramName);
-
-	// Bind vertex array & draw 
-	glBindVertexArray(VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
-
-	glf::checkError("display");
-}
 
 bool initProgram()
 {
@@ -227,6 +148,74 @@ bool initUniformBuffer()
 	}
 
 	return glf::checkError("initUniformBuffer");
+}
+
+bool begin()
+{
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initProgram();
+	if(Validated)
+		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initVertexArray();
+	if(Validated)
+		Validated = initUniformBuffer();
+
+	return Validated && glf::checkError("begin");
+}
+
+bool end()
+{
+	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteBuffers(1, &ArrayBufferName);
+	glDeleteBuffers(1, &ElementBufferName);
+	glDeleteBuffers(1, &TransformBufferName);
+	glDeleteBuffers(1, &MaterialBufferName);
+	glDeleteProgram(ProgramName);
+
+	return glf::checkError("end");
+}
+
+void display()
+{
+	// Compute the MVP (Model View Projection matrix)
+	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 MVP = Projection * View * Model;
+
+	glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	// Set the display viewport
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
+
+	// Clear color buffer with black
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Bind program
+	glUseProgram(ProgramName);
+
+	// Bind vertex array & draw 
+	glBindVertexArray(VertexArrayName);
+		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(0);
+
+	// Unbind program
+	glUseProgram(0);
+
+	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

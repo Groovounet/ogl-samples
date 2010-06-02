@@ -14,6 +14,7 @@ namespace glf
 	inline void swapBuffers()
 	{
 		glutSwapBuffers();
+		glGetError(); // 'glutSwapBuffers' generates an here with OpenGL 3 > core profile ... :/
 	}
 
 	inline void initFunc()
@@ -403,6 +404,9 @@ namespace glf
 
 		glutCreateWindow(argv[0]);
 		glewInit();
+#ifdef WIN32
+		glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORARBPROC)glfGetProcAddress("glVertexAttribDivisor");
+#endif//WIN32
 		glGetError();
 		//glf::init();
 

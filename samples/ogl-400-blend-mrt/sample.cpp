@@ -297,10 +297,10 @@ bool initBlend()
 
 bool begin()
 {
-	Viewport[TEXTURE_RGB8] = glm::ivec4(0, 0, WindowSize >> 1);
-	Viewport[TEXTURE_R] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
-	Viewport[TEXTURE_G] = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
-	Viewport[TEXTURE_B] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
+	Viewport[TEXTURE_RGB8] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[TEXTURE_R] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[TEXTURE_G] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_B] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
@@ -395,8 +395,8 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL sampler filter
+// OpenGL Sampler Filter
 // 10/05/2010
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL sampler filter";	
+	std::string const SAMPLE_NAME = "OpenGL Sampler Filter";	
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -51,7 +51,33 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
-}
+
+	namespace viewport
+	{
+		enum type
+		{
+			V00,
+			V10,
+			V11,
+			V01,
+			MAX
+		};
+	}
+
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
+
+	GLuint BufferName = 0;
+	GLuint Texture2DName = 0;
+
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
+
+	GLenum MinFilter[viewport::MAX];
+	GLenum MagFilter[viewport::MAX];
+	glm::ivec4 Viewport[viewport::MAX];
+
+}//namespace
 
 bool initProgram()
 {
@@ -141,14 +167,12 @@ bool initTexture2D()
 	return glf::checkError("initTexture2D");
 }
 
-
-bool begin(glm::ivec2 const & WindowSize)
+bool begin()
 {
-	WindowSize = WindowSize;
-	Viewport[viewport::V00] = glm::ivec4(1, 1, WindowSize / 2 - 1);
-	Viewport[viewport::V10] = glm::ivec4(WindowSize.x / 2 + 1, 1, WindowSize / 2 - 1);
-	Viewport[viewport::V11] = glm::ivec4(WindowSize.x / 2 + 1, WindowSize.y / 2 + 1, WindowSize / 2 - 1);
-	Viewport[viewport::V01] = glm::ivec4(1, WindowSize.y / 2 + 1, WindowSize / 2 - 1);
+	Viewport[viewport::V00] = glm::ivec4(1, 1, Window.Size / 2 - 1);
+	Viewport[viewport::V10] = glm::ivec4(Window.Size.x / 2 + 1, 1, Window.Size / 2 - 1);
+	Viewport[viewport::V11] = glm::ivec4(Window.Size.x / 2 + 1, Window.Size.y / 2 + 1, Window.Size / 2 - 1);
+	Viewport[viewport::V01] = glm::ivec4(1, Window.Size.y / 2 + 1, Window.Size / 2 - 1);
 
 	glEnable(GL_SCISSOR_TEST);
 
@@ -176,14 +200,14 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
-	glScissor(0, 0, WindowSize.x, WindowSize.y);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glScissor(0, 0, Window.Size.x, Window.Size.y);
 	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -221,8 +245,8 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glf::checkError("display");
 	glf::swapBuffers();
-	return glf::checkError("display");
 }
 
 int main(int argc, char* argv[])

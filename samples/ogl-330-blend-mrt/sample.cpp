@@ -9,7 +9,7 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
@@ -24,6 +24,8 @@ namespace
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
 	int const SAMPLE_MINOR_VERSION = 3;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	struct vertex
 	{
@@ -52,9 +54,39 @@ namespace
 		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
 	};
-}
 
-GLuint initShader(std::string const & Filename, GLenum Stage)
+	enum texture_type
+	{
+		TEXTURE_RGB8,
+		TEXTURE_R,
+		TEXTURE_G,
+		TEXTURE_B,
+		TEXTURE_MAX
+	};
+
+	GLuint FramebufferName = 0;
+	GLuint VertexArrayName = 0;
+
+	GLuint ProgramNameSingle = 0;
+	GLuint UniformMVPSingle = 0;
+	GLuint UniformDiffuseSingle = 0;
+
+	GLuint ProgramNameMultiple = 0;
+	GLuint UniformMVPMultiple = 0;
+	GLuint UniformDiffuseMultiple = 0;
+
+	GLuint BufferName = 0;
+	GLuint Texture2DName[TEXTURE_MAX];
+
+	glm::ivec4 Viewport[TEXTURE_MAX];
+
+}//namespace
+
+GLuint initShader
+(
+	std::string const & Filename, 
+	GLenum Stage
+)
 {
 	bool Validated = true;
 
@@ -223,7 +255,7 @@ bool initFramebuffer()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	return true;
+	return glf::checkError("initFramebuffer");
 }
 
 bool initVertexArray()
@@ -263,10 +295,10 @@ bool initBlend()
 
 bool begin()
 {
-	Viewport[TEXTURE_RGB8] = glm::ivec4(0, 0, WindowSize >> 1);
-	Viewport[TEXTURE_R] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
-	Viewport[TEXTURE_G] = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
-	Viewport[TEXTURE_B] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
+	Viewport[TEXTURE_RGB8] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[TEXTURE_R] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[TEXTURE_G] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_B] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
@@ -361,8 +393,8 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])

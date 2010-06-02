@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL buffer type
+// OpenGL Buffer Type
 // 10/05/2010
 //**********************************
 // Christophe Riccio
@@ -9,11 +9,11 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL buffer type";
+	std::string const SAMPLE_NAME = "OpenGL Buffer Type";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -24,15 +24,15 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSizeF64 = VertexCount * sizeof(glm::dvec2);
-	glm::dvec2 const PositionDataF64[VertexCount] =
+	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
+	glm::hvec2 const PositionDataF16[VertexCount] =
 	{
-		glm::dvec2(-1.0f, -1.0f),
-		glm::dvec2( 1.0f, -1.0f),
-		glm::dvec2( 1.0f,  1.0f),
-		glm::dvec2( 1.0f,  1.0f),
-		glm::dvec2(-1.0f,  1.0f),
-		glm::dvec2(-1.0f, -1.0f)
+		glm::hvec2(-1.0f, -1.0f),
+		glm::hvec2( 1.0f, -1.0f),
+		glm::hvec2( 1.0f,  1.0f),
+		glm::hvec2( 1.0f,  1.0f),
+		glm::hvec2(-1.0f,  1.0f),
+		glm::hvec2(-1.0f, -1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
@@ -67,7 +67,24 @@ namespace
 		glm::i32vec2(-1, 1),
 		glm::i32vec2(-1,-1)
 	};
-}
+
+	enum buffer_index
+	{
+		BUFFER_F16,
+		BUFFER_F32,
+		BUFFER_I8,
+		BUFFER_I32,
+		BUFFER_MAX
+	};
+
+	GLuint ProgramName = 0;
+	GLuint BufferName[BUFFER_MAX];
+	GLuint VertexArrayName[BUFFER_MAX];
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
+	glm::ivec4 Viewport[BUFFER_MAX];
+
+}//namespace
 
 bool initProgram()
 {
@@ -111,8 +128,8 @@ bool initArrayBuffer()
 	glGenBuffers(BUFFER_MAX, BufferName);
 
 	// Allocate and copy buffers memory
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F64]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF64, PositionDataF64, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
@@ -128,16 +145,51 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");
 }
 
-bool begin(glm::ivec2 const & WindowSize)
+bool initVertexArray()
 {
-	Viewport[BUFFER_F64] = glm::ivec4(0, 0, WindowSize >> 1);
-	BufferType[BUFFER_F64] = GL_DOUBLE;
-	Viewport[BUFFER_F32] = glm::ivec4(WindowSize.x >> 1, 0, WindowSize >> 1);
-	BufferType[BUFFER_F32] = GL_FLOAT;
-	Viewport[BUFFER_I8]  = glm::ivec4(WindowSize.x >> 1, WindowSize.y >> 1, WindowSize >> 1);
-	BufferType[BUFFER_I8]  = GL_BYTE;
-	Viewport[BUFFER_I32] = glm::ivec4(0, WindowSize.y >> 1, WindowSize >> 1);
-	BufferType[BUFFER_I32] = GL_INT;
+	glGenVertexArrays(BUFFER_MAX, VertexArrayName);
+
+    glBindVertexArray(VertexArrayName[BUFFER_F16]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+    glBindVertexArray(VertexArrayName[BUFFER_F32]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F32]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+    glBindVertexArray(VertexArrayName[BUFFER_I8]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_I8]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_BYTE, GL_FALSE, sizeof(glm::u8vec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+    glBindVertexArray(VertexArrayName[BUFFER_I32]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_I32]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_INT, GL_FALSE, sizeof(glm::i32vec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
+	Viewport[BUFFER_F16] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[BUFFER_F32] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[BUFFER_I8]  = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[BUFFER_I32] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
@@ -148,6 +200,8 @@ bool begin(glm::ivec2 const & WindowSize)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initVertexArray();
 
 	return Validated && glf::checkError("begin");
 }
@@ -156,6 +210,7 @@ bool end()
 {
 	// Delete objects
 	glDeleteBuffers(BUFFER_MAX, BufferName);
+	glDeleteVertexArrays(BUFFER_MAX, VertexArrayName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -165,9 +220,9 @@ void display()
 {
 	// Compute the MVP (Model View Projection matrix)
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslateZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslateZ, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 ViewRotateY = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewTranslateZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslateZ, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 ViewRotateY = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 View = ViewRotateY;
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
@@ -191,22 +246,16 @@ void display()
 			Viewport[Index].z, 
 			Viewport[Index].w);
 
-		// Bind vertex attribute
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[Index]);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, BufferType[Index], GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		// Draw
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glBindVertexArray(VertexArrayName[Index]);
 			glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-		glDisableVertexAttribArray(glf::semantic::attr::POSITION);
+		glBindVertexArray(0);
 	}
 
 	// Unbind program
 	glUseProgram(0);
 
-	glf::swapBuffers();
 	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])
