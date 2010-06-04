@@ -1,9 +1,9 @@
 #version 330
 
-uniform samplerBuffer Displacement;
+uniform samplerBuffer Diffuse;
 flat in int Instance;
 
 void main()
 {
-	gl_FragColor = texelFetch(Displacement, Instance);
+	gl_FragColor = texelFetch(Diffuse, Instance);
 }
