@@ -178,7 +178,6 @@ void display()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glUniform1i(UniformDisplacement, 0);
-	glActiveTexture(GL_TEXTURE1);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TextureBufferName);
 
     glBindVertexArray(VertexArrayName);
