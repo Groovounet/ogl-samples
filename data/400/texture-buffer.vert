@@ -1,4 +1,4 @@
-#version 330
+#version 400
 
 uniform samplerBuffer Displacement;
 uniform mat4 MVP;

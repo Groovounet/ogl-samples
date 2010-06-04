@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Buffer Texture
+// OpenGL Buffer Texture RGB
 // 04/06/2010
 //**********************************
 // Christophe Riccio
@@ -13,13 +13,13 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Buffer Texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-buffer.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-buffer.frag");
+	std::string const SAMPLE_NAME = "OpenGL Buffer Texture RGB";
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/texture-buffer.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/texture-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_MAJOR_VERSION = 4;
+	int const SAMPLE_MINOR_VERSION = 0;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -91,13 +91,13 @@ bool initArrayBuffer()
 
 bool initTextureBuffer()
 {
-	glm::vec4 Position[5] = 
+	glm::vec3 Position[5] = 
 	{
-		glm::vec4( 0.1f, 0.3f,-1.0f, 1.0f), 
-		glm::vec4(-0.5f, 0.0f,-0.5f, 1.0f),
-		glm::vec4(-0.2f,-0.2f, 0.0f, 1.0f),
-		glm::vec4( 0.3f, 0.2f, 0.5f, 1.0f),
-		glm::vec4( 0.1f,-0.3f, 1.0f, 1.0f)
+		glm::vec3( 0.1f, 0.3f,-1.0f), 
+		glm::vec3(-0.5f, 0.0f,-0.5f),
+		glm::vec3(-0.2f,-0.2f, 0.0f),
+		glm::vec3( 0.3f, 0.2f, 0.5f),
+		glm::vec3( 0.1f,-0.3f, 1.0f)
 	};
 
 	glGenBuffers(1, &DisplacementBufferName);
@@ -107,7 +107,7 @@ bool initTextureBuffer()
 
 	glGenTextures(1, &DisplacementTextureName);
 	glBindTexture(GL_TEXTURE_BUFFER, DisplacementTextureName);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, DisplacementBufferName);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, DisplacementBufferName);
 	glBindTexture(GL_TEXTURE_BUFFER, 0);
 
 	glm::u8vec4 Diffuse[5] = 
@@ -134,6 +134,7 @@ bool initTextureBuffer()
 
 bool initVertexArray()
 {
+	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);

@@ -74,6 +74,7 @@ add_subdirectory(ogl-330-transform-feedback)
 add_subdirectory(ogl-330-vao)
 
 add_subdirectory(ogl-400-blend-mrt)
+add_subdirectory(ogl-400-buffer-texture-rgb)
 add_subdirectory(ogl-400-draw-indirect)
 add_subdirectory(ogl-400-glsl-subroutine)
 add_subdirectory(ogl-400-primitive-instancing)
