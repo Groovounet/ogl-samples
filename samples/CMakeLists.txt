@@ -39,6 +39,7 @@ add_subdirectory(ogl-210-test-scissor)
 
 add_subdirectory(ogl-330-blend-index)
 add_subdirectory(ogl-330-blend-mrt)
+add_subdirectory(ogl-330-buffer-texture)
 add_subdirectory(ogl-330-buffer-type)
 add_subdirectory(ogl-330-buffer-uniform)
 add_subdirectory(ogl-330-buffer-update)
