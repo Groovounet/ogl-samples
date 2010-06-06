@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL image rectangle
+// OpenGL Image Rectangle
 // 28/08/2009
 //**********************************
 // Christophe Riccio
@@ -9,16 +9,20 @@
 // www.g-truc.net
 //**********************************
 
-#include "sample.hpp"
+#include <glf/glf.hpp>
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL image rectangle";
-	GLint const SAMPLE_MAJOR_VERSION = 3;
-	GLint const SAMPLE_MINOR_VERSION = 3;
+	std::string const SAMPLE_NAME = "OpenGL Image Rectangle";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	int const SAMPLE_SIZE_WIDTH = 640;
+	int const SAMPLE_SIZE_HEIGHT = 480;
+	int const SAMPLE_MAJOR_VERSION = 3;
+	int const SAMPLE_MINOR_VERSION = 3;
+
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	struct vertex
 	{
@@ -46,144 +50,71 @@ namespace
 		vertex(glm::vec2(-2.0f, 1.5f), glm::vec2(0.0f, 0.0f)),
 		vertex(glm::vec2(-2.0f,-1.5f), glm::vec2(0.0f, 240.0f))
 	};
-}
 
-sample::sample
-(
-	std::string const & Name, 
-	glm::ivec2 const & WindowSize,
-	glm::uint32 VersionMajor,
-	glm::uint32 VersionMinor
-) :
-	window(Name, WindowSize, VersionMajor, VersionMinor),
-	ProgramName(0)
-{}
+	GLuint VertexArrayName = 0;
+	GLuint ProgramName = 0;
 
-sample::~sample()
-{}
+	GLuint BufferName = 0;
+	GLuint TextureRectName = 0;
 
-bool sample::check() const
-{
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Version = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	return Version && glf::checkError("sample::check");
-}
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
+}//namespace
 
-bool sample::begin(glm::ivec2 const & WindowSize)
-{
-	this->WindowSize = WindowSize;
-
-	bool Validated = true;
-	if(Validated)
-		Validated = this->initProgram();
-	if(Validated)
-		Validated = this->initArrayBuffer();
-	if(Validated)
-		Validated = this->initVertexArray();
-	if(Validated)
-		Validated = this->initTexture2D();
-
-	return Validated && glf::checkError("sample::begin");;
-}
-
-bool sample::end()
-{
-	glDeleteBuffers(1, &this->BufferName);
-	glDeleteProgram(this->ProgramName);
-	glDeleteTextures(1, &this->TextureRectName);
-	glDeleteVertexArrays(1, &this->VertexArrayName);
-
-	return glf::checkError("sample::end");
-}
-
-void sample::render()
-{
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, RotationCurrent.y, glm::vec3(-1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-
-	glViewport(0, 0, this->WindowSize.x, this->WindowSize.y);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Bind the program for use
-	glUseProgram(this->ProgramName);
-
-	glUniformMatrix4fv(this->UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_RECTANGLE, this->TextureRectName);
-
-	glBindVertexArray(this->VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_RECTANGLE, 0);
-
-	 glf::checkError("sample::render");
-}
-
-bool sample::initProgram()
+bool initProgram()
 {
 	bool Validated = true;
 	
 	// Create program
 	if(Validated)
 	{
-		this->ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		glLinkProgram(this->ProgramName);
-		Validated = glf::checkProgram(this->ProgramName);
+		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		this->UniformMVP = glGetUniformLocation(this->ProgramName, "MVP");
-		this->UniformDiffuse = glGetUniformLocation(this->ProgramName, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	// Set some variables 
 	if(Validated)
 	{
 		// Bind the program for use
-		glUseProgram(this->ProgramName);
+		glUseProgram(ProgramName);
 
 		// Set uniform value
-		glUniform1i(this->UniformDiffuse, 0);
+		glUniform1i(UniformDiffuse, 0);
 
 		// Unbind the program
 		glUseProgram(0);
 	}
 
-	return Validated && glf::checkError("sample::initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
-bool sample::initArrayBuffer()
+bool initArrayBuffer()
 {
-	glGenBuffers(1, &this->BufferName);
+	glGenBuffers(1, &BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("sample::initArrayBuffer");
+	return glf::checkError("initArrayBuffer");
 }
 
-bool sample::initTexture2D()
+bool initTexture2D()
 {
 	GLint TextureSize = 0;
 	glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &TextureSize);
 
-	glGenTextures(1, &this->TextureRectName);
+	glGenTextures(1, &TextureRectName);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_RECTANGLE, this->TextureRectName);
+	glBindTexture(GL_TEXTURE_RECTANGLE, TextureRectName);
 
 	// Set filter
 	glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -213,15 +144,15 @@ bool sample::initTexture2D()
 			Image[Level].data());
 	}
 
-	return glf::checkError("sample::initTexture2D");
+	return glf::checkError("initTexture2D");
 }
 
-bool sample::initVertexArray()
+bool initVertexArray()
 {
 	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &this->VertexArrayName);
-    glBindVertexArray(this->VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, this->BufferName);
+	glGenVertexArrays(1, &VertexArrayName);
+    glBindVertexArray(VertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -230,32 +161,78 @@ bool sample::initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return glf::checkError("sample::initVertexArray");
+	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initProgram();
+	if(Validated)
+		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initVertexArray();
+	if(Validated)
+		Validated = initTexture2D();
+
+	return Validated && glf::checkError("begin");;
+}
+
+bool end()
+{
+	glDeleteBuffers(1, &BufferName);
+	glDeleteProgram(ProgramName);
+	glDeleteTextures(1, &TextureRectName);
+	glDeleteVertexArrays(1, &VertexArrayName);
+
+	return glf::checkError("end");
+}
+
+void display()
+{
+	// Compute the MVP (Model View Projection matrix)
+	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 MVP = Projection * View * Model;
+
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Bind the program for use
+	glUseProgram(ProgramName);
+
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_RECTANGLE, TextureRectName);
+
+	glBindVertexArray(VertexArrayName);
+	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_RECTANGLE, 0);
+
+	glf::checkError("display");
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])
 {
-	glm::ivec2 ScreenSize = glm::ivec2(640, 480);
-
-	sample* Sample = new sample(
-		SAMPLE_NAME, 
-		ScreenSize, 
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION);
-
-	if(Sample->check())
-	{
-		Sample->begin(ScreenSize);
-		Sample->run();
-		Sample->end();
-
-		delete Sample;
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
 		return 0;
-	}
-
-	fprintf(stderr, "OpenGL Error: this sample failed to run\n");
-
-	delete Sample;
-	Sample = 0;
 	return 1;
 }

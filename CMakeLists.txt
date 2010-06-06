@@ -3,16 +3,6 @@ cmake_policy(VERSION 2.6)
 
 project(ogl-samples-pack-4.0.0)
 
-message("Variables:")
-message("CMAKE_FIND_LIBRARY_SUFFIXES", ${CMAKE_FIND_LIBRARY_SUFFIXES})
-message("CMAKE_IMPORT_LIBRARY_SUFFIX", ${CMAKE_IMPORT_LIBRARY_SUFFIX})
-message("CMAKE_LINK_LIBRARY_SUFFIX", ${CMAKE_LINK_LIBRARY_SUFFIX})
-message("CMAKE_SHARED_LIBRARY_SUFFIX", ${CMAKE_SHARED_LIBRARY_SUFFIX})
-message("CMAKE_SHARED_MODULE_SUFFIX", ${CMAKE_SHARED_MODULE_SUFFIX})
-message("CMAKE_STATIC_LIBRARY_SUFFIX", ${CMAKE_STATIC_LIBRARY_SUFFIX})
-message("CMAKE_DEBUG_POSTFIX", ${CMAKE_DEBUG_POSTFIX})
-message("end")
-
 ##########################
 # Setup binary directory
 
@@ -66,12 +56,25 @@ endif(MSVC)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION}/include")
 
 ############
+# Add GLUT 
+
+if(MSVC)
+	set(GLUT_VERSION "freeglut-2.6.0")
+	set(GLUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLUT_VERSION})
+
+	add_definitions(-DFREEGLUT_STATIC)
+	include_directories("${GLUT_DIRECTORY}")
+	link_directories("${GLUT_DIRECTORY}/lib/${BINARY_DIRECTORY}")
+endif(MSVC)
+
+############
 # Add GLEW 
 
 if(MSVC)
-    set(GLEW_VERSION "glew-1.5.4")
-    set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
+	set(GLEW_VERSION "glew-1.5.4")
+	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
+	add_definitions(-DGLEW_STATIC)
 	include_directories("${GLEW_DIRECTORY}/include")
 	link_directories("${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY}")
 endif(MSVC)
@@ -108,12 +111,14 @@ include_directories("${GLI_DIRECTORY}")
 
 if(MSVC)
 	set(BINARY_FILES "SDL" "SDLmain" "glew32s" "OpenGL32")
-elif(APPLE)
-    set(BINARY_FILES "SDL" "SDLmain" "../libGL.dylib")
-#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
-else(UNIX and not APPLE)
-#	set(BINARY_FILES "SDL" "SDLmain" "GL")
 endif(MSVC)
+if(APPLE)
+    set(BINARY_FILES "SDL" "SDLmain" "../libGL.dylib")
+	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
+endif(APPLE)
+#if(UNIX and NOT APPLE)
+#	set(BINARY_FILES "SDL" "SDLmain" "GL")
+#endif(UNIX and not APPLE)
 
 ################################
 # Add output directory

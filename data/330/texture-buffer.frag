@@ -1,9 +1,9 @@
-#version 140
+#version 330
 
-uniform sampler2D Diffuse;
-in vec2 VertTexcoord;
+uniform samplerBuffer Diffuse;
+flat in int Instance;
 
 void main()
 {
-	gl_FragColor = texture2D(Diffuse, VertTexcoord);
+	gl_FragColor = texelFetch(Diffuse, Instance);
 }

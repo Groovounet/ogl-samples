@@ -16,20 +16,16 @@
 
 uniform mat4 MVP;
 
-in attr
-{
-	layout(location = ATTR_POSITION) vec2 Position;
-	layout(location = ATTR_TEXCOORD) vec2 Texcoord;
-} Attr;
+layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vert
 {
-	/*layout(location = VERT_POSITION)*/ vec4 gl_Position;
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
 void main()
 {	
-	Vert.Texcoord = Attr.Texcoord;
-	gl_Position = MVP * vec4(Attr.Position, 0.0, 1.0);
+	Vert.Texcoord = Texcoord;
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }

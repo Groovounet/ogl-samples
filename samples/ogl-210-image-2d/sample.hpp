@@ -24,14 +24,6 @@ private:
 	bool initTexture2D();
 	bool initVertexArray();
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
-
-	GLuint BufferName;
-	GLuint Texture2DName;
-
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

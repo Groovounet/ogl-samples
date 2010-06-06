@@ -21,8 +21,8 @@ layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vert
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-	/*layout(location = VERT_INSTANCE)*/ float Instance;
+	vec2 Texcoord;
+	float Instance;
 } Vert;
 
 void main()

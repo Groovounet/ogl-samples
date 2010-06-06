@@ -29,19 +29,6 @@ private:
 		glm::vec4 const & ClearColor, 
 		glm::mat4 const & MVP, 
 		GLuint TextureName);
-
-	GLuint VertexArrayName;
-	GLuint ProgramName;
-
-	GLuint BufferName;
-	GLuint Texture2DName;
-	GLuint ColorbufferName;
-	GLuint FramebufferName;
-
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
-
-	GLint CapableSRGB;
 };
 
 #endif//GLF_SAMPLE_INCLUDED

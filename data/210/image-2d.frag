@@ -21,7 +21,6 @@ in vert
 	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
 } Vert;
 
-
 layout(location = FRAG_COLOR) out vec4 Color;
 
 void main()

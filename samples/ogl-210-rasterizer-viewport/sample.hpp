@@ -24,13 +24,6 @@ private:
 	void renderScene(glm::mat4 const & MVP);
 	bool initVertexArray();
 
-	GLuint VertexArrayName;
-	GLuint ProgramName;
-
-	GLuint BufferName;
-
-	GLint UniformMVP;
-	GLint UniformDiffuse;
 };
 
 #endif//GLF_MAIN_INCLUDED
