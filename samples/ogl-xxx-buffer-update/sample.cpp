@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Buffer Update
-// 11/08/2009
+// 07/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Buffer Update";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+        std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "xxx/flat-color.vert");
+        std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "xxx/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+        int const SAMPLE_MAJOR_VERSION = 4;
+        int const SAMPLE_MINOR_VERSION = 0;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -62,117 +62,52 @@ bool initProgram()
 		UniformColor = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
-/*
-// Buffer update using glBufferSubData
+
+// Buffer update using glMapNamedBufferRange
 bool initArrayBuffer()
 {
 	// Generate a buffer object
 	glGenBuffers(1, &BufferName);
 
-	// Bind the buffer for use
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-
 	// Reserve buffer memory but don't copy the values
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, NULL, GL_STATIC_DRAW);
-
-	// Copy the vertex data in the buffer, in this sample for the whole range of data.
-    glBufferSubData(GL_ARRAY_BUFFER, 0, PositionSize, &PositionData[0][0]);
-
-	// Unbind the buffer
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return glf::checkError("initArrayBuffer");
-}
-*/
-/*
-// Buffer update using glMapBuffer
-bool initArrayBuffer()
-{
-	// Generate a buffer object
-	glGenBuffers(1, &BufferName);
-
-	// Bind the buffer for use
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-
-	// Reserve buffer memory but don't copy the values
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, 0, GL_STATIC_DRAW);
-
-	// Copy the vertex data in the buffer, in this sample for the whole range of data.
-    GLvoid* Data = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	memcpy(Data, PositionData, PositionSize);
-	glUnmapBuffer(GL_ARRAY_BUFFER);
-
-	// Unbind the buffer
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return glf::checkError("initArrayBuffer");
-}
-*/
-
-// Buffer update using glMapBufferRange
-bool initArrayBuffer()
-{
-	// Generate a buffer object
-	glGenBuffers(1, &BufferName);
-
-	// Bind the buffer for use
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-
-	// Reserve buffer memory but don't copy the values
-    glBufferData(
-		GL_ARRAY_BUFFER, 
+    glNamedBufferDataEXT(
+                BufferName,
 		PositionSize, 
 		0, 
 		GL_STATIC_DRAW);
 
 	// Copy the vertex data in the buffer, in this sample for the whole range of data.
 	// It doesn't required to be the buffer size but pointers require no memory overlapping.
-    GLvoid* Data = glMapBufferRange(
-		GL_ARRAY_BUFFER, 
+    GLvoid* Data = glMapNamedBufferRangeEXT(
+                BufferName,
 		0,				// Offset
 		PositionSize,	// Size,
 		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
 	memcpy(Data, PositionData, PositionSize);
 
 	// Explicitly send the data to the graphic card.
-	glFlushMappedBufferRange(GL_ARRAY_BUFFER, 0, PositionSize);
+        glFlushMappedNamedBufferRangeEXT(BufferName, 0, PositionSize);
 
-	glUnmapBuffer(GL_ARRAY_BUFFER);
-
-	// Unbind the buffer
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glUnmapNamedBufferEXT(BufferName);
 
 	return glf::checkError("initArrayBuffer");
 }
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
-	glGenVertexArrays(1, &VertexArrayName);
+        glGenVertexArrays(1, &VertexArrayName);
+
+        glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ArrayBufferName, glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
+
+        // DSA function missing...
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+        glBindVertexArray(0);
 
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-	glBindVertexArray(0);
-
-	return glf::checkError("initVertexArray");
+        return glf::checkError("initVertexArray");
 }
 
 bool begin()
@@ -213,6 +148,10 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+        // Set the value of MVP uniform.
+        glProgramUniformMatrix4fvEXT(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+        glProgramUniform4fvEXT(ProgramName, UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
@@ -220,11 +159,8 @@ void display()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Bind program
-	glUseProgram(ProgramName);
-
-	// Set the value of MVP uniform.
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+        // Bind program
+        glUseProgram(ProgramName);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
