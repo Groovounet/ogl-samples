@@ -82,4 +82,8 @@ add_subdirectory(ogl-400-primitive-tessellation)
 add_subdirectory(ogl-400-sampler-fetch)
 add_subdirectory(ogl-400-sampler-gather)
 add_subdirectory(ogl-400-transform-feedback-object)
+
+add_subdirectory(ogl-xxx-fbo-multisample)
+add_subdirectory(ogl-xxx-sampler-object)
+add_subdirectory(ogl-xxx-vao)
 endif(APPLE)
