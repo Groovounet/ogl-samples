@@ -1,16 +1,21 @@
 function(glCreateSampleGTC NAME)
 	set(SAMPLE_NAME ogl-${GL_VERSION_GTC}-${NAME})
-	set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../data/${GL_VERSION_GTC})
+	set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../data/${GL_VERSION_GTC})
 
 	foreach(FILE ${GL_SHADER_GTC})
  		set(SHADER_PATH ${SHADER_PATH} ${SHADER_DIR}/${FILE})
 	endforeach(FILE)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
-	add_executable(${SAMPLE_NAME} ${GL_SOURCE_GTC} ${SHADER_PATH})
+	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
 	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
 	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES})
 endfunction(glCreateSampleGTC)
+
+set(GL_VERSION_GTC 210)
+set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+
+glCreateSampleGTC(buffer-type)
 
 #add_subdirectory(ogl-alpha-discard)
 #add_subdirectory(ogl-alpha-test)
@@ -23,7 +28,7 @@ endfunction(glCreateSampleGTC)
 
 if(APPLE)
 
-add_subdirectory(ogl-210-buffer-type)
+#add_subdirectory(ogl-210-buffer-type)
 add_subdirectory(ogl-210-buffer-update)
 add_subdirectory(ogl-210-draw-elements)
 add_subdirectory(ogl-210-draw-range)
