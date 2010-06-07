@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Framebuffer multisample
+// OpenGL Framebuffer Multisample
 // 01/09/2009
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Framebuffer multisample";	
+	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";	
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
