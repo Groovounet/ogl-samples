@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL vertex Array
+// OpenGL Vertex Array
 // 07/06/2009
 //**********************************
 // Christophe Riccio
@@ -24,18 +24,18 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::hvec2);
+	glm::hvec2 const PositionData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f)
+		glm::hvec2(-1.0f,-1.0f),
+		glm::hvec2( 1.0f,-1.0f),
+		glm::hvec2( 1.0f, 1.0f),
+		glm::hvec2(-1.0f, 1.0f)
 	};
 
 	GLsizei const ElementCount = 6;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLubyte);
+	GLubyte const ElementData[ElementCount] =
 	{
 		0, 1, 2, 
 		2, 3, 0
@@ -84,7 +84,7 @@ bool initVertexArray()
 	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
 
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ArrayBufferName, glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ArrayBufferName, glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 
     glBindVertexArray(VertexArrayName);
@@ -159,7 +159,7 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_BYTE, 0);
 	glBindVertexArray(0);
 
 	// Unbind program

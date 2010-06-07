@@ -150,7 +150,9 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
-	glGenerateTextureMipmapEXT(Image2DName, GL_TEXTURE_2D);
+
+	if(Image.levels() == 1)
+		glGenerateTextureMipmapEXT(Image2DName, GL_TEXTURE_2D);
 
 	return glf::checkError("initTexture2D");
 }
@@ -158,31 +160,20 @@ bool initTexture2D()
 bool initFramebuffer()
 {
 	glGenRenderbuffers(1, &ColorRenderbufferName);
-	glBindRenderbuffer(GL_RENDERBUFFER, ColorRenderbufferName);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	// The second parameter is the number of samples.
+	glNamedRenderbufferStorageMultisampleEXT(ColorRenderbufferName, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ColorRenderbufferName);
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	glNamedFramebufferRenderbufferEXT(FramebufferRenderName, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ColorRenderbufferName);
+	if(glCheckNamedFramebufferStatusEXT(FramebufferRenderName, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glGenTextures(1, &ColorTextureName);
-	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureImage2DEXT(ColorTextureName, GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferResolveName);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ColorTextureName, 0);
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    glNamedFramebufferTexture2DEXT(FramebufferResolveName, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ColorTextureName, 0);
+	if(glCheckNamedFramebufferStatusEXT(FramebufferResolveName, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return glf::checkError("initFramebuffer");
 }
