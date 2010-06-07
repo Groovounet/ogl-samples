@@ -85,6 +85,8 @@ add_subdirectory(ogl-400-sampler-gather)
 add_subdirectory(ogl-400-transform-feedback-object)
 
 add_subdirectory(ogl-xxx-buffer-uniform)
+add_subdirectory(ogl-xxx-buffer-texture)
+add_subdirectory(ogl-xxx-buffer-update)
 add_subdirectory(ogl-xxx-fbo-multisample)
 add_subdirectory(ogl-xxx-sampler-object)
 add_subdirectory(ogl-xxx-vao)
