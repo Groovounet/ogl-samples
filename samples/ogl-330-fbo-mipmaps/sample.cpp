@@ -58,6 +58,7 @@ namespace
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName = 0;
+	GLuint SamplerName = 0;
 	GLuint ColorbufferName = 0;
 	GLuint FramebufferName = 0;
 
@@ -110,6 +111,17 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");;
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
@@ -143,11 +155,6 @@ bool initFramebuffer()
 	glBindTexture(GL_TEXTURE_2D, ColorbufferName);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
@@ -194,6 +201,8 @@ bool begin()
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initFramebuffer();
 
 	return Validated && glf::checkError("begin");
@@ -207,6 +216,7 @@ bool end()
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return glf::checkError("end");
 }
@@ -244,6 +254,8 @@ void display()
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
+
+	glBindSampler(0, SamplerName);
 
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);

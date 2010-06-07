@@ -151,6 +151,8 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_MAX_LEVEL, 1000);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
