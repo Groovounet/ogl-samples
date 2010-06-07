@@ -73,8 +73,7 @@ namespace
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
 
-	GLenum MinFilter[viewport::MAX];
-	GLenum MagFilter[viewport::MAX];
+	GLuint SamplerName[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
 
@@ -123,16 +122,36 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");;
 }
 
+bool initSampler()
+{
+	glGenSamplers(viewport::MAX, SamplerName);
+
+	for(std::size_t i = 0; i < viewport::MAX; ++i)
+	{
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+
+	glSamplerParameteri(SamplerName[viewport::V00], GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName[viewport::V10], GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName[viewport::V11], GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glSamplerParameteri(SamplerName[viewport::V01], GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glSamplerParameteri(SamplerName[viewport::V00], GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName[viewport::V10], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName[viewport::V11], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName[viewport::V01], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	// Set filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -150,16 +169,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	MinFilter[viewport::V00] = GL_NEAREST;
-	MinFilter[viewport::V10] = GL_LINEAR;
-	MinFilter[viewport::V11] = GL_LINEAR_MIPMAP_NEAREST;
-	MinFilter[viewport::V01] = GL_LINEAR_MIPMAP_LINEAR;
-
-	MagFilter[viewport::V00] = GL_NEAREST;
-	MagFilter[viewport::V10] = GL_LINEAR;
-	MagFilter[viewport::V11] = GL_LINEAR;
-	MagFilter[viewport::V01] = GL_LINEAR;
 
 	return glf::checkError("initTexture2D");
 }
@@ -204,6 +213,8 @@ bool begin()
 		Validated = initVertexArray();
 	if(Validated)
 		Validated = initTexture2D();
+	if(Validated)
+		Validated = initSampler();
 
 	return Validated && glf::checkError("begin");
 }
@@ -252,8 +263,7 @@ void display()
 			Viewport[Index].z, 
 			Viewport[Index].w);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, MinFilter[Index]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, MagFilter[Index]);
+		glBindSampler(0, SamplerName[Index]);
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}

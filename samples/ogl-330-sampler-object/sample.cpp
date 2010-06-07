@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL sampler object
+// OpenGL Sampler Object
 // 26/03/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL sampler object";
+	std::string const SAMPLE_NAME = "OpenGL Sampler Object";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
