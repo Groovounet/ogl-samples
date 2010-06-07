@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL sampler object
+// OpenGL Sampler Object
 // 26/03/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL sampler object";
+	std::string const SAMPLE_NAME = "OpenGL Sampler Object";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -74,10 +74,6 @@ namespace
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
 
-	GLenum SwizzleR[viewport::MAX];
-	GLenum SwizzleG[viewport::MAX];
-	GLenum SwizzleB[viewport::MAX];
-	GLenum SwizzleA[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
 
@@ -129,6 +125,8 @@ bool initArrayBuffer()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
+
+	// Parameters part of the sampler object:
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -151,10 +149,13 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
+	// Parameters that remains texture parameters:
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_MAX_LEVEL, 1000);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
