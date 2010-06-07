@@ -16,6 +16,7 @@ set(GL_VERSION_GTC 210)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 
 glCreateSampleGTC(buffer-type)
+glCreateSampleGTC(buffer-update)
 
 #add_subdirectory(ogl-alpha-discard)
 #add_subdirectory(ogl-alpha-test)
@@ -29,7 +30,7 @@ glCreateSampleGTC(buffer-type)
 if(APPLE)
 
 #add_subdirectory(ogl-210-buffer-type)
-add_subdirectory(ogl-210-buffer-update)
+#add_subdirectory(ogl-210-buffer-update)
 add_subdirectory(ogl-210-draw-elements)
 add_subdirectory(ogl-210-draw-range)
 add_subdirectory(ogl-210-image-2d)
