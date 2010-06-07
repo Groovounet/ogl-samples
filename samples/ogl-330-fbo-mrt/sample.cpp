@@ -160,11 +160,6 @@ bool initTexture2D()
 	// Load image
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
-		// Set filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 		{

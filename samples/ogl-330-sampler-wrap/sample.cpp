@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Sampler wrap
+// OpenGL Sampler Wrap
 // 27/08/2009
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Sampler wrap";	
+	std::string const SAMPLE_NAME = "OpenGL Sampler Wrap";	
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -73,8 +73,7 @@ namespace
 	GLuint UniformMVP;
 	GLuint UniformDiffuse;
 
-	GLenum WrapS[viewport::MAX];
-	GLenum WrapT[viewport::MAX];
+	GLuint SamplerName[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
 
@@ -123,18 +122,37 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");;
 }
 
+bool initSampler()
+{
+	glGenSamplers(viewport::MAX, SamplerName);
+
+	for(std::size_t i = 0; i < viewport::MAX; ++i)
+	{
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glm::vec4 BorderColor(0.0f, 0.5f, 1.0f, 1.0f);
+		glSamplerParameterfv(SamplerName[i], GL_TEXTURE_BORDER_COLOR, &BorderColor[0]);
+	}
+
+	glSamplerParameteri(SamplerName[viewport::V00], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName[viewport::V10], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glSamplerParameteri(SamplerName[viewport::V11], GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(SamplerName[viewport::V01], GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+
+	glSamplerParameteri(SamplerName[viewport::V00], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName[viewport::V10], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glSamplerParameteri(SamplerName[viewport::V11], GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glSamplerParameteri(SamplerName[viewport::V01], GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	// Set filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glm::vec4 BorderColor(0.0f, 0.5f, 1.0f, 1.0f);
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &BorderColor[0]);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -152,16 +170,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	WrapS[viewport::V00] = GL_CLAMP_TO_EDGE;
-	WrapS[viewport::V10] = GL_CLAMP_TO_BORDER;
-	WrapS[viewport::V11] = GL_REPEAT;
-	WrapS[viewport::V01] = GL_MIRRORED_REPEAT;
-
-	WrapT[viewport::V00] = GL_CLAMP_TO_EDGE;
-	WrapT[viewport::V10] = GL_CLAMP_TO_BORDER;
-	WrapT[viewport::V11] = GL_REPEAT;
-	WrapT[viewport::V01] = GL_MIRRORED_REPEAT;
 
 	return glf::checkError("initTexture2D");
 }
@@ -202,6 +210,8 @@ bool begin()
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initTexture2D();
+	if(Validated)
+		Validated = initSampler();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -250,8 +260,7 @@ void display()
 			Viewport[Index].z, 
 			Viewport[Index].w);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, WrapS[Index]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, WrapT[Index]);
+		glBindSampler(0, SamplerName[Index]);
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}

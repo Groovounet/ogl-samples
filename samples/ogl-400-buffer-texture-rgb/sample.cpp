@@ -107,7 +107,7 @@ bool initTextureBuffer()
 
 	glGenTextures(1, &DisplacementTextureName);
 	glBindTexture(GL_TEXTURE_BUFFER, DisplacementTextureName);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, DisplacementBufferName);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, DisplacementBufferName);
 	glBindTexture(GL_TEXTURE_BUFFER, 0);
 
 	glm::u8vec4 Diffuse[5] = 

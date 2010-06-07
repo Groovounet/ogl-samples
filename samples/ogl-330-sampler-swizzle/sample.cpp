@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Sampler swizzle
+// OpenGL Image Swizzling
 // 27/08/2009
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Sampler swizzle";
+	std::string const SAMPLE_NAME = "OpenGL Image Swizzling";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -132,15 +132,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	// Set filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glm::vec4 BorderColor(0.0f, 0.5f, 1.0f, 1.0f);
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &BorderColor[0]);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
