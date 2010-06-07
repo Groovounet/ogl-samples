@@ -73,7 +73,7 @@ namespace
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
 
-	GLint Anisotropy[viewport::MAX];
+	GLuint SamplerName[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
 
 }//namespace
@@ -130,10 +130,6 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
-	// Set filter
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
@@ -150,11 +146,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	Anisotropy[viewport::V00] = 1;
-	Anisotropy[viewport::V10] = 2;
-	Anisotropy[viewport::V11] = 4;
-	Anisotropy[viewport::V01] = 16;
 
 	return glf::checkError("initTexture2D");
 }
@@ -173,6 +164,28 @@ bool initVertexArray()
     glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
+}
+
+bool initSampler()
+{
+	glGenSamplers(viewport::MAX, SamplerName);
+
+	for(std::size_t i = 0; i < viewport::MAX; ++i)
+	{
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glSamplerParameteri(SamplerName[i], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	glSamplerParameterf(SamplerName[viewport::V00], GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
+	glSamplerParameterf(SamplerName[viewport::V10], GL_TEXTURE_MAX_ANISOTROPY_EXT, 2.0f);
+	glSamplerParameterf(SamplerName[viewport::V11], GL_TEXTURE_MAX_ANISOTROPY_EXT, 4.0f);
+	glSamplerParameterf(SamplerName[viewport::V01], GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+
+	return glf::checkError("initSampler");
 }
 
 bool begin()
@@ -197,6 +210,8 @@ bool begin()
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initVertexArray();
 
 	return Validated && glf::checkError("begin");
@@ -204,6 +219,7 @@ bool begin()
 
 bool end()
 {
+	glDeleteSamplers(viewport::MAX, SamplerName);
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Texture2DName);
@@ -246,8 +262,7 @@ void display()
 			Viewport[Index].z, 
 			Viewport[Index].w);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, Anisotropy[Index]);
-
+		glBindSampler(0, SamplerName[Index]);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
 

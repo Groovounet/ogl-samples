@@ -132,9 +132,6 @@ bool initTexture2D()
 	// Set image
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
-		// Set filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		gli::image Image = gli::import_as(TEXTURE_DIFFUSE_RGB8);
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -154,9 +151,6 @@ bool initTexture2D()
 
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_COMP]);
-		// Set filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		gli::image Image = gli::import_as(TEXTURE_DIFFUSE_RGB8);
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -178,9 +172,6 @@ bool initTexture2D()
 		gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT1);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_DXT1]);
-		// Set filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 		{
@@ -200,9 +191,6 @@ bool initTexture2D()
 		gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_DXT5]);
-		// Set filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 		{
