@@ -18,7 +18,7 @@ uniform sampler2D Diffuse;
 
 in vert
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
 layout(location = FRAG_RED, index = 0) out float Red;

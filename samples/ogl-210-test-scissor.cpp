@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Test scissor
+// OpenGL Test Scissor
 // 10/05/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Test scissor";	
+	std::string const SAMPLE_NAME = "OpenGL Test Scissor";	
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
@@ -69,6 +69,7 @@ bool initProgram()
 	{
 		::ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
 		glBindAttribLocation(::ProgramName, glf::semantic::attr::POSITION, "Position");
+		glBindAttribLocation(::ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
 		glLinkProgram(::ProgramName);
 		Validated = glf::checkProgram(::ProgramName);
 	}

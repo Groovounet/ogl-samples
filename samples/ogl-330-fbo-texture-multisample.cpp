@@ -58,6 +58,7 @@ namespace
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName = 0;
+	GLuint SamplerName = 0;
 	
 	GLuint MultisampleTextureName = 0;
 	GLuint ColorTextureName = 0;
@@ -69,6 +70,26 @@ namespace
 	GLuint UniformDiffuse = 0;	
 
 }//namespace
+
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	// Parameters part of the sampler object:
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
 
 bool initProgram()
 {
@@ -86,19 +107,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform1i(UniformDiffuse, 0);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return glf::checkError("initProgram");
@@ -172,7 +180,6 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -202,6 +209,8 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initFramebuffer();
@@ -213,6 +222,7 @@ bool end()
 {
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
+	glDeleteSamplers(1, &SamplerName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteTextures(1, &ColorTextureName);
 	glDeleteTextures(1, &MultisampleTextureName);
@@ -263,6 +273,7 @@ void renderFB(GLuint Texture2DName)
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
+
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -285,6 +296,8 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(ProgramName);
+
+	glUniform1i(UniformDiffuse, 0);
 
 	// Pass 1
 	// Render the scene in a multisampled framebuffer
