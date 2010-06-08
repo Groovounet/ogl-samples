@@ -139,7 +139,8 @@ endif(MSVC)
 set(TARGET_DATA_COPY DATA_COPY)
 add_custom_target(
 	${TARGET_DATA_COPY}
-	COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
+ 	COMMAND pwd)
+# 	COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
 
 set(OGL_DATA_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 
