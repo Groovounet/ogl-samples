@@ -25,36 +25,6 @@ endif(MSVC)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 
-###########
-# Add SDL 
-
-set(SDL_VERSION "SDL-1.3.0-4429")
-set(SDL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION})
-
-if(MSVC)
-	link_directories("${SDL_DIRECTORY}/binary/${BINARY_DIRECTORY}")
-	execute_process(COMMAND cmake -E copy ${SDL_DIRECTORY}/binary/${BINARY_DIRECTORY}/SDL.dll ${CMAKE_CURRENT_BINARY_DIR}/build/release/SDL.dll)
-	execute_process(COMMAND cmake -E copy ${SDL_DIRECTORY}/binary/${BINARY_DIRECTORY}/SDL.dll ${CMAKE_CURRENT_BINARY_DIR}/build/debug/SDL.dll)
-	execute_process(COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/build/release)
-	execute_process(COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/build/debug)
-else(MSVC)
-	if(DEFINED CMAKE_BUILD_TYPE)
-
-	else()
-		set(CMAKE_BUILD_TYPE Release)
-	endif()
-	
-	set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-
-    execute_process(COMMAND sh ./autogen.sh	WORKING_DIRECTORY ${SDL_DIRECTORY})
-    execute_process(COMMAND ./configure --prefix=${SDL_DIRECTORY} WORKING_DIRECTORY ${SDL_DIRECTORY})
-    execute_process(COMMAND make WORKING_DIRECTORY ${SDL_DIRECTORY})
-    execute_process(COMMAND make install WORKING_DIRECTORY ${SDL_DIRECTORY})
-    link_directories("${SDL_DIRECTORY}/lib")
-endif(MSVC)
-
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/${SDL_VERSION}/include")
-
 ############
 # Add GLUT 
 
@@ -110,14 +80,14 @@ include_directories("${GLI_DIRECTORY}")
 # Add libraries to executables
 
 if(MSVC)
-	set(BINARY_FILES "SDL" "SDLmain" "glew32s" "OpenGL32")
+	set(BINARY_FILES "glew32s" "OpenGL32")
 endif(MSVC)
 if(APPLE)
-    set(BINARY_FILES "SDL" "SDLmain" "../libGL.dylib")
+    set(BINARY_FILES "../libGL.dylib")
 	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
 endif(APPLE)
 #if(UNIX and NOT APPLE)
-#	set(BINARY_FILES "SDL" "SDLmain" "GL")
+#	set(BINARY_FILES "GL")
 #endif(UNIX and not APPLE)
 
 ################################
@@ -139,8 +109,7 @@ endif(MSVC)
 set(TARGET_DATA_COPY DATA_COPY)
 add_custom_target(
 	${TARGET_DATA_COPY}
- 	COMMAND pwd)
-# 	COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
+ 	COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
 
 set(OGL_DATA_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 
