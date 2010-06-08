@@ -18,8 +18,8 @@ uniform sampler2DArray Diffuse;
 
 in vert
 {
-	float Instance;
 	vec2 Texcoord;
+	float Instance;
 } Vert;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;

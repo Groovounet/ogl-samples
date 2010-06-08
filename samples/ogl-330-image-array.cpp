@@ -149,7 +149,6 @@ bool initTextureArray2D()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -173,13 +172,13 @@ bool begin()
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
 
 	if(Validated)
-		Validated = initProgram();
+		Validated = initTextureArray2D();
 	if(Validated)
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTextureArray2D();
+		Validated = initProgram();
 
 	return Validated && glf::checkError("begin");
 }

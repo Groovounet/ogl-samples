@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL FBO Multiple Render Target
-// 20/10/2009
+// 20/10/2009 - 08/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -81,26 +81,6 @@ namespace
 	glm::ivec4 Viewport[TEXTURE_MAX];
 
 }//namespace
-
-GLuint initShader(std::string const & Filename, GLenum Stage)
-{
-	bool Validated = true;
-
-	GLuint ShaderName = 0;
-	if(Validated)
-	{
-		std::string Source0 = glf::loadFile(Filename);
-		char const * Source = Source0.c_str();
-		ShaderName = glCreateShader(Stage);
-		glShaderSource(ShaderName, 1, &Source, NULL);
-		glCompileShader(ShaderName);
-		Validated = glf::checkShader(ShaderName, Source);
-	}
-	
-	glf::checkError("initShader");
-
-	return ShaderName;
-}
 
 bool initProgram()
 {
@@ -202,10 +182,6 @@ bool initTexture2D()
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glTexImage2D(
 			GL_TEXTURE_2D, 
@@ -251,7 +227,6 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -335,18 +310,17 @@ void display()
 	}
 
 	// Pass 2
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glUseProgram(ProgramNameSingle);
-
 	{
 		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
 		glm::mat4 View = glm::mat4(1.0f);
 		glm::mat4 Model = glm::mat4(1.0f);
 		glm::mat4 MVP = Projection * View * Model;
 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(ProgramNameSingle);
 		glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuseSingle, 0);
 	}

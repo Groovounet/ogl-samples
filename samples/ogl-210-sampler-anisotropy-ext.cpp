@@ -87,6 +87,7 @@ bool initProgram()
 	{
 		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
 		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glBindAttribLocation(ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -95,19 +96,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform1i(UniformDiffuse, 0);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return glf::checkError("initProgram");
