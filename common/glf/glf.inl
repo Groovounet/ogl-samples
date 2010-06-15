@@ -17,7 +17,7 @@ namespace glf
 		glGetError(); // 'glutSwapBuffers' generates an here with OpenGL 3 > core profile ... :/
 	}
 
-	inline void initFunc()
+	inline void init()
 	{
 #ifdef WIN32
 		glewInit();
@@ -68,6 +68,8 @@ namespace glf
 		glDrawElementsInstancedBaseVertex = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC)glfGetProcAddress("glDrawElementsBaseVertex");
 		glDrawRangeElementsBaseVertex = (PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC)glfGetProcAddress("glDrawRangeElementsBaseVertex");
 		glMultiDrawElementsBaseVertex = (PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC)glfGetProcAddress("glMultiDrawElementsBaseVertex");
+		glTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTexImage2DMultisample");
+		glTexImage3DMultisample = (PFNGLTEXIMAGE3DMULTISAMPLEPROC)glfGetProcAddress("glTexImage3DMultisample");
 
 		// Load OpenGL 3.3 functions
 		glGenSamplers = (PFNGLGENSAMPLERSPROC)glfGetProcAddress("glGenSamplers");
@@ -408,7 +410,7 @@ namespace glf
 		glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORARBPROC)glfGetProcAddress("glVertexAttribDivisor");
 #endif//WIN32
 		glGetError();
-		//glf::init();
+		glf::init();
 
 		if(begin())
 		{
