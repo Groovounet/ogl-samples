@@ -6,5 +6,5 @@ varying vec2 VertTexcoord;
 
 void main()
 {
-	gl_FragColor = texture(Diffuse, VertTexcoord);
+	gl_FragColor = texture2D(Diffuse, VertTexcoord);
 }
