@@ -152,6 +152,7 @@ bool initFramebuffer()
 {
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
+
 	// The second parameter is the number of samples.
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_FALSE);
 
@@ -165,6 +166,7 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
