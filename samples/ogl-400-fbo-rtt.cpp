@@ -14,16 +14,13 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
-	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
-	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.frag");
-	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_MAJOR_VERSION = 4;
+	int const SAMPLE_MINOR_VERSION = 0;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -64,8 +61,7 @@ namespace
 	};
 
 	GLuint FramebufferName = 0;
-	GLuint VertexArrayMultipleName = 0;
-	GLuint VertexArrayImageName = 0;
+	GLuint VertexArrayName = 0;
 
 	GLuint ProgramNameSingle = 0;
 	GLuint UniformMVPSingle = 0;
@@ -86,33 +82,26 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
-			glLinkProgram(ProgramNameMultiple);
-			Validated = glf::checkProgram(ProgramNameMultiple);
-		}
+		ProgramNameSingle = glCreateProgram();
 
-		if(Validated)
-		{
-			UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
-		}
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		glAttachShader(ProgramNameSingle, VertexShaderName);
+		glDeleteShader(VertexShaderName);
+
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		glAttachShader(ProgramNameSingle, FragmentShaderName);
+		glDeleteShader(FragmentShaderName);
+
+		glLinkProgram(ProgramNameSingle);
+		Validated = glf::checkProgram(ProgramNameSingle);
 	}
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
-			glLinkProgram(ProgramNameSingle);
-			Validated = glf::checkProgram(ProgramNameSingle);
-		}
-
-		if(Validated)
-		{
-			UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-			UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
-		}
+		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
+		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -182,7 +171,6 @@ bool initFramebuffer()
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return true;
@@ -190,17 +178,8 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	glGenVertexArrays(1, &VertexArrayMultipleName);
-    glBindVertexArray(VertexArrayMultipleName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-	glBindVertexArray(0);
-
-	glGenVertexArrays(1, &VertexArrayImageName);
-    glBindVertexArray(VertexArrayImageName);
+	glGenVertexArrays(1, &VertexArrayName);
+    glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
@@ -253,42 +232,26 @@ bool end()
 void display()
 {
 	// Pass 1
-	{
-		// Compute the MVP (Model View Projection matrix)
-		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f,-1.0f, 1.0f, -1.0f, 1.0f);
-		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		glm::mat4 View = ViewTranslate;
-		glm::mat4 Model = glm::mat4(1.0f);
-		glm::mat4 MVP = Projection * View * Model;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glUseProgram(ProgramNameMultiple);
-		glUniformMatrix4fv(UniformMVPMultiple, 1, GL_FALSE, &MVP[0][0]);
-
-		glBindVertexArray(VertexArrayMultipleName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 2, &glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 3, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0]);
 
 	// Pass 2
-	{
-		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
-		glm::mat4 View = glm::mat4(1.0f);
-		glm::mat4 Model = glm::mat4(1.0f);
-		glm::mat4 MVP = Projection * View * Model;
+	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
+	glm::mat4 View = glm::mat4(1.0f);
+	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 MVP = Projection * View * Model;
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-		glUseProgram(ProgramNameSingle);
-		glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuseSingle, 0);
-	}
+	glUseProgram(ProgramNameSingle);
+	glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(UniformDiffuseSingle, 0);
 
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
@@ -297,7 +260,7 @@ void display()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
 
-		glBindVertexArray(VertexArrayImageName);
+		glBindVertexArray(VertexArrayName);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
 		glActiveTexture(GL_TEXTURE0);

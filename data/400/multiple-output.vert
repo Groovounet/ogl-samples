@@ -14,13 +14,18 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-layout(location = FRAG_RED, index = 0) out vec4 Red;
-layout(location = FRAG_GREEN, index = 0) out vec4 Green;
-layout(location = FRAG_BLUE, index = 0) out vec4 Blue;
+uniform mat4 MVP;
+
+layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
+
+out vert
+{
+	vec2 Texcoord;
+} Vert;
 
 void main()
-{
-	Red = vec4(1.0, 0.0, 0.0, 1.0);
-	Green = vec4(0.0, 1.0, 0.0, 1.0);
-	Blue = vec4(0.0, 0.0, 1.0, 1.0);
+{	
+	Vert.Texcoord = Texcoord;
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }
