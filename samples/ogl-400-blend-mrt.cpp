@@ -81,26 +81,6 @@ namespace
 	glm::ivec4 Viewport[TEXTURE_MAX];
 }//namespace
 
-GLuint initShader(std::string const & Filename, GLenum Stage)
-{
-	bool Validated = true;
-
-	GLuint ShaderName = 0;
-	if(Validated)
-	{
-		std::string Source0 = glf::loadFile(Filename);
-		char const * Source = Source0.c_str();
-		ShaderName = glCreateShader(Stage);
-		glShaderSource(ShaderName, 1, &Source, NULL);
-		glCompileShader(ShaderName);
-		Validated = glf::checkShader(ShaderName, Source);
-	}
-	
-	glf::checkError("initShader");
-
-	return ShaderName;
-}
-
 bool initProgram()
 {
 	bool Validated = true;
@@ -160,6 +140,9 @@ bool initTexture2D()
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 		{
 			glTexImage2D(
@@ -178,6 +161,9 @@ bool initTexture2D()
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_R]);
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -186,6 +172,9 @@ bool initTexture2D()
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_G]);
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -193,6 +182,9 @@ bool initTexture2D()
 	}
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_B]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
@@ -204,6 +196,9 @@ bool initTexture2D()
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexImage2D(
 			GL_TEXTURE_2D, 
@@ -246,7 +241,6 @@ bool initFramebuffer()
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return true;
@@ -254,7 +248,6 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);

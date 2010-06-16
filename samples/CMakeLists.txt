@@ -163,6 +163,8 @@ set(GL_SHADER_GTC gather.vert gather.frag)
 glCreateSampleGTC(sampler-gather)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(transform-feedback-object)
+set(GL_SHADER_GTC image-2d.vert image-2d.frag multiple-output.vert multiple-output.frag)
+glCreateSampleGTC(fbo-rtt)
 
 # OpenGL Future
 set(GL_VERSION_GTC xxx)
