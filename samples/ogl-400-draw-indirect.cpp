@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Draw indirect
-// 26/05/2010
+// 26/05/2010 - 16/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -197,9 +197,10 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClearDepth(1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glm::vec4 Color(0.0f);
+	float Depth(1.0f);
+	glClearBufferfv(GL_COLOR, 0, &Color[0]);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
 
 	// Bind program
 	glUseProgram(ProgramName);
