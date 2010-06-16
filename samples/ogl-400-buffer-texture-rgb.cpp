@@ -110,13 +110,13 @@ bool initTextureBuffer()
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, DisplacementBufferName);
 	glBindTexture(GL_TEXTURE_BUFFER, 0);
 
-	glm::u8vec4 Diffuse[5] = 
+	glm::vec3 Diffuse[5] = 
 	{
-		glm::u8vec4(255,   0,   0, 255), 
-		glm::u8vec4(255, 127,   0, 255),
-		glm::u8vec4(255, 255,   0, 255),
-		glm::u8vec4(  0, 255,   0, 255),
-		glm::u8vec4(  0,   0, 255, 255)
+		glm::vec3(1.0f, 0.0f, 0.0f), 
+		glm::vec3(1.0f, 0.5f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
 	};	
 
 	glGenBuffers(1, &DiffuseBufferName);
@@ -126,7 +126,7 @@ bool initTextureBuffer()
 
 	glGenTextures(1, &DiffuseTextureName);
 	glBindTexture(GL_TEXTURE_BUFFER, DiffuseTextureName);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, DiffuseTextureName);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, DiffuseTextureName);
 	glBindTexture(GL_TEXTURE_BUFFER, 0);	
 
 	return glf::checkError("initTextureBuffer");

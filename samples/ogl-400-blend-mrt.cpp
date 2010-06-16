@@ -177,6 +177,7 @@ bool initTexture2D()
 
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_R]);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -184,6 +185,7 @@ bool initTexture2D()
 	}
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_G]);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -191,6 +193,7 @@ bool initTexture2D()
 	}
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_B]);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
