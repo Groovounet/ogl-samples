@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Blend MRT
-// 28/05/2010
+// OpenGL Render to texture blending 
+// 28/05/2010 - 16/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Blend MRT";
+	std::string const SAMPLE_NAME = "OpenGL Render to texture blending";
 	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.vert");
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.frag");
 	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");

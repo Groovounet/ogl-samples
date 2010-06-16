@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL FBO Multiple Render Target
-// 20/10/2009 - 08/06/2010
+// OpenGL Multiple render to texture
+// 20/10/2009 - 16/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL FBO Multiple Render Target";
+	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
 	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.frag");
 	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
