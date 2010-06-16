@@ -14,18 +14,16 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
+uniform sampler2D Diffuse;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
-
-out vert
+in vert
 {
 	vec2 Texcoord;
 } Vert;
 
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+
 void main()
-{	
-	Vert.Texcoord = Texcoord;
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+{
+	Color = texture(Diffuse, interpolateAtSample(Vert.Texcoord, gl_SampleID));
 }
