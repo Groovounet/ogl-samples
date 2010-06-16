@@ -176,7 +176,6 @@ bool initFramebuffer()
 	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
 	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
 	DrawBuffers[2] = GL_COLOR_ATTACHMENT2;
-
 	glDrawBuffers(3, DrawBuffers);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
