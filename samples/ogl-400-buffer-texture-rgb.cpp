@@ -63,7 +63,16 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		ProgramName = glCreateProgram();
+
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		glAttachShader(ProgramName, VertexShaderName);
+		glDeleteShader(VertexShaderName);
+
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(ProgramName);
+
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}

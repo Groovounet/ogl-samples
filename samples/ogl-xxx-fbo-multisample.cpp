@@ -78,7 +78,13 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		ProgramName = glCreateProgram();
+		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		glAttachShader(ProgramName, VertexShader);
+		glDeleteShader(VertexShader);
+		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		glAttachShader(ProgramName, FragmentShader);
+		glDeleteShader(FragmentShader);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -87,13 +93,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Set uniform value
-		glProgramUniform1iEXT(ProgramName, UniformDiffuse, 0);
 	}
 
 	return glf::checkError("initProgram");
@@ -242,6 +241,7 @@ void renderFBO(GLuint Framebuffer)
 	glm::mat4 MVP = Perspective * View * Model;
 
 	glProgramUniformMatrix4fvEXT(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1iEXT(ProgramName, UniformDiffuse, 0);
 
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
@@ -290,13 +290,12 @@ void display()
 
 	glUseProgram(ProgramName);
 
-	// Pass 1
-	// Render the scene in a multisampled framebuffer
+	// Step 1: Render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
 
-	// Resolved multisampling
+	// Step 2: Resolved multisampling
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FramebufferRenderName);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FramebufferResolveName);
 	glBlitFramebuffer(
@@ -305,8 +304,7 @@ void display()
 		GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// Pass 2
-	// Render the colorbuffer from the multisampled framebuffer
+	// Step 3: Render the colorbuffer from the multisampled framebuffer
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	renderFB(ColorTextureName);
 
