@@ -16,8 +16,8 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
 	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.frag");
-	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/rtt-array.vert");
+	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/rtt-array.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -70,6 +70,7 @@ namespace
 	GLuint ProgramNameSingle = 0;
 	GLuint UniformMVPSingle = 0;
 	GLuint UniformDiffuseSingle = 0;
+	GLuint UniformLayer = 0;
 
 	GLuint ProgramNameMultiple = 0;
 	GLuint UniformMVPMultiple = 0;
@@ -112,6 +113,7 @@ bool initProgram()
 		{
 			UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
 			UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
+			UniformLayer = glGetUniformLocation(ProgramNameSingle, "Layer");
 		}
 	}
 
@@ -280,7 +282,7 @@ void display()
 		glm::mat4 MVP = Projection * View * Model;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
+		glViewport(0, 0, Window.Size.x, Window.Size.y);
 		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -295,6 +297,7 @@ void display()
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
+		glUniform1f(UniformLayer, float(i));
 
 		glBindVertexArray(VertexArrayImageName);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
@@ -311,9 +314,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

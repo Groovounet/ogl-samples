@@ -63,13 +63,9 @@ namespace
 	GLuint FramebufferName = 0;
 	GLuint VertexArrayName = 0;
 
-	GLuint ProgramNameSingle = 0;
-	GLuint UniformMVPSingle = 0;
-	GLuint UniformDiffuseSingle = 0;
-
-	GLuint ProgramNameMultiple = 0;
-	GLuint UniformMVPMultiple = 0;
-	GLuint UniformDiffuseMultiple = 0;
+	GLuint ProgramName = 0;
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];
@@ -84,24 +80,24 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameSingle = glCreateProgram();
+		ProgramName = glCreateProgram();
 
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramNameSingle, VertexShaderName);
+		glAttachShader(ProgramName, VertexShaderName);
 		glDeleteShader(VertexShaderName);
 
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-		glAttachShader(ProgramNameSingle, FragmentShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(FragmentShaderName);
 
-		glLinkProgram(ProgramNameSingle);
-		Validated = glf::checkProgram(ProgramNameSingle);
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -221,8 +217,7 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramNameMultiple);
-	glDeleteProgram(ProgramNameSingle);
+	glDeleteProgram(ProgramName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
 
@@ -249,9 +244,9 @@ void display()
 	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramNameSingle);
-	glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuseSingle, 0);
+	glUseProgram(ProgramName);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(UniformDiffuse, 0);
 
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
