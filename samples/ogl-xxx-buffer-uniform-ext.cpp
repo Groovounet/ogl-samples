@@ -91,10 +91,6 @@ bool initVertexArray()
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ArrayBufferName, glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 
-    glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	glBindVertexArray(0);
-
 	return glf::checkError("initVertexArray");
 }
 
@@ -199,11 +195,9 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+	
+	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
