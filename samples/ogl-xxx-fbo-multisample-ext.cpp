@@ -248,13 +248,9 @@ void renderFBO(GLuint Framebuffer)
 
 	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Image2DName);
 	glBindSampler(0, SamplerName);
-
 	glBindVertexArray(VertexArrayName);
+
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glf::checkError("renderFBO");
 }
@@ -272,11 +268,9 @@ void renderFB(GLuint Texture2DName)
 
 	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Texture2DName);
 	glBindSampler(0, SamplerName);
-
 	glBindVertexArray(VertexArrayName);
+
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-		
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, 0);
 
 	glf::checkError("renderFB");
 }

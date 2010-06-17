@@ -239,11 +239,9 @@ void display()
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 
 		glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Texture2DName[i]);
-
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-		glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, 0);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
 
 	glf::checkError("display");
