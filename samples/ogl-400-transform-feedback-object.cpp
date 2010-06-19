@@ -198,7 +198,7 @@ void display()
 
 		glUseProgram(TransformProgramName);
 		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(1.00f, 0.50f, 0.00f, 1.0f)[0]);
+		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 		glBindVertexArray(TransformVertexArrayName);
 
@@ -215,7 +215,7 @@ void display()
 	{
 		glUseProgram(FeedbackProgramName);
 		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(0.00f, 0.50f, 1.00f, 1.00f)[0]);
+		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		glBindVertexArray(FeedbackVertexArrayName);
 		glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
