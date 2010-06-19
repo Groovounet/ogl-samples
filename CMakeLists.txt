@@ -6,7 +6,7 @@ project(ogl-samples-pack-4.0.0)
 ##########################
 # Setup binary directory
 
-if(MSVC)
+if(MSVC AND NOT CMAKE_CL_64)
 	if(MSVC_VERSION EQUAL 1400)
 		set(BINARY_DIRECTORY "win32-vc2005")
 	endif(MSVC_VERSION EQUAL 1400)
@@ -16,9 +16,19 @@ if(MSVC)
 	if(MSVC_VERSION EQUAL 1600)
 		set(BINARY_DIRECTORY "win32-vc2010")
 	endif(MSVC_VERSION EQUAL 1600)
-else(MSVC)
-	set(BINARY_DIRECTORY "unknowned")
-endif(MSVC)
+endif(MSVC AND NOT CMAKE_CL_64)
+
+if(MSVC AND CMAKE_CL_64)
+	if(MSVC_VERSION EQUAL 1400)
+		set(BINARY_DIRECTORY "win64-vc2005")
+	endif(MSVC_VERSION EQUAL 1400)
+	if(MSVC_VERSION EQUAL 1500)
+		set(BINARY_DIRECTORY "win64-vc2008")
+	endif(MSVC_VERSION EQUAL 1500)	
+	if(MSVC_VERSION EQUAL 1600)
+		set(BINARY_DIRECTORY "win64-vc2010")
+	endif(MSVC_VERSION EQUAL 1600)
+endif(MSVC AND CMAKE_CL_64)
 
 #####################
 # Add common source 
