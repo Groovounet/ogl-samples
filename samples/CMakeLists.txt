@@ -172,16 +172,4 @@ glCreateSampleGTC(fbo-multisample)
 set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-texture-array)
 
-# OpenGL Future
-set(GL_VERSION_GTC xxx)
-
-set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
-glCreateSampleGTC(buffer-uniform-ext)
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(fbo-multisample-ext)
-set(GL_SHADER_GTC image-2d.vert image-2d.frag multiple-output.vert multiple-output.frag)
-glCreateSampleGTC(fbo-rtt-ext)
-set(GL_SHADER_GTC fetch.vert fetch.frag)
-glCreateSampleGTC(sampler-fetch-ext)
-
 endif(APPLE)
