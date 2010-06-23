@@ -37,7 +37,7 @@ namespace
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
 	GLushort const ElementData[ElementCount] =
 	{
-		0, 1, 2, 
+		0, 1, 2,
 		2, 3, 0
 	};
 
@@ -55,7 +55,7 @@ namespace
 bool initProgram()
 {
 	bool Validated = true;
-	
+
 	// Create program
 	if(Validated)
 	{
@@ -115,7 +115,7 @@ bool initUniformBuffer()
 	GLint UniformBlockSize = 0;
 
 	glGetActiveUniformBlockiv(
-		ProgramName, 
+		ProgramName,
 		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSize);
@@ -124,7 +124,7 @@ bool initUniformBuffer()
 
 	glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
 	glGetActiveUniformBlockiv(
-		ProgramName, 
+		ProgramName,
 		UniformMaterial,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSize);
@@ -193,10 +193,10 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	// Bind vertex array & draw 
+	// Bind vertex array & draw
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	
+
 	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 
 	glf::checkError("display");
@@ -207,8 +207,8 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT),
+		::SAMPLE_MAJOR_VERSION,
 		::SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
