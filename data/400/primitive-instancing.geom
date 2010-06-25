@@ -25,9 +25,9 @@ uniform mat4 MVP;
 
 void main()
 {	
-	for(int i = 0; i < gl_VerticesIn; ++i)
+	for(int i = 0; i < gl_in.length(); ++i)
 	{
-		gl_Position = MVP * (gl_PositionIn[i] + vec4(vec2(0.0), - 0.3 + float(0.1) * float(gl_InvocationID), 0.0));
+		gl_Position = MVP * (gl_in[i].gl_Position + vec4(vec2(0.0), - 0.3 + float(0.1) * float(gl_InvocationID), 0.0));
 		Geom.Color = vec3(gl_InvocationID + 1) / 6.0;
 		EmitVertex();
 	}
