@@ -85,6 +85,7 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
+		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
 		FeedbackUniformDiffuse = glGetUniformLocation(FeedbackProgramName, "Diffuse");
 	}
 
@@ -207,6 +208,7 @@ void display()
 	// Second draw, reuse the captured attributes
 	{
 		glUseProgram(FeedbackProgramName);
+		glUniformMatrix4fv(FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		GLuint PrimitivesWritten = 0;
