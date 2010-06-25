@@ -69,19 +69,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
@@ -94,8 +81,6 @@ bool initVertexArray()
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -167,8 +152,10 @@ void display()
 
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind vertex array & draw 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glBindVertexArray(VertexArrayName);
 		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
