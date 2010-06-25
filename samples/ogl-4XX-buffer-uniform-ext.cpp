@@ -104,7 +104,7 @@ bool initArrayBuffer()
 
 	void * Data = glMapNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize, GL_MAP_WRITE_BIT);
 	memcpy(Data, &PositionData[0], PositionSize);
-	//glFlushMappedNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize);
+	glFlushMappedNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize);
 	glUnmapNamedBufferEXT(ArrayBufferName);
 
 	return glf::checkError("initArrayBuffer");
@@ -208,8 +208,8 @@ int main(int argc, char* argv[])
 	if(glf::run(
 		argc, argv,
 		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT),
-		::SAMPLE_MAJOR_VERSION,
-		::SAMPLE_MINOR_VERSION))
+		SAMPLE_MAJOR_VERSION,
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

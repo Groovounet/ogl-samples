@@ -60,6 +60,8 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	glf::checkError("initProgram 0");
+
 	// Create program
 	if(Validated)
 	{
@@ -71,11 +73,13 @@ bool initProgram()
 
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(ProgramName);
+		glDeleteShader(FragmentShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
+
+	glf::checkError("initProgram 5");
 
 	// Get variables locations
 	if(Validated)
