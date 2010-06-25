@@ -173,7 +173,7 @@ set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-texture-array)
 
 # OpenGL Future
-set(GL_VERSION_GTC xxx)
+set(GL_VERSION_GTC 4xx)
 
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform-ext)
