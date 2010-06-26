@@ -247,10 +247,6 @@ bool end()
 
 void renderFBO(GLuint Framebuffer)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
 	glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
 	glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
@@ -260,19 +256,14 @@ void renderFBO(GLuint Framebuffer)
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glf::checkError("renderFBO");
 }
@@ -303,8 +294,7 @@ void display()
 {
 	// Clear the framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
 	glUniform1i(UniformDiffuse, 0);
@@ -312,7 +302,7 @@ void display()
 
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
-	glMinSampleShading(1.0f);
+	glMinSampleShading(2.0f);
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
 

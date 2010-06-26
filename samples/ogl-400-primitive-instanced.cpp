@@ -170,10 +170,9 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with white
-	glm::vec4 Color(1.0f);
 	float Depth(1.0f);
-	glClearBufferfv(GL_COLOR, 0, &Color[0]);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
