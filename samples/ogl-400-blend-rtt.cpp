@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Render to texture blending 
-// 28/05/2010 - 16/06/2010
+// 28/05/2010 - 26/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -27,32 +27,22 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	struct vertex
+	GLsizei const VertexCount = 4;
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
+	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
-		vertex
-		(
-			glm::vec2 const & Position,
-			glm::vec2 const & Texcoord
-		) :
-			Position(Position),
-			Texcoord(Texcoord)
-		{}
-
-		glm::vec2 Position;
-		glm::vec2 Texcoord;
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
-	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
-	vertex const VertexData[VertexCount] =
+	GLsizei const ElementCount = 6;
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
+	GLushort const ElementData[ElementCount] =
 	{
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f)),
-		vertex(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 0.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
+		0, 1, 2, 
+		2, 3, 0
 	};
 
 	enum texture_type
@@ -64,19 +54,26 @@ namespace
 		TEXTURE_MAX
 	};
 
-	GLuint FramebufferName;
-	GLuint VertexArrayName;
+	enum buffer_type
+	{
+		BUFFER_VERTEX,
+		BUFFER_ELEMENT,
+		BUFFER_MAX
+	};
 
-	GLuint ProgramNameSingle;
-	GLuint UniformMVPSingle;
-	GLuint UniformDiffuseSingle;
+	GLuint FramebufferName = 0;
+	GLuint VertexArrayName = 0;
 
-	GLuint ProgramNameMultiple;
-	GLuint UniformMVPMultiple;
-	GLuint UniformDiffuseMultiple;
+	GLuint ProgramNameSingle = 0;
+	GLuint UniformMVPSingle = 0;
+	GLuint UniformDiffuseSingle = 0;
 
-	GLuint BufferName;
-	GLuint Texture2DName[TEXTURE_MAX];
+	GLuint ProgramNameMultiple = 0;
+	GLuint UniformMVPMultiple = 0;
+	GLuint UniformDiffuseMultiple = 0;
+
+	GLuint BufferName[BUFFER_MAX];
+	GLuint TextureName[TEXTURE_MAX];
 
 	glm::ivec4 Viewport[TEXTURE_MAX];
 }//namespace
@@ -85,44 +82,56 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
-			glLinkProgram(ProgramNameMultiple);
-			Validated = glf::checkProgram(ProgramNameMultiple);
-		}
-
-		if(Validated)
-		{
-			UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
-			UniformDiffuseMultiple = glGetUniformLocation(ProgramNameMultiple, "Diffuse");
-		}
+		ProgramNameMultiple = glCreateProgram();
+		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE1);
+		glAttachShader(ProgramNameMultiple, VertexShader);
+		glDeleteShader(VertexShader);
+		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE1);
+		glAttachShader(ProgramNameMultiple, FragmentShader);
+		glDeleteShader(FragmentShader);
+		glLinkProgram(ProgramNameMultiple);
+		Validated = glf::checkProgram(ProgramNameMultiple);
 	}
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
-			glLinkProgram(ProgramNameSingle);
-			Validated = glf::checkProgram(ProgramNameSingle);
-		}
+		UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
+		UniformDiffuseMultiple = glGetUniformLocation(ProgramNameMultiple, "Diffuse");
+	}
 
-		if(Validated)
-		{
-			UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-			UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
-		}
+	if(Validated)
+	{
+		ProgramNameSingle = glCreateProgram();
+		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE2);
+		glAttachShader(ProgramNameSingle, VertexShader);
+		glDeleteShader(VertexShader);
+		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE2);
+		glAttachShader(ProgramNameSingle, FragmentShader);
+		glDeleteShader(FragmentShader);
+		glLinkProgram(ProgramNameSingle);
+		Validated = glf::checkProgram(ProgramNameSingle);
+	}
+
+	if(Validated)
+	{
+		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
+		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initVertexBuffer()
 {
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(BUFFER_MAX, BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -132,13 +141,13 @@ bool initArrayBuffer()
 bool initTexture2D()
 {
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(TEXTURE_MAX, Texture2DName);
+	glGenTextures(TEXTURE_MAX, TextureName);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 
 	// Load image
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -164,7 +173,7 @@ bool initTexture2D()
 	}
 
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_R]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_R]);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -175,7 +184,7 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
 	}
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_G]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_G]);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -186,7 +195,7 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
 	}
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_B]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_B]);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -199,7 +208,7 @@ bool initTexture2D()
 
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -233,7 +242,7 @@ bool initFramebuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 
 	for(std::size_t i = TEXTURE_R; i <= TEXTURE_B; ++i)
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName[i], 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), TextureName[i], 0);
 
 	GLenum DrawBuffers[3];
 	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -254,13 +263,15 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -309,7 +320,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initVertexBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -322,10 +333,10 @@ bool begin()
 
 bool end()
 {
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(BUFFER_MAX, BufferName);
+	glDeleteTextures(TEXTURE_MAX, TextureName);
 	glDeleteProgram(ProgramNameMultiple);
 	glDeleteProgram(ProgramNameSingle);
-	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
 
 	return glf::checkError("end");
@@ -351,10 +362,10 @@ void display()
 		glUniform1i(UniformDiffuseMultiple, 0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -381,10 +392,10 @@ void display()
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
+		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);

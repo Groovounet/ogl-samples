@@ -114,7 +114,6 @@ set(GL_SHADER_GTC rtt-array.vert rtt-array.frag multiple-output.vert multiple-ou
 glCreateSampleGTC(fbo-texture-array)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-multisample)
-glCreateSampleGTC(fbo-texture-multisample)
 glCreateSampleGTC(fbo-srgb)
 glCreateSampleGTC(image-2d)
 glCreateSampleGTC(image-2d-compressed)
@@ -141,8 +140,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(test-scissor)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert)
 glCreateSampleGTC(transform-feedback)
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(vao)
 
 # OpenGL 4.0 samples
 set(GL_VERSION_GTC 400)
