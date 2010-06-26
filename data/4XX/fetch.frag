@@ -25,7 +25,7 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	vec2 Level = textureQueryLOD(Diffuse, Vert.Texcoord);
+	vec2 Level = textureQueryLod(Diffuse, Vert.Texcoord);
 	int LevelMin = int(ceil(Level.x));
 	int LevelMax = int(floor(Level.x));
 	vec2 SizeMin = textureSize(Diffuse, LevelMin) - 1;
