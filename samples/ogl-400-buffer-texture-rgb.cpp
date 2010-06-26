@@ -83,7 +83,6 @@ bool initProgram()
 	if(Validated)
 	{
 		ProgramName = glCreateProgram();
-
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glDeleteShader(VertexShaderName);

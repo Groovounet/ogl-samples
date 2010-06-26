@@ -62,7 +62,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		TransformProgramName = glf::createProgram(VERTEX_SHADER_SOURCE_TRANSFORM, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		TransformProgramName = glCreateProgram();
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
+		glAttachShader(TransformProgramName, VertexShaderName);
+		glDeleteShader(VertexShaderName);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		glAttachShader(TransformProgramName, FragmentShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		GLchar const * Strings[] = {"gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
@@ -79,7 +86,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		FeedbackProgramName = glf::createProgram(VERTEX_SHADER_SOURCE_FEEDBACK, FRAGMENT_SHADER_SOURCE_FEEDBACK);
+		FeedbackProgramName = glCreateProgram();
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
+		glAttachShader(FeedbackProgramName, VertexShaderName);
+		glDeleteShader(VertexShaderName);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
+		glAttachShader(FeedbackProgramName, FragmentShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}

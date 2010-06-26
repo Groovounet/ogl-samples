@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL tessellation
-// 14/05/2010
+// OpenGL Tessellation
+// 14/05/2010 - 26/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -79,19 +79,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -176,12 +163,8 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
-		glDrawArrays(GL_PATCHES, 0, VertexCount);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
+	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+	glDrawArrays(GL_PATCHES, 0, VertexCount);
 
 	glf::checkError("display");
 	glf::swapBuffers();

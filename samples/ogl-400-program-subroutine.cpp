@@ -41,9 +41,18 @@ namespace
 		2, 3, 0
 	};
 
+	namespace buffer
+	{
+		enum type
+		{
+			VERTEX,
+			ELEMENT,
+			MAX
+		};
+	}//namespace buffer
+
 	GLuint ProgramName = 0;
-	GLuint ElementBufferName = 0;
-	GLuint ArrayBufferName = 0;
+	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName = 0;
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
@@ -59,7 +68,13 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		ProgramName = glCreateProgram();
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		glAttachShader(ProgramName, VertexShaderName);
+		glDeleteShader(VertexShaderName);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -81,31 +96,30 @@ bool initVertexArray()
 	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
 
-bool initArrayBuffer()
+bool initVertexBuffer()
 {
-	// Generate a buffer object
-	glGenBuffers(1, &ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+	glGenBuffers(buffer::MAX, BufferName);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &ArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initVertexBuffer");
 }
 
 bool begin()
@@ -119,7 +133,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initVertexBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -129,8 +143,7 @@ bool begin()
 bool end()
 {
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteBuffers(1, &ArrayBufferName);
-	glDeleteBuffers(1, &ElementBufferName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -162,11 +175,7 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
+	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

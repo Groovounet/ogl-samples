@@ -42,9 +42,18 @@ namespace
 		2, 3, 0
 	};
 
+	namespace buffer
+	{
+		enum type
+		{
+			VERTEX,
+			ELEMENT,
+			MAX
+		};
+	}//namespace buffer
+
 	GLuint ProgramName = 0;
-	GLuint ElementBufferName = 0;
-	GLuint ArrayBufferName = 0;
+	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName = 0;
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
@@ -84,19 +93,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
@@ -105,27 +101,26 @@ bool initVertexArray()
 	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
 
-bool initArrayBuffer()
+bool initVertexBuffer()
 {
-	// Generate a buffer object
-	glGenBuffers(1, &ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+	glGenBuffers(buffer::MAX, BufferName);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &ArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -145,7 +140,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initVertexBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -154,9 +149,8 @@ bool begin()
 
 bool end()
 {
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteBuffers(1, &ArrayBufferName);
-	glDeleteBuffers(1, &ElementBufferName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -184,16 +178,14 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	// Set the value of MVP uniform.
+	// Set the value of uniforms
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
+	glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
+	//glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

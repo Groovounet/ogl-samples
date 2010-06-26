@@ -21,6 +21,7 @@ in vert
 	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
 } Vert;
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
 layout(location = FRAG_COLOR, index = 0) out vec3 Color;
 
 vec3 texelAverage(in ivec2 Offset)
