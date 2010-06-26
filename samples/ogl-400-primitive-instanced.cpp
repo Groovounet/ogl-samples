@@ -25,8 +25,8 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec2);
+	glm::vec2 const VertexData[VertexCount] =
 	{
 		glm::vec2(-1.0f,-1.0f),
 		glm::vec2( 1.0f,-1.0f),
@@ -121,7 +121,7 @@ bool initVertexBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");

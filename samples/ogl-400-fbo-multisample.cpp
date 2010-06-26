@@ -312,7 +312,7 @@ void display()
 
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
-	glMinSampleShadingARB(1.0f);
+	glMinSampleShading(1.0f);
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
 

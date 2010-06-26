@@ -222,9 +222,9 @@ void display()
 	glUniform1i(UniformDiffuse, 0);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ::Image2DName);
+	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
-	glBindVertexArray(::VertexArrayName);
+	glBindVertexArray(VertexArrayName);
 	glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
 	//glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
