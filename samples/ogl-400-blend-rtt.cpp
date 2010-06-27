@@ -86,10 +86,10 @@ bool initProgram()
 	{
 		ProgramNameMultiple = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE1);
-		glAttachShader(ProgramNameMultiple, VertexShader);
-		glDeleteShader(VertexShader);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE1);
+		glAttachShader(ProgramNameMultiple, VertexShader);
 		glAttachShader(ProgramNameMultiple, FragmentShader);
+		glDeleteShader(VertexShader);
 		glDeleteShader(FragmentShader);
 		glLinkProgram(ProgramNameMultiple);
 		Validated = glf::checkProgram(ProgramNameMultiple);
@@ -105,10 +105,10 @@ bool initProgram()
 	{
 		ProgramNameSingle = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE2);
-		glAttachShader(ProgramNameSingle, VertexShader);
-		glDeleteShader(VertexShader);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE2);
+		glAttachShader(ProgramNameSingle, VertexShader);
 		glAttachShader(ProgramNameSingle, FragmentShader);
+		glDeleteShader(VertexShader);
 		glDeleteShader(FragmentShader);
 		glLinkProgram(ProgramNameSingle);
 		Validated = glf::checkProgram(ProgramNameSingle);
@@ -174,10 +174,6 @@ bool initTexture2D()
 
 	{
 		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_R]);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -185,10 +181,6 @@ bool initTexture2D()
 	}
 	{
 		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_G]);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
@@ -196,10 +188,6 @@ bool initTexture2D()
 	}
 	{
 		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_B]);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
@@ -209,10 +197,6 @@ bool initTexture2D()
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
@@ -229,9 +213,6 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			0);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glf::checkError("initTexture2D");
 }
@@ -279,22 +260,28 @@ bool initVertexArray()
 
 bool initBlend()
 {
+	glEnable(GL_SAMPLE_MASK);
+
 	glEnablei(GL_BLEND, 0);
+	glSampleMaski(0, 0xFF);
 	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
 	glBlendEquationSeparatei(0, GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
 	glBlendFuncSeparatei(0, GL_SRC_COLOR, GL_ONE, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 1);
+	glSampleMaski(1, 0xFF);
 	glColorMaski(1, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glBlendEquationSeparatei(1, GL_FUNC_ADD, GL_FUNC_ADD);
 	glBlendFuncSeparatei(1, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 2);
+	glSampleMaski(2, 0xFF);
 	glColorMaski(2, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glBlendEquationSeparatei(2, GL_FUNC_ADD, GL_FUNC_ADD);
 	glBlendFuncSeparatei(2, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 3);
+	glSampleMaski(2, 0xFF);
 	glColorMaski(3, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glBlendEquationSeparatei(3, GL_FUNC_ADD, GL_FUNC_ADD);
 	glBlendFuncSeparatei(3, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
@@ -344,32 +331,26 @@ bool end()
 
 void display()
 {
-	// Pass 1
-	{
-		// Compute the MVP (Model View Projection matrix)
-		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f,-1.0f, 1.0f, -1.0f, 1.0f);
-		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		glm::mat4 View = ViewTranslate;
-		glm::mat4 Model = glm::mat4(1.0f);
-		glm::mat4 MVP = Projection * View * Model;
+	// Pass 1: Compute the MVP (Model View Projection matrix)
+	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f,-1.0f, 1.0f, -1.0f, 1.0f);
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	glm::mat4 View = ViewTranslate;
+	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 MVP = Projection * View * Model;
 
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x >> 1, FRAMEBUFFER_SIZE.y >> 1);
-		glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+	glViewport(0, 0, FRAMEBUFFER_SIZE.x >> 1, FRAMEBUFFER_SIZE.y >> 1);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 
-		glUseProgram(ProgramNameMultiple);
-		glUniformMatrix4fv(UniformMVPMultiple, 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuseMultiple, 0);
+	glUseProgram(ProgramNameMultiple);
+	glUniformMatrix4fv(UniformMVPMultiple, 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(UniformDiffuseMultiple, 0);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
 
-		glBindVertexArray(VertexArrayName);
-		glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
+	glBindVertexArray(VertexArrayName);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	// Pass 2
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -377,15 +358,13 @@ void display()
 
 	glUseProgram(ProgramNameSingle);
 
-	{
-		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
-		glm::mat4 View = glm::mat4(1.0f);
-		glm::mat4 Model = glm::mat4(1.0f);
-		glm::mat4 MVP = Projection * View * Model;
+	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
+	glm::mat4 View = glm::mat4(1.0f);
+	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 MVP = Projection * View * Model;
 
-		glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuseSingle, 0);
-	}
+	glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(UniformDiffuseSingle, 0);
 
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
@@ -395,7 +374,7 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
+		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
 	glf::checkError("display");

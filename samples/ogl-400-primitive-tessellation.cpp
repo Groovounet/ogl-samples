@@ -115,7 +115,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
@@ -164,7 +164,7 @@ void display()
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
-	glDrawArrays(GL_PATCHES, 0, VertexCount);
+	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();
