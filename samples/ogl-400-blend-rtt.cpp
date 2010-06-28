@@ -84,9 +84,10 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameMultiple = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE1);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE1);
+
+		ProgramNameMultiple = glCreateProgram();
 		glAttachShader(ProgramNameMultiple, VertexShader);
 		glAttachShader(ProgramNameMultiple, FragmentShader);
 		glDeleteShader(VertexShader);
@@ -103,9 +104,10 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameSingle = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE2);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE2);
+
+		ProgramNameSingle = glCreateProgram();
 		glAttachShader(ProgramNameSingle, VertexShader);
 		glAttachShader(ProgramNameSingle, FragmentShader);
 		glDeleteShader(VertexShader);
@@ -146,57 +148,57 @@ bool initTexture2D()
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 
 	// Load image
+	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+
+	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
-		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-
-		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-		{
-			glTexImage2D(
-				GL_TEXTURE_2D, 
-				GLint(Level), 
-				GL_RGB,
-				GLsizei(Image[Level].dimensions().x), 
-				GLsizei(Image[Level].dimensions().y), 
-				0,  
-				GL_RGB, 
-				GL_UNSIGNED_BYTE, 
-				Image[Level].data());
-		}
+		glTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGB,
+			GLsizei(Image[Level].dimensions().x), 
+			GLsizei(Image[Level].dimensions().y), 
+			0,  
+			GL_RGB, 
+			GL_UNSIGNED_BYTE, 
+			Image[Level].data());
 	}
 
-	{
-		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_R]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
-	{
-		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_G]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
-	{
-		glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_B]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
+	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_R]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
+
+	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_G]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
+
+	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_B]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
 
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);

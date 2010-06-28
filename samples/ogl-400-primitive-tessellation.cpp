@@ -41,7 +41,6 @@ namespace
 	GLuint VertexArrayName = 0;
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
-
 }//namespace
 
 bool initProgram()
@@ -52,13 +51,9 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
-		glf::checkError("VertexShader");
 		GLuint ControlShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
-		glf::checkError("ControlShader");
 		GLuint EvaluationShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
-		glf::checkError("EvaluationShader");
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
-		glf::checkError("FragmentShader");
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShader);
@@ -69,7 +64,6 @@ bool initProgram()
 		glDeleteShader(ControlShader);
 		glDeleteShader(EvaluationShader);
 		glDeleteShader(FragmentShader);
-
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -174,9 +168,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

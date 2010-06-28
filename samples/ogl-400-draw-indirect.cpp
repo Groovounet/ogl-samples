@@ -74,9 +74,10 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -90,19 +91,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -142,7 +130,6 @@ bool initIndirectBuffer()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
@@ -211,15 +198,12 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
 	glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0);
-
-	// Unbind program
-	glUseProgram(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -229,9 +213,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

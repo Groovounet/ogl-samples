@@ -68,11 +68,8 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		glf::checkError("VertShader");
 		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
-		glf::checkError("GeomShader");
 		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-		glf::checkError("FragShader");
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertShader);
