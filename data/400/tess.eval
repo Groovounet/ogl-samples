@@ -2,11 +2,27 @@
 
 layout(quads, equal_spacing, ccw) in;
 
+in cont
+{
+	vec4 Color;
+} Cont[gl_in.length()];
+
+out eval
+{
+	vec4 Color;
+} Eval;
+
+vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+	vec4 a = mix(v0, v1, gl_TessCoord.x);
+	vec4 b = mix(v3, v2, gl_TessCoord.x);
+	return mix(a, b, gl_TessCoord.y);
+}
+
 void main()
 {	
-	vec4 a = mix(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_TessCoord.x);
-	vec4 b = mix(gl_in[3].gl_Position, gl_in[2].gl_Position, gl_TessCoord.x);
-	gl_Position = mix(a, b, gl_TessCoord.y);
+	gl_Position = interpolate(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
+	Eval.Color = interpolate(Cont[0].Color, Cont[1].Color, Cont[2].Color, Cont[3].Color);
 }
 
 /*
