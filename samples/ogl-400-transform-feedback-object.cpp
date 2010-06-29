@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Transform Feedback Object
-// 20/05/2010
+// 20/05/2010 - 26/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -24,8 +24,8 @@ namespace
 	int const SAMPLE_MINOR_VERSION = 0;
 
 	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec2);
+	glm::vec2 const VertexData[VertexCount] =
 	{
 		glm::vec2(-1.0f,-1.0f),
 		glm::vec2( 1.0f,-1.0f),
@@ -62,7 +62,15 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		TransformProgramName = glf::createProgram(VERTEX_SHADER_SOURCE_TRANSFORM, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+
+		TransformProgramName = glCreateProgram();
+		glAttachShader(TransformProgramName, VertexShaderName);
+		glAttachShader(TransformProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		GLchar const * Strings[] = {"gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
@@ -79,8 +87,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		FeedbackProgramName = glf::createProgram(VERTEX_SHADER_SOURCE_FEEDBACK, FRAGMENT_SHADER_SOURCE_FEEDBACK);
-		glLinkProgram(FeedbackProgramName);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+
+		FeedbackProgramName = glCreateProgram();
+		glAttachShader(FeedbackProgramName, VertexShaderName);
+		glAttachShader(FeedbackProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
@@ -100,8 +114,9 @@ bool initVertexArray()
     glBindVertexArray(TransformVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
 	// Build a vertex array object
@@ -109,8 +124,9 @@ bool initVertexArray()
     glBindVertexArray(FeedbackVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -132,7 +148,7 @@ bool initArrayBuffer()
 	// Generate a buffer object
 	glGenBuffers(1, &TransformArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &FeedbackArrayBufferName);
@@ -145,9 +161,14 @@ bool initArrayBuffer()
 
 bool begin()
 {
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+
 	glGenQueries(1, &Query);
 
-	bool Validated = true;
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -192,34 +213,30 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// First draw, capture the attributes
-	{
-		// Disable rasterisation, vertices processing only!
-		glEnable(GL_RASTERIZER_DISCARD);
+	// Disable rasterisation, vertices processing only!
+	glEnable(GL_RASTERIZER_DISCARD);
 
-		glUseProgram(TransformProgramName);
-		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(1.00f, 0.50f, 0.00f, 1.0f)[0]);
+	glUseProgram(TransformProgramName);
+	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
-		glBindVertexArray(TransformVertexArrayName);
+	glBindVertexArray(TransformVertexArrayName);
 
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
-		glBeginTransformFeedback(GL_TRIANGLES);
-			glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-		glEndTransformFeedback();
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
+	glBeginTransformFeedback(GL_TRIANGLES);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glEndTransformFeedback();
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
-		glDisable(GL_RASTERIZER_DISCARD);
-	}
+	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
-	{
-		glUseProgram(FeedbackProgramName);
-		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(0.00f, 0.50f, 1.00f, 1.00f)[0]);
+	glUseProgram(FeedbackProgramName);
+	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-		glBindVertexArray(FeedbackVertexArrayName);
-		glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
-	}
+	glBindVertexArray(FeedbackVertexArrayName);
+	glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -229,9 +246,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

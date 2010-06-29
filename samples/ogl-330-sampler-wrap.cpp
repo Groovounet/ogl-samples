@@ -176,7 +176,6 @@ bool initTexture2D()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -264,9 +263,6 @@ void display()
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

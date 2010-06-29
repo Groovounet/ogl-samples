@@ -23,25 +23,44 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizei const VertexCount = 4;
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec2);
+	glm::vec2 const VertexData[VertexCount] = 
 	{
-		glm::vec2(-1.0f,-1.0f),
+		glm::vec2(-1.0f,-1.0f), 
 		glm::vec2( 1.0f,-1.0f),
 		glm::vec2( 1.0f, 1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f),
-		glm::vec2(-1.0f,-1.0f)
+		glm::vec2(-1.0f, 1.0f)
 	};
 
+	GLsizei const ElementCount = 6;
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
+	GLushort const ElementData[ElementCount] = 
+	{
+		0, 1, 2, 
+		2, 3, 0
+	};
+
+	enum buffer_type
+	{
+		BUFFER_VERTEX,
+		BUFFER_ELEMENT,
+		BUFFER_DISPLACEMENT,
+		BUFFER_DIFFUSE,
+		BUFFER_MAX
+	};
+
+	enum texture_type
+	{
+		TEXTURE_DISPLACEMENT,
+		TEXTURE_DIFFUSE,
+		TEXTURE_MAX
+	};
+
+	GLuint BufferName[BUFFER_MAX];
+	GLuint TextureName[TEXTURE_MAX];
 	GLuint VertexArrayName = 0;
 	GLuint ProgramName = 0;
-	GLuint BufferName = 0;
-	GLuint DisplacementBufferName = 0;
-	GLuint DisplacementTextureName = 0;
-	GLuint DiffuseBufferName = 0;
-	GLuint DiffuseTextureName = 0;
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
 	GLint UniformDisplacement = 0;
@@ -63,16 +82,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
-
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramName, VertexShaderName);
-		glDeleteShader(VertexShaderName);
-
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(ProgramName);
 
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -88,19 +105,19 @@ bool initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
-	glGenBuffers(1, &BufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+	glGenBuffers(BUFFER_MAX, BufferName);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
-}
-
-bool initTextureBuffer()
-{
-	glm::vec3 Position[5] = 
+	glm::vec3 Displacement[5] = 
 	{
 		glm::vec3( 0.1f, 0.3f,-1.0f), 
 		glm::vec3(-0.5f, 0.0f,-0.5f),
@@ -109,15 +126,9 @@ bool initTextureBuffer()
 		glm::vec3( 0.1f,-0.3f, 1.0f)
 	};
 
-	glGenBuffers(1, &DisplacementBufferName);
-    glBindBuffer(GL_TEXTURE_BUFFER, DisplacementBufferName);
-    glBufferData(GL_TEXTURE_BUFFER, sizeof(Position), Position, GL_STATIC_DRAW);
+    glBindBuffer(GL_TEXTURE_BUFFER, BufferName[BUFFER_DISPLACEMENT]);
+    glBufferData(GL_TEXTURE_BUFFER, sizeof(Displacement), Displacement, GL_STATIC_DRAW);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-	glGenTextures(1, &DisplacementTextureName);
-	glBindTexture(GL_TEXTURE_BUFFER, DisplacementTextureName);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, DisplacementBufferName);
-	glBindTexture(GL_TEXTURE_BUFFER, 0);
 
 	glm::vec3 Diffuse[5] = 
 	{
@@ -128,14 +139,23 @@ bool initTextureBuffer()
 		glm::vec3(0.0f, 0.0f, 1.0f)
 	};	
 
-	glGenBuffers(1, &DiffuseBufferName);
-    glBindBuffer(GL_TEXTURE_BUFFER, DiffuseBufferName);
+    glBindBuffer(GL_TEXTURE_BUFFER, BufferName[BUFFER_DIFFUSE]);
     glBufferData(GL_TEXTURE_BUFFER, sizeof(Diffuse), Diffuse, GL_STATIC_DRAW);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
-	glGenTextures(1, &DiffuseTextureName);
-	glBindTexture(GL_TEXTURE_BUFFER, DiffuseTextureName);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, DiffuseTextureName);
+	return glf::checkError("initBuffer");
+}
+
+bool initTexture()
+{
+	glGenTextures(TEXTURE_MAX, TextureName);
+
+	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DISPLACEMENT]);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BufferName[BUFFER_DISPLACEMENT]);
+	glBindTexture(GL_TEXTURE_BUFFER, 0);
+
+	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DIFFUSE]);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BufferName[BUFFER_DIFFUSE]);
 	glBindTexture(GL_TEXTURE_BUFFER, 0);	
 
 	return glf::checkError("initTextureBuffer");
@@ -145,11 +165,13 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
 			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -161,16 +183,16 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initTest();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initTextureBuffer();
+		Validated = initBuffer();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initTexture();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -179,12 +201,8 @@ bool begin()
 
 bool end()
 {
-	// Delete objects
-	glDeleteTextures(1, &DiffuseTextureName);
-	glDeleteBuffers(1, &DiffuseBufferName);
-	glDeleteTextures(1, &DisplacementTextureName);
-	glDeleteBuffers(1, &DisplacementBufferName);
-	glDeleteBuffers(1, &BufferName);
+	glDeleteTextures(TEXTURE_MAX, TextureName);
+	glDeleteBuffers(BUFFER_MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
@@ -205,10 +223,9 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with white
-	glm::vec4 Color(1.0f);
 	float Depth(1.0f);
-	glClearBufferfv(GL_COLOR, 0, &Color[0]);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
@@ -218,17 +235,14 @@ void display()
 	glUniform1i(UniformDiffuse, 1);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_BUFFER, DisplacementTextureName);
+	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DISPLACEMENT]);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_BUFFER, DiffuseTextureName);
+	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DIFFUSE]);
 
     glBindVertexArray(VertexArrayName);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5);
 	
-	// Unbind program
-	glUseProgram(0);
-
 	glf::checkError("display");
 	glf::swapBuffers();
 }

@@ -10,14 +10,12 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+uniform dmat4 MVP;
 
-in prim
-{
-	vec4 Color;
-} Prim;
+layout(location = ATTR_POSITION) in vec3 Position;
 
 void main()
-{
-	Color = Prim.Color;
+{	
+	gl_Position = vec4(MVP * dvec4(Position, 1.0));
 }
+

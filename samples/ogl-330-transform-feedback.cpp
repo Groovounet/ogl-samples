@@ -98,8 +98,9 @@ bool initVertexArray()
     glBindVertexArray(TransformVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
 	// Build a vertex array object
@@ -107,8 +108,9 @@ bool initVertexArray()
     glBindVertexArray(FeedbackVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -189,7 +191,7 @@ void display()
 
 		glUseProgram(TransformProgramName);
 		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 
@@ -207,7 +209,7 @@ void display()
 	// Second draw, reuse the captured attributes
 	{
 		glUseProgram(FeedbackProgramName);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
+		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		GLuint PrimitivesWritten = 0;
 		glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);

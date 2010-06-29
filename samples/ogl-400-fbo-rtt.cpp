@@ -24,32 +24,29 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	struct vertex
+	GLsizei const VertexCount = 4;
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
+	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
-		vertex
-		(
-			glm::vec2 const & Position,
-			glm::vec2 const & Texcoord
-		) :
-			Position(Position),
-			Texcoord(Texcoord)
-		{}
-
-		glm::vec2 Position;
-		glm::vec2 Texcoord;
+		glf::vertex_v2fv2f(glm::vec2(-4.0f,-3.0f), glm::vec2(0.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 4.0f,-3.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 4.0f, 3.0f), glm::vec2(1.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-4.0f, 3.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
-	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
-	vertex const VertexData[VertexCount] =
+	GLsizei const ElementCount = 6;
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
+	GLushort const ElementData[ElementCount] =
 	{
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f)),
-		vertex(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 0.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
+		0, 1, 2, 
+		2, 3, 0
+	};
+
+	enum buffer_type
+	{
+		BUFFER_VERTEX,
+		BUFFER_ELEMENT,
+		BUFFER_MAX
 	};
 
 	enum texture_type
@@ -67,7 +64,7 @@ namespace
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
 
-	GLuint BufferName = 0;
+	GLuint BufferName[BUFFER_MAX];
 	GLuint Texture2DName[TEXTURE_MAX];
 
 	glm::ivec4 Viewport[TEXTURE_MAX];
@@ -80,16 +77,14 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
-
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramName, VertexShaderName);
-		glDeleteShader(VertexShaderName);
-
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(FragmentShaderName);
 
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -103,11 +98,15 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initVertexBuffer()
 {
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(BUFFER_MAX, BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -122,14 +121,14 @@ bool initTexture2D()
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
-
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 
 		glTexImage2D(
 			GL_TEXTURE_2D, 
@@ -142,9 +141,6 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			0);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glf::checkError("initTexture2D");
 }
@@ -176,13 +172,15 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -203,7 +201,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initVertexBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -216,10 +214,10 @@ bool begin()
 
 bool end()
 {
-	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName);
+	glDeleteBuffers(BUFFER_MAX, BufferName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
+	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
 }
@@ -256,10 +254,7 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 	}
 
 	glf::checkError("display");
@@ -270,9 +265,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

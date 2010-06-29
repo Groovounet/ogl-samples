@@ -10,14 +10,12 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+uniform dvec4 Diffuse;
 
-in prim
-{
-	vec4 Color;
-} Prim;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = Prim.Color;
+	Color = Diffuse;
 }
+

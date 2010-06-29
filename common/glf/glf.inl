@@ -1,7 +1,50 @@
 #include <GL/freeglut.h>
 
 #ifdef WIN32
+#	ifndef APIENTRY
+#		define APIENTRY
+#	endif
+#	ifndef APIENTRYP
+#		define APIENTRYP APIENTRY *
+#	endif
+
 	PFNGLVERTEXATTRIBDIVISORARBPROC glVertexAttribDivisor = 0;
+
+	typedef void (APIENTRYP PFNGLUNIFORM1DPROC) (GLint location, GLdouble x);
+	typedef void (APIENTRYP PFNGLUNIFORM2DPROC) (GLint location, GLdouble x, GLdouble y);
+	typedef void (APIENTRYP PFNGLUNIFORM3DPROC) (GLint location, GLdouble x, GLdouble y, GLdouble z);
+	typedef void (APIENTRYP PFNGLUNIFORM4DPROC) (GLint location, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
+	typedef void (APIENTRYP PFNGLUNIFORM1DVPROC) (GLint location, GLsizei count, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORM2DVPROC) (GLint location, GLsizei count, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORM3DVPROC) (GLint location, GLsizei count, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORM4DVPROC) (GLint location, GLsizei count, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX2DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX3DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX4DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX2X3DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX2X4DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX3X2DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX3X4DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX4X2DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+	typedef void (APIENTRYP PFNGLUNIFORMMATRIX4X3DVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value);
+
+	PFNGLUNIFORM1DPROC glUniform1d = 0;
+	PFNGLUNIFORM2DPROC glUniform2d = 0;
+	PFNGLUNIFORM3DPROC glUniform3d = 0;
+	PFNGLUNIFORM4DPROC glUniform4d = 0;
+	PFNGLUNIFORM1DVPROC glUniform1dv = 0;
+	PFNGLUNIFORM2DVPROC glUniform2dv = 0;
+	PFNGLUNIFORM3DVPROC glUniform3dv = 0;
+	PFNGLUNIFORM4DVPROC glUniform4dv = 0;
+	PFNGLUNIFORMMATRIX2DVPROC glUniformMatrix2dv = 0;
+	PFNGLUNIFORMMATRIX3DVPROC glUniformMatrix3dv = 0;
+	PFNGLUNIFORMMATRIX4DVPROC glUniformMatrix4dv = 0;
+	PFNGLUNIFORMMATRIX2X3DVPROC glUniformMatrix2x3dv = 0;
+	PFNGLUNIFORMMATRIX2X4DVPROC glUniformMatrix2x4dv = 0;
+	PFNGLUNIFORMMATRIX3X2DVPROC glUniformMatrix3x2dv = 0;
+	PFNGLUNIFORMMATRIX3X4DVPROC glUniformMatrix3x4dv = 0;
+	PFNGLUNIFORMMATRIX4X2DVPROC glUniformMatrix4x2dv = 0;
+	PFNGLUNIFORMMATRIX4X3DVPROC glUniformMatrix4x3dv = 0;
 #endif//WIN32
 
 bool check();
@@ -32,6 +75,7 @@ namespace glf
 		glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)glfGetProcAddress("glBindVertexArray");
 		glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glfGetProcAddress("glGenFramebuffers");
 		glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glfGetProcAddress("glBindFramebuffer");
+		glFramebufferTextureLayer = (PFNGLFRAMEBUFFERTEXTURELAYERPROC)glfGetProcAddress("glFramebufferTextureLayer");
 		glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glfGetProcAddress("glFramebufferTexture2D");
 		glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glfGetProcAddress("glCheckFramebufferStatus");
 		glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glfGetProcAddress("glDeleteFramebuffers");
@@ -113,6 +157,24 @@ namespace glf
 		glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC)glfGetProcAddress("glBlendFuncSeparatei");
 		glBlendFunci = (PFNGLBLENDFUNCIPROC)glfGetProcAddress("glBlendFunci");
 		glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)glfGetProcAddress("glMinSampleShading");
+
+		glUniform1d = (PFNGLUNIFORM1DPROC)glfGetProcAddress("glUniform1d");
+		glUniform2d = (PFNGLUNIFORM2DPROC)glfGetProcAddress("glUniform2d");
+		glUniform3d = (PFNGLUNIFORM3DPROC)glfGetProcAddress("glUniform3d");
+		glUniform4d = (PFNGLUNIFORM4DPROC)glfGetProcAddress("glUniform4d");
+		glUniform1dv = (PFNGLUNIFORM1DVPROC)glfGetProcAddress("glUniform1dv");
+		glUniform2dv = (PFNGLUNIFORM2DVPROC)glfGetProcAddress("glUniform2dv");
+		glUniform3dv = (PFNGLUNIFORM3DVPROC)glfGetProcAddress("glUniform3dv");
+		glUniform4dv = (PFNGLUNIFORM4DVPROC)glfGetProcAddress("glUniform4dv");
+		glUniformMatrix2dv = (PFNGLUNIFORMMATRIX2DVPROC)glfGetProcAddress("glUniformMatrix2dv");
+		glUniformMatrix3dv = (PFNGLUNIFORMMATRIX3DVPROC)glfGetProcAddress("glUniformMatrix3dv");
+		glUniformMatrix4dv = (PFNGLUNIFORMMATRIX4DVPROC)glfGetProcAddress("glUniformMatrix4dv");
+		glUniformMatrix2x3dv = (PFNGLUNIFORMMATRIX2X3DVPROC)glfGetProcAddress("glUniformMatrix2x3dv");
+		glUniformMatrix2x4dv = (PFNGLUNIFORMMATRIX2X4DVPROC)glfGetProcAddress("glUniformMatrix2x4dv");
+		glUniformMatrix3x2dv = (PFNGLUNIFORMMATRIX3X2DVPROC)glfGetProcAddress("glUniformMatrix3x2dv");
+		glUniformMatrix3x4dv = (PFNGLUNIFORMMATRIX3X4DVPROC)glfGetProcAddress("glUniformMatrix3x4dv");
+		glUniformMatrix4x2dv = (PFNGLUNIFORMMATRIX4X2DVPROC)glfGetProcAddress("glUniformMatrix4x2dv");
+		glUniformMatrix4x3dv = (PFNGLUNIFORMMATRIX4X3DVPROC)glfGetProcAddress("glUniformMatrix4x3dv");
 #endif//WIN32
 	}
 
