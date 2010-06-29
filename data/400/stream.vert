@@ -16,7 +16,7 @@
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec3 Position;
+layout(location = ATTR_POSITION, index = 0) in vec3 Position;
 
 void main()
 {	

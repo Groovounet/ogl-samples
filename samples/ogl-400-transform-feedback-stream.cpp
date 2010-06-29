@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Transform Feedback Object
+// OpenGL Transform feedback stream
 // 20/05/2010 - 26/06/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Object";
+	std::string const SAMPLE_NAME = "OpenGL Transform feedback stream";
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
