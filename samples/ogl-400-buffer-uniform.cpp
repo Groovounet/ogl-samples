@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Uniform Buffer
-// 06/04/2010
+// 29/06/2010 - 29/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/uniform-buffer.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/uniform-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_MAJOR_VERSION = 4;
+	int const SAMPLE_MINOR_VERSION = 0;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -59,7 +59,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -67,8 +74,8 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
-		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material");
-		UniformTransform = glGetUniformBlockIndex(ProgramName, "transform");
+		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material[0]");
+		UniformTransform = glGetUniformBlockIndex(ProgramName, "transform[0]");
 	}
 
 	return Validated && glf::checkError("initProgram");
