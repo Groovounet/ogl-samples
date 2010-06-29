@@ -204,7 +204,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -255,7 +255,7 @@ void display()
 			Viewport[Index].w);
 
 		glBindVertexArray(VertexArrayName[Index]);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 	}
 
 	glf::checkError("display");

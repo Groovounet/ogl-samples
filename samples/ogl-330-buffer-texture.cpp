@@ -216,9 +216,6 @@ void display()
     glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
 	
-	// Unbind program
-	glUseProgram(0);
-
 	glf::checkError("display");
 	glf::swapBuffers();
 }

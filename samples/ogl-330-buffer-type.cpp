@@ -247,12 +247,8 @@ void display()
 			Viewport[Index].w);
 
 		glBindVertexArray(VertexArrayName[Index]);
-			glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-		glBindVertexArray(0);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
-
-	// Unbind program
-	glUseProgram(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
