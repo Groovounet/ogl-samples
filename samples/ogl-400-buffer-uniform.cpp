@@ -41,6 +41,8 @@ namespace
 		2, 3, 0
 	};
 
+	GLuint const Instances = 2;
+
 	GLuint ProgramName = 0;
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
@@ -74,8 +76,9 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
-		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material[0]");
-		UniformTransform = glGetUniformBlockIndex(ProgramName, "transform[0]");
+		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material");
+		UniformTransform[0] = glGetUniformBlockIndex(ProgramName, "transform[0]");
+		UniformTransform[1] = glGetUniformBlockIndex(ProgramName, "transform[1]");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -120,19 +123,24 @@ bool initUniformBuffer()
 	{
 		glGetActiveUniformBlockiv(
 			ProgramName, 
-			UniformTransform,
+			UniformTransform[0],
 			GL_UNIFORM_BLOCK_DATA_SIZE,
 			&UniformBlockSize);
 
 		glGenBuffers(1, &TransformBufferName);
 		glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
-		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, 0, GL_DYNAMIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize * Instances, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
 		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName);
 		// Associate the uniform block to this binding point.
-		glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM);
+		glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM);
+
+		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
+		glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName, sizeof(glm::mat4), sizeof(glm::mat4));
+		// Associate the uniform block to this binding point.
+		glUniformBlockBinding(ProgramName, UniformTransform[1], glf::semantic::uniform::TRANSFORM);
 	}
 
 	{
@@ -164,7 +172,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
@@ -192,16 +200,28 @@ bool end()
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-
 	glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+	// Compute the MVP (Model View Projection matrix)
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+	}
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y + 90.f, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(MVP), &MVP[0][0]);
+	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Set the display viewport
@@ -216,7 +236,7 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, Instances);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -226,9 +246,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

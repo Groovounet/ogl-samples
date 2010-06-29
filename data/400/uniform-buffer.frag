@@ -13,11 +13,11 @@
 uniform material
 {
 	vec4 Diffuse;
-} Material[1];
+} Material;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = Material[0].Diffuse;
+	Color = Material.Diffuse;
 }
