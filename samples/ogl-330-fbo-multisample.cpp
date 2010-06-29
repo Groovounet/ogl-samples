@@ -128,6 +128,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -165,6 +167,8 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 

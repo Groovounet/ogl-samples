@@ -58,7 +58,6 @@ namespace
 	GLint UniformDiffuse = 0;
 	GLuint IndexOrange = 0;
 	GLuint IndexBlue = 0;
-
 }//namespace
 
 bool initProgram()
@@ -68,12 +67,13 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramName, VertexShaderName);
-		glDeleteShader(VertexShaderName);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
@@ -175,7 +175,7 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();

@@ -98,8 +98,9 @@ bool initVertexArray()
     glBindVertexArray(TransformVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
 	// Build a vertex array object
@@ -107,8 +108,9 @@ bool initVertexArray()
     glBindVertexArray(FeedbackVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");

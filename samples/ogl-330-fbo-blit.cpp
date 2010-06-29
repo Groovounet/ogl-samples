@@ -121,6 +121,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
@@ -157,6 +159,8 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glGenerateMipmap(GL_TEXTURE_2D); // Allocate all mipmaps memory
 
@@ -238,9 +242,6 @@ void renderFBO()
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glf::checkError("renderFBO");
 }
 
@@ -260,9 +261,6 @@ void renderFB()
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glf::checkError("renderFB");
 }

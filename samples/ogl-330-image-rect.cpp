@@ -115,6 +115,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE, TextureRectName);
+	glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
@@ -212,9 +214,6 @@ void display()
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_RECTANGLE, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

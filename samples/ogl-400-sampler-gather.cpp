@@ -76,7 +76,6 @@ namespace
 	GLenum SwizzleB[viewport::MAX];
 	GLenum SwizzleA[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];
-
 }//namespace
 
 bool initProgram()
@@ -86,12 +85,13 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramName, VertexShaderName);
-		glDeleteShader(VertexShaderName);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
@@ -127,7 +127,10 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
@@ -146,9 +149,6 @@ bool initTexture2D()
 			GLsizei(Image[Level].capacity()), 
 			Image[Level].data());
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glf::checkError("initTexture2D");
 }
@@ -227,11 +227,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 0);
-	//glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -241,9 +237,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

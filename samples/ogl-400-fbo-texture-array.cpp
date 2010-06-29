@@ -78,9 +78,10 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -105,14 +106,14 @@ bool initTexture2D()
 	glGenTextures(1, &Texture2DName);
 
 	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
-
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
 
 	glTexImage3D(
 		GL_TEXTURE_2D_ARRAY, 
@@ -253,7 +254,7 @@ void display()
 		glUniform1f(UniformLayer, float(i));
 
 		glBindVertexArray(VertexArrayName);
-		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 	}
 
 	glf::checkError("display");
@@ -264,9 +265,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

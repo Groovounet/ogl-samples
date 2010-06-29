@@ -100,7 +100,6 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
-	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
@@ -121,7 +120,6 @@ bool initTexture2D()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -213,11 +211,6 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glDisable(GL_SCISSOR_TEST);
-
 	glf::checkError("display");
 	glf::swapBuffers();
 }
@@ -226,9 +219,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

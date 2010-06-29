@@ -82,9 +82,10 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -240,7 +241,7 @@ void display()
 	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DIFFUSE]);
 
     glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5);
 	
 	glf::checkError("display");
 	glf::swapBuffers();

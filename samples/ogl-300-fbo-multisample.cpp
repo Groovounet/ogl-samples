@@ -253,11 +253,6 @@ void renderFBO(GLuint Framebuffer)
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	glf::checkError("renderFBO");
 }
 
@@ -277,9 +272,6 @@ void renderFB(GLuint Texture2DName)
 	glBindVertexArray(VertexArrayName);
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 		
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glf::checkError("renderFB");
 }
 

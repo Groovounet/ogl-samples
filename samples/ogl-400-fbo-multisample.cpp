@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Framebuffer Multisample
-// 16/06/2010 - 16/06/2010
+// 16/06/2010 - 28/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -75,9 +75,10 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, FragmentShader);
 		glDeleteShader(VertexShader);
@@ -136,6 +137,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -173,6 +176,8 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
@@ -260,7 +265,7 @@ void renderFBO(GLuint Framebuffer)
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	glf::checkError("renderFBO");
 }
@@ -279,7 +284,7 @@ void renderFB(GLuint Texture2DName)
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	glf::checkError("renderFB");
 }
@@ -297,7 +302,7 @@ void display()
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_SAMPLE_MASK);
-	glMinSampleShading(1.0f);
+	//glMinSampleShading(2.0f);
 	glSampleMaski(0, 0xFF);
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
@@ -323,9 +328,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }
