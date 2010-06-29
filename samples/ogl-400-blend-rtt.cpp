@@ -360,12 +360,13 @@ void display()
 
 	glUseProgram(ProgramNameSingle);
 
-	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
-	glm::mat4 View = glm::mat4(1.0f);
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-
-	glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
+	{
+		glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
+		glm::mat4 View = glm::mat4(1.0f);
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
+		glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
+	}
 	glUniform1i(UniformDiffuseSingle, 0);
 
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
