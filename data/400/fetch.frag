@@ -1,5 +1,5 @@
 #version 400 core
-#extension GL_ARB_texture_query_lod : required
+#extension GL_ARB_texture_query_lod : require
 
 // Declare all the semantics
 #define ATTR_POSITION	0

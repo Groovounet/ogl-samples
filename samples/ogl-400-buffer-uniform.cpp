@@ -49,7 +49,7 @@ namespace
 	GLuint VertexArrayName = 0;
 	GLuint TransformBufferName = 0;
 	GLuint MaterialBufferName = 0;
-	GLint UniformTransform = 0;
+	GLint UniformTransform[Instances];
 	GLint UniformMaterial = 0;
 
 }//namespace
