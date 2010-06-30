@@ -102,7 +102,7 @@ bool initArrayBuffer()
 	glGenBuffers(1, &ArrayBufferName);
     glNamedBufferDataEXT(ArrayBufferName, PositionSize, PositionData, GL_STATIC_DRAW);
 
-	void * Data = glMapNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize, GL_MAP_WRITE_BIT);
+	void * Data = glMapNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize, GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
 	memcpy(Data, &PositionData[0], PositionSize);
 	glFlushMappedNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize);
 	glUnmapNamedBufferEXT(ArrayBufferName);
