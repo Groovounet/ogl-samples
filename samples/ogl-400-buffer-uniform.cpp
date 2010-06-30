@@ -133,7 +133,7 @@ bool initUniformBuffer()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName);
+		glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName, 0, sizeof(glm::mat4));
 		// Associate the uniform block to this binding point.
 		glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM);
 
@@ -201,6 +201,12 @@ bool end()
 void display()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
+    GLvoid* Data = glMapBufferRange(
+		GL_UNIFORM_BUFFER, 
+		0,				// Offset
+		sizeof(glm::mat4) * Instances,	// Size,
+		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
+
 	// Compute the MVP (Model View Projection matrix)
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -210,7 +216,8 @@ void display()
 		glm::mat4 Model = glm::mat4(1.0f);
 		glm::mat4 MVP = Projection * View * Model;
 
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+		memcpy(Data, glm::value_ptr(MVP) + 0, sizeof(MVP));
+		glFlushMappedBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(MVP));
 	}
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -220,16 +227,18 @@ void display()
 		glm::mat4 Model = glm::mat4(1.0f);
 		glm::mat4 MVP = Projection * View * Model;
 
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(MVP), &MVP[0][0]);
+		memcpy(Data, glm::value_ptr(MVP) + sizeof(MVP), sizeof(MVP));
+		glFlushMappedBufferRange(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(MVP));
 	}
+
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
