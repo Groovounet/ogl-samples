@@ -24,6 +24,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/half_float.hpp>
 #include <glm/gtc/type_precision.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <gli/gli.hpp>
 
