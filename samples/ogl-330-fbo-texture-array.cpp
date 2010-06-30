@@ -87,34 +87,30 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
-			glLinkProgram(ProgramNameMultiple);
-			Validated = glf::checkProgram(ProgramNameMultiple);
-		}
-
-		if(Validated)
-		{
-			UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
-		}
+		ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
+		glLinkProgram(ProgramNameMultiple);
+		Validated = glf::checkProgram(ProgramNameMultiple);
 	}
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
-			glLinkProgram(ProgramNameSingle);
-			Validated = glf::checkProgram(ProgramNameSingle);
-		}
+		UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
+	}
 
-		if(Validated)
-		{
-			UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-			UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
-			UniformLayer = glGetUniformLocation(ProgramNameSingle, "Layer");
-		}
+	if(Validated)
+	{
+		ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
+		glLinkProgram(ProgramNameSingle);
+		Validated = glf::checkProgram(ProgramNameSingle);
+	}
+
+	if(Validated)
+	{
+		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
+		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
+		UniformLayer = glGetUniformLocation(ProgramNameSingle, "Layer");
 	}
 
 	return glf::checkError("initProgram");
@@ -137,9 +133,6 @@ bool initTexture2D()
 	glGenTextures(1, &Texture2DName);
 
 	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
-
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
@@ -247,6 +240,8 @@ bool end()
 	glDeleteProgram(ProgramNameSingle);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
+	glDeleteVertexArrays(1, &VertexArrayMultipleName);
+	glDeleteVertexArrays(1, &VertexArrayImageName);
 
 	return glf::checkError("end");
 }
