@@ -141,6 +141,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	Validated = Validated && GLEW_EXT_direct_state_access;
 
 	if(Validated)
 		Validated = initProgram();

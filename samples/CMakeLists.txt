@@ -178,6 +178,10 @@ glCreateSampleGTC(transform-feedback-object)
 # OpenGL Future
 set(GL_VERSION_GTC 4XX)
 
+set(GL_SHADER_GTC double.vert double.frag)
+glCreateSampleGTC(program-64bits-ext)
+set(GL_SHADER_GTC separate.vert separate.frag)
+glCreateSampleGTC(program-separate-ext)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform-ext)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)

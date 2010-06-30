@@ -95,19 +95,18 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	// Create programs
 	if(Validated)
 	{
 		std::string VertexSource = glf::loadFile(VERTEX_SHADER_SOURCE);
 		ProgramName[program::VERTEX] = glCreateShaderProgramEXT(GL_VERTEX_SHADER, VertexSource.c_str());
-		Validated = glf::checkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName[program::VERTEX]);
 	}
 
 	if(Validated)
 	{
 		std::string FragmentSource = glf::loadFile(FRAGMENT_SHADER_SOURCE);
 		ProgramName[program::FRAGMENT] = glCreateShaderProgramEXT(GL_FRAGMENT_SHADER, FragmentSource.c_str());
-		Validated = glf::checkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
 	}
 
 	if(Validated)
