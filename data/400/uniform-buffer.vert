@@ -3,7 +3,7 @@
 uniform transform
 {
 	mat4 MVP;
-} Transform[1];
+} Transform[2];
 
 in vec3 Position;
 
