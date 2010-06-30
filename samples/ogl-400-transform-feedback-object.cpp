@@ -17,7 +17,7 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.frag");
+	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
@@ -101,6 +101,7 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
+		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
 		FeedbackUniformDiffuse = glGetUniformLocation(FeedbackProgramName, "Diffuse");
 	}
 

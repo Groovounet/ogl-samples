@@ -79,6 +79,8 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	glf::checkError("initProgram 0");
+
 	// Create program
 	if(Validated)
 	{
@@ -93,6 +95,8 @@ bool initProgram()
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
+
+	glf::checkError("initProgram 5");
 
 	// Get variables locations
 	if(Validated)
@@ -251,9 +255,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

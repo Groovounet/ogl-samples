@@ -159,7 +159,7 @@ set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch)
 set(GL_SHADER_GTC gather.vert gather.frag)
 glCreateSampleGTC(sampler-gather)
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag multiple-output.vert multiple-output.frag)
 glCreateSampleGTC(fbo-rtt)
@@ -169,7 +169,7 @@ set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-texture-array)
 
 # OpenGL Future
-set(GL_VERSION_GTC xxx)
+set(GL_VERSION_GTC 4XX)
 
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform-ext)
