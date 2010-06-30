@@ -83,12 +83,6 @@ namespace
 
 	GLuint UniformMVP;
 	GLuint UniformDiffuse;
-
-	GLenum SwizzleR[viewport::MAX];
-	GLenum SwizzleG[viewport::MAX];
-	GLenum SwizzleB[viewport::MAX];
-	GLenum SwizzleA[viewport::MAX];
-	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
 
 bool initProgram()
