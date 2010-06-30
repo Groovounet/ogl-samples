@@ -261,7 +261,7 @@ namespace glf
 		fprintf(stdout, "Linking program\n");
 		int InfoLogLength;
 		glGetProgramiv(ProgramName, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		std::vector<char> Buffer(InfoLogLength);
+		std::vector<char> Buffer(std::max(InfoLogLength, int(1)));
 		glGetProgramInfoLog(ProgramName, InfoLogLength, NULL, &Buffer[0]);
 		fprintf(stdout, "%s\n", &Buffer[0]);
 

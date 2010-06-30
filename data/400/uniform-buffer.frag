@@ -10,18 +10,14 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
-
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
-
-out vert
+uniform material
 {
-	vec2 Texcoord;
-} Vert;
+	vec4 Diffuse;
+} Material;
+
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
-{	
-	Vert.Texcoord = Texcoord;
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+{
+	Color = Material.Diffuse;
 }

@@ -69,7 +69,6 @@ namespace
 
 	GLuint BufferName[buffer::MAX];
 	GLuint Image2DName = 0;
-	GLuint SamplerName = 0;
 
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
@@ -200,7 +199,6 @@ bool end()
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Image2DName);
-	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
 	return glf::checkError("end");
