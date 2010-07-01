@@ -96,21 +96,6 @@ bool initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
-{
-	glGenBuffers(1, &ArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	return glf::checkError("initArrayBuffer");
-}
-
 bool initIndirectBuffer()
 {
 	DrawElementsIndirectCommand Command;
@@ -128,6 +113,21 @@ bool initIndirectBuffer()
 	return glf::checkError("initIndirectBuffer");
 }
 
+bool initArrayBuffer()
+{
+	glGenBuffers(1, &ArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenBuffers(1, &ElementBufferName);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	return glf::checkError("initArrayBuffer");
+}
+
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
@@ -143,7 +143,6 @@ bool initVertexArray()
 
 	return glf::checkError("initVertexArray");
 }
-
 
 bool begin()
 {
@@ -190,10 +189,7 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glm::vec4 Color(0.0f);
-	float Depth(1.0f);
-	glClearBufferfv(GL_COLOR, 0, &Color[0]);
-	glClearBufferfv(GL_DEPTH, 0, &Depth);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);

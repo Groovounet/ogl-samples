@@ -17,7 +17,7 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.frag");
+	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
@@ -72,7 +72,8 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 
 		GLchar const * Strings[] = {"gl_Position"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
+		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); // GL_INTERLEAVED_ATTRIBS GL_SEPARATE_ATTRIBS
+
 		glLinkProgram(TransformProgramName);
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 	}
@@ -87,14 +88,15 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
 		glAttachShader(FeedbackProgramName, VertexShaderName);
 		glAttachShader(FeedbackProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
+		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
@@ -183,6 +185,8 @@ bool begin()
 
 bool end()
 {
+	glf::checkError("end 0");
+
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(TransformProgramName);
@@ -192,6 +196,7 @@ bool end()
 	glDeleteProgram(FeedbackProgramName);
 
 	glDeleteQueries(1, &Query);
+	glDeleteTransformFeedbacks(1, &FeedbackName);
 
 	return glf::checkError("end");
 }

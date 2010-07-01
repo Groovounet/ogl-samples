@@ -370,6 +370,7 @@ namespace glf
 		switch(key) 
 		{
 		case 27:
+			end();
 			exit(0);
 			break;
 		}
@@ -441,6 +442,11 @@ namespace glf
 		glutPostRedisplay();
 	}
 
+	static void close()
+	{
+		end();
+	}
+
 	static void motion(int x, int y)
 	{
 		Window.MouseCurrent = glm::ivec2(x, y);
@@ -482,12 +488,11 @@ namespace glf
 			glutMotionFunc(glf::motion);
 			glutKeyboardFunc(glf::keyboard);
 			glutIdleFunc(glf::idle);
+			glutCloseFunc(glf::close);
 
 			glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
 			glutMainLoop();
-
-			end();
 
 			return 0;
 		}

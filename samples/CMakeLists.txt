@@ -146,7 +146,7 @@ glCreateSampleGTC(blend-rtt)
 set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
 glCreateSampleGTC(buffer-texture-rgb)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
-glCreateSampleGTC(buffer-uniform)
+#glCreateSampleGTC(buffer-uniform)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(draw-indirect)
@@ -173,7 +173,7 @@ glCreateSampleGTC(sampler-fetch)
 set(GL_SHADER_GTC gather.vert gather.frag)
 glCreateSampleGTC(sampler-gather)
 
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
 
 endif(APPLE)
