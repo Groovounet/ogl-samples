@@ -133,7 +133,7 @@ bool initTexture2D()
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0, 
-			Image[Level].capacity(), 
+			GLsuzei(Image[Level].capacity()), 
 			Image[Level].data());
 	}
 
