@@ -25,7 +25,7 @@ namespace
 
 	GLsizei const VertexCount = 6;
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	glm::vec2 const PositionData[VertexCount] = 
 	{
 		glm::vec2(-1.0f,-1.0f),
 		glm::vec2( 1.0f,-1.0f),
@@ -216,9 +216,6 @@ void display()
     glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
 	
-	// Unbind program
-	glUseProgram(0);
-
 	glf::checkError("display");
 	glf::swapBuffers();
 }

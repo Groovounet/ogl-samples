@@ -14,21 +14,13 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform sampler2D Diffuse;
-
-in vert
-{
-	vec2 Texcoord;
-} Vert;
-
-layout(location = FRAG_RED, index = 0) out float Red;
-layout(location = FRAG_GREEN, index = 0) out float Green;
-layout(location = FRAG_BLUE, index = 0) out float Blue;
+layout(location = FRAG_RED, index = 0) out vec4 Red;
+layout(location = FRAG_GREEN, index = 0) out vec4 Green;
+layout(location = FRAG_BLUE, index = 0) out vec4 Blue;
 
 void main()
 {
-	vec4 Color = texture(Diffuse, Vert.Texcoord);
-	Red = Color.r;
-	Green = Color.g;
-	Blue = Color.b;
+	Red = vec4(1.0, 0.0, 0.0, 1.0);
+	Green = vec4(0.0, 1.0, 0.0, 1.0);
+	Blue = vec4(0.0, 0.0, 1.0, 1.0);
 }

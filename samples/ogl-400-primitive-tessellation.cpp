@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL tessellation
-// 14/05/2010
+// OpenGL Tessellation
+// 14/05/2010 - 26/06/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -17,6 +17,7 @@ namespace
 	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "400/tess.vert");
 	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "400/tess.cont");
 	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "400/tess.eval");
+	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "400/tess.geom");
 	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "400/tess.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
@@ -26,22 +27,19 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fc4f);
+	glf::vertex_v2fc4f const VertexData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f)
+		glf::vertex_v2fc4f(glm::vec2(-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2( 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2( 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2(-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f))
 	};
 
 	GLuint ProgramName = 0;
-	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
 	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-
 }//namespace
 
 bool initProgram()
@@ -52,24 +50,22 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
-		glf::checkError("VertexShader");
 		GLuint ControlShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
-		glf::checkError("ControlShader");
 		GLuint EvaluationShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
-		glf::checkError("EvaluationShader");
+		GLuint GeometryShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
-		glf::checkError("FragmentShader");
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, ControlShader);
 		glAttachShader(ProgramName, EvaluationShader);
+		glAttachShader(ProgramName, GeometryShader);
 		glAttachShader(ProgramName, FragmentShader);
 		glDeleteShader(VertexShader);
 		glDeleteShader(ControlShader);
 		glDeleteShader(EvaluationShader);
+		glDeleteShader(GeometryShader);
 		glDeleteShader(FragmentShader);
-
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -78,20 +74,6 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
-
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -103,9 +85,12 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -116,7 +101,7 @@ bool initArrayBuffer()
 	// Generate a buffer object
 	glGenBuffers(1, &ArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
@@ -128,7 +113,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
@@ -144,7 +129,6 @@ bool end()
 {
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
-	glDeleteBuffers(1, &ElementBufferName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -166,8 +150,7 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
@@ -177,12 +160,8 @@ void display()
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-		glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
-		glDrawArrays(GL_PATCHES, 0, VertexCount);
-	glBindVertexArray(0);
-
-	// Unbind program
-	glUseProgram(0);
+	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -192,9 +171,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

@@ -59,6 +59,7 @@ namespace
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName = 0;
+	GLuint SamplerName = 0;
 	
 	GLuint ColorRenderbufferName = 0;
 	GLuint ColorTextureName = 0;
@@ -115,6 +116,26 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");;
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	// Parameters part of the sampler object:
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
@@ -122,7 +143,6 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
-	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
@@ -158,11 +178,10 @@ bool initFramebuffer()
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glGenerateMipmap(GL_TEXTURE_2D); // Allocate all mipmaps memory
 
 	glGenFramebuffers(1, &FramebufferResolveName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferResolveName);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ColorTextureName, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ColorTextureName, 0);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return glf::checkError("initFramebuffer");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -172,7 +191,6 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -199,6 +217,8 @@ bool begin()
 		Validated = initProgram();
 	if(Validated)
 		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initSampler();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -234,12 +254,10 @@ void renderFBO()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
+	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
 	glf::checkError("renderFBO");
 }
@@ -257,12 +275,10 @@ void renderFB()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-
+	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
 	glf::checkError("renderFB");
 }

@@ -77,6 +77,7 @@ namespace
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];
+	GLuint SamplerName = 0;
 
 	glm::ivec4 Viewport[TEXTURE_MAX];
 
@@ -110,34 +111,30 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
-			glLinkProgram(ProgramNameMultiple);
-			Validated = glf::checkProgram(ProgramNameMultiple);
-		}
-
-		if(Validated)
-		{
-			UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
-			UniformDiffuseMultiple = glGetUniformLocation(ProgramNameMultiple, "Diffuse");
-		}
+		ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
+		glLinkProgram(ProgramNameMultiple);
+		Validated = glf::checkProgram(ProgramNameMultiple);
 	}
 
+	if(Validated)
 	{
-		if(Validated)
-		{
-			ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
-			glLinkProgram(ProgramNameSingle);
-			Validated = glf::checkProgram(ProgramNameSingle);
-		}
+		UniformMVPMultiple = glGetUniformLocation(ProgramNameMultiple, "MVP");
+		UniformDiffuseMultiple = glGetUniformLocation(ProgramNameMultiple, "Diffuse");
+	}
 
-		if(Validated)
-		{
-			UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-			UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
-		}
+	if(Validated)
+	{
+		ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
+		glLinkProgram(ProgramNameSingle);
+		Validated = glf::checkProgram(ProgramNameSingle);
+	}
+
+	if(Validated)
+	{
+		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
+		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -154,6 +151,26 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	// Parameters part of the sampler object:
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -162,51 +179,44 @@ bool initTexture2D()
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 
 	// Load image
+	glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
-
-		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-		{
-			glTexImage2D(
-				GL_TEXTURE_2D, 
-				GLint(Level), 
-				GL_RGB,
-				GLsizei(Image[Level].dimensions().x), 
-				GLsizei(Image[Level].dimensions().y), 
-				0,  
-				GL_RGB, 
-				GL_UNSIGNED_BYTE, 
-				Image[Level].data());
-		}
+		glTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGB,
+			GLsizei(Image[Level].dimensions().x), 
+			GLsizei(Image[Level].dimensions().y), 
+			0,  
+			GL_RGB, 
+			GL_UNSIGNED_BYTE, 
+			Image[Level].data());
 	}
 
-	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_R]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
-	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_G]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
-	{
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_B]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
-	}
+	glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_R]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
 
-	// Set filter
+	glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_G]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
+
+	glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_B]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ZERO);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ZERO);
+
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
-
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			0, 
@@ -219,9 +229,6 @@ bool initTexture2D()
 			0);
 	}
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	return glf::checkError("initTexture2D");
 }
 
@@ -231,7 +238,7 @@ bool initFramebuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 
 	for(std::size_t i = TEXTURE_R; i <= TEXTURE_B; ++i)
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), GL_TEXTURE_2D, Texture2DName[i], 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName[i], 0);
 
 	GLenum DrawBuffers[3];
 	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -243,15 +250,11 @@ bool initFramebuffer()
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	return glf::checkError("initFramebuffer");
 }
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -306,6 +309,8 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initFramebuffer();
@@ -320,6 +325,7 @@ bool end()
 	glDeleteProgram(ProgramNameSingle);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return glf::checkError("end");
 }
@@ -346,12 +352,10 @@ void display()
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
-
+		glBindSampler(0, SamplerName);
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
 
 	// Pass 2
@@ -376,12 +380,10 @@ void display()
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
-
+		glBindSampler(0, SamplerName);
 		glBindVertexArray(VertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
 
 	glf::checkError("display");

@@ -99,8 +99,9 @@ bool initVertexArray()
     glBindVertexArray(TransformVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
 	// Build a vertex array object
@@ -108,8 +109,9 @@ bool initVertexArray()
     glBindVertexArray(FeedbackVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -226,9 +228,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

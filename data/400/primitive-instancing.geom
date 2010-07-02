@@ -16,7 +16,7 @@
 
 layout(triangles, invocations = 6) in;
 
-out geom
+layout(stream = 0) out geom
 {
 	vec3 Color;
 } Geom;

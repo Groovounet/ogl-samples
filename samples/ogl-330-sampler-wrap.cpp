@@ -164,19 +164,15 @@ bool initTexture2D()
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0, 
-			Image[Level].capacity(), 
+			GLsizei(Image[Level].capacity()), 
 			Image[Level].data());
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glf::checkError("initTexture2D");
 }
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -264,9 +260,6 @@ void display()
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

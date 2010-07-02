@@ -13,7 +13,7 @@
 
 namespace
 {
-        std::string const SAMPLE_NAME = "OpenGL Sampler Wrap";
+	std::string const SAMPLE_NAME = "OpenGL Sampler Wrap";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -149,7 +149,7 @@ bool initTexture2D()
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0, 
-			Image[Level].capacity(), 
+			GLsizei(Image[Level].capacity()), 
 			Image[Level].data());
 	}
 
