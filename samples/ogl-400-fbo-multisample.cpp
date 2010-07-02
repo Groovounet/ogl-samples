@@ -128,8 +128,6 @@ bool initSampler()
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
-	glBindSampler(0, SamplerName);
-
 	return glf::checkError("initSampler");
 }
 
@@ -139,6 +137,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -303,7 +303,7 @@ void display()
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
 	//glEnable(GL_SAMPLE_MASK);
-	glMinSampleShading(2.0f);
+	//glMinSampleShadingARB(2.0f);
 	//glSampleMaski(0, 0xFF);
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);

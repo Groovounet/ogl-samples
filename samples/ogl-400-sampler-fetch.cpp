@@ -35,8 +35,8 @@ namespace
 	};
 
 	GLsizei const ElementCount = 6;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLuint);
+	GLuint const ElementData[ElementCount] =
 	{
 		0, 1, 2, 
 		2, 3, 0
@@ -72,12 +72,6 @@ namespace
 
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
-
-	GLenum SwizzleR[viewport::MAX];
-	GLenum SwizzleG[viewport::MAX];
-	GLenum SwizzleB[viewport::MAX];
-	GLenum SwizzleA[viewport::MAX];
-	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
 
 bool initProgram()
@@ -227,7 +221,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();

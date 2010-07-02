@@ -169,14 +169,10 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	glf::checkError("display 7");
-
 	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexOrange);
 	//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexBlue);
-
-	glf::checkError("display 8");
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
