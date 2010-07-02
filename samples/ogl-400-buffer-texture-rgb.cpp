@@ -241,7 +241,7 @@ void display()
 	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DIFFUSE]);
 
     glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5, 0);
 	
 	glf::checkError("display");
 	glf::swapBuffers();

@@ -173,7 +173,7 @@ void display()
 	glUniform4dv(UniformDiffuse, 1, &glm::dvec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
