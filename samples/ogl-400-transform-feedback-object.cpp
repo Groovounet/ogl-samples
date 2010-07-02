@@ -72,7 +72,8 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 
 		GLchar const * Strings[] = {"gl_Position"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
+		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); // GL_INTERLEAVED_ATTRIBS GL_SEPARATE_ATTRIBS
+
 		glLinkProgram(TransformProgramName);
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 	}
@@ -87,14 +88,15 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
 		glAttachShader(FeedbackProgramName, VertexShaderName);
 		glAttachShader(FeedbackProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
+		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
@@ -184,6 +186,8 @@ bool begin()
 
 bool end()
 {
+	glf::checkError("end 0");
+
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(TransformProgramName);
@@ -193,6 +197,7 @@ bool end()
 	glDeleteProgram(FeedbackProgramName);
 
 	glDeleteQueries(1, &Query);
+	glDeleteTransformFeedbacks(1, &FeedbackName);
 
 	return glf::checkError("end");
 }
@@ -225,7 +230,7 @@ void display()
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBeginTransformFeedback(GL_TRIANGLES);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	glEndTransformFeedback();
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 

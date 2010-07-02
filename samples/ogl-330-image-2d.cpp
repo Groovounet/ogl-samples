@@ -188,14 +188,9 @@ void display()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
 	glBindVertexArray(VertexArrayName);
+
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glUseProgram(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

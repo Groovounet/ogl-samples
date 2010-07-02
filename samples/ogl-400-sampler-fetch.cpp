@@ -35,8 +35,8 @@ namespace
 	};
 
 	GLsizei const ElementCount = 6;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLuint);
+	GLuint const ElementData[ElementCount] =
 	{
 		0, 1, 2, 
 		2, 3, 0
@@ -111,8 +111,6 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -211,7 +209,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

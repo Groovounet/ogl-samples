@@ -127,20 +127,30 @@ bool initUniformBuffer()
 			GL_UNIFORM_BLOCK_DATA_SIZE,
 			&UniformBlockSize);
 
+		glf::checkError("initUniformBuffer 1");
+
 		glGenBuffers(1, &TransformBufferName);
 		glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
 		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize * Instances, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+		glf::checkError("initUniformBuffer 2");
+
 		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-		glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName, 0, sizeof(glm::mat4));
+		glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName, 0, sizeof(glm::mat4) * Instances);
 		// Associate the uniform block to this binding point.
 		glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM);
 
+		glf::checkError("initUniformBuffer 3");
+
 		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
 		glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName, sizeof(glm::mat4), sizeof(glm::mat4));
+
+		glf::checkError("initUniformBuffer 4");
 		// Associate the uniform block to this binding point.
 		glUniformBlockBinding(ProgramName, UniformTransform[1], glf::semantic::uniform::TRANSFORM);
+
+		glf::checkError("initUniformBuffer 5");
 	}
 
 	{

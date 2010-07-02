@@ -254,7 +254,7 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
 	glf::checkError("display");

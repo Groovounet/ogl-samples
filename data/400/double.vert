@@ -12,10 +12,10 @@
 
 uniform dmat4 MVP;
 
-layout(location = ATTR_POSITION) in vec3 Position;
+layout(location = ATTR_POSITION) in vec2 Position;
 
 void main()
 {	
-	gl_Position = vec4(MVP * dvec4(Position, 1.0));
+	gl_Position = vec4(MVP * dvec4(Position, 0.0, 1.0));
 }
 

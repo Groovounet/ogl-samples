@@ -277,23 +277,23 @@ bool initBlend()
 
 	glEnablei(GL_BLEND, 0);
 	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
-	glBlendEquationSeparateiARB(0, GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
-	glBlendFuncSeparateiARB(0, GL_SRC_COLOR, GL_ONE, GL_ZERO, GL_ZERO);
+	glBlendEquationSeparatei(0, GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
+	glBlendFuncSeparatei(0, GL_SRC_COLOR, GL_ONE, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 1);
 	glColorMaski(1, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparateiARB(1, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparateiARB(1, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glBlendEquationSeparatei(1, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(1, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 2);
 	glColorMaski(2, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparateiARB(2, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparateiARB(2, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glBlendEquationSeparatei(2, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(2, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	glEnablei(GL_BLEND, 3);
 	glColorMaski(3, GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glBlendEquationSeparateiARB(3, GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparateiARB(3, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
+	glBlendEquationSeparatei(3, GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparatei(3, GL_SRC_COLOR, GL_SRC_COLOR, GL_ZERO, GL_ZERO);
 
 	return glf::checkError("initBlend");
 }
@@ -359,7 +359,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	// Pass 2
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -384,7 +384,7 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, TextureName[i]);
 
 		glBindVertexArray(VertexArrayName);
-		glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
 	glf::checkError("display");

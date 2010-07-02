@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";	
+	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/multisample.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/multisample.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
@@ -39,7 +39,7 @@ namespace
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
 	GLushort const ElementData[ElementCount] =
 	{
-		0, 1, 2, 
+		0, 1, 2,
 		2, 3, 0
 	};
 
@@ -55,23 +55,23 @@ namespace
 
 	GLuint BufferName[BUFFER_MAX];
 	GLuint Texture2DName = 0;
-	
+
 	GLuint MultisampleTextureName = 0;
 	GLuint ColorTextureName = 0;
 	GLuint SamplerName = 0;
-	
+
 	GLuint FramebufferRenderName = 0;
 	GLuint FramebufferResolveName = 0;
 
 	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;	
+	GLuint UniformDiffuse = 0;
 
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
-	
+
 	// Create program
 	if(Validated)
 	{
@@ -116,8 +116,8 @@ bool initSampler()
 	glGenSamplers(1, &SamplerName);
 
 	// Parameters part of the sampler object:
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -144,14 +144,14 @@ bool initTexture2D()
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGB, 
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
-			0,  
-			GL_RGB, 
-			GL_UNSIGNED_BYTE, 
+			GL_TEXTURE_2D,
+			GLint(Level),
+			GL_RGB,
+			GLsizei(Image[Level].dimensions().x),
+			GLsizei(Image[Level].dimensions().y),
+			0,
+			GL_RGB,
+			GL_UNSIGNED_BYTE,
 			Image[Level].data());
 	}
 
@@ -176,8 +176,6 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
@@ -225,6 +223,8 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initFramebuffer();
@@ -263,9 +263,10 @@ void renderFBO(GLuint Framebuffer)
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
+	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("renderFBO");
 }
@@ -282,9 +283,10 @@ void renderFB(GLuint Texture2DName)
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
+	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("renderFB");
 }
@@ -297,13 +299,14 @@ void display()
 
 	glUseProgram(ProgramName);
 	glUniform1i(UniformDiffuse, 0);
-	glBindSampler(0, SamplerName);
 
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
-	glMinSampleShadingARB(2.0f);
-	glEnable(GL_SAMPLE_MASK);
-	glSampleMaski(0, 0xFF);
+
+	//glMinSampleShading(2.0f);
+	//glEnable(GL_SAMPLE_MASK);
+	//glSampleMaski(0, 0xFF);
+
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
 
@@ -311,8 +314,8 @@ void display()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FramebufferRenderName);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FramebufferResolveName);
 	glBlitFramebuffer(
-		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
-		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
+		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y,
+		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y,
 		GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -328,8 +331,8 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
-		SAMPLE_MAJOR_VERSION, 
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT),
+		SAMPLE_MAJOR_VERSION,
 		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;

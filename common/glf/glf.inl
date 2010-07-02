@@ -131,6 +131,8 @@ namespace glf
 		glDisablei = (PFNGLDISABLEIPROC)glfGetProcAddress("glDisablei");
 
 		// Load OpenGL 3.1 functions
+		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)glfGetProcAddress("glBindBufferBase");
+		glBindBufferRange = (PFNGLBINDBUFFERRANGEPROC)glfGetProcAddress("glBindBufferRange");
 		glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)glfGetProcAddress("glDrawArraysInstanced");
 		glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)glfGetProcAddress("glDrawElementsInstanced");
 		glTexBuffer = (PFNGLTEXBUFFERPROC)glfGetProcAddress("glTexBuffer");
@@ -145,7 +147,7 @@ namespace glf
 
 		// Load OpenGL 3.2 functions
 		glDrawElementsBaseVertex = (PFNGLDRAWELEMENTSBASEVERTEXPROC)glfGetProcAddress("glDrawElementsBaseVertex");
-		glDrawElementsInstancedBaseVertex = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC)glfGetProcAddress("glDrawElementsBaseVertex");
+		glDrawElementsInstancedBaseVertex = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC)glfGetProcAddress("glDrawElementsInstancedBaseVertex");
 		glDrawRangeElementsBaseVertex = (PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC)glfGetProcAddress("glDrawRangeElementsBaseVertex");
 		glMultiDrawElementsBaseVertex = (PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC)glfGetProcAddress("glMultiDrawElementsBaseVertex");
 		glTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTexImage2DMultisample");
@@ -406,6 +408,7 @@ namespace glf
 		switch(key) 
 		{
 		case 27:
+			end();
 			exit(0);
 			break;
 		}
@@ -477,6 +480,11 @@ namespace glf
 		glutPostRedisplay();
 	}
 
+	static void close()
+	{
+		end();
+	}
+
 	static void motion(int x, int y)
 	{
 		Window.MouseCurrent = glm::ivec2(x, y);
@@ -518,12 +526,11 @@ namespace glf
 			glutMotionFunc(glf::motion);
 			glutKeyboardFunc(glf::keyboard);
 			glutIdleFunc(glf::idle);
+			glutCloseFunc(glf::close);
 
 			glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
 			glutMainLoop();
-
-			end();
 
 			return 0;
 		}
