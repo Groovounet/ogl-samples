@@ -230,7 +230,7 @@ void display()
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBeginTransformFeedback(GL_TRIANGLES);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	glEndTransformFeedback();
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
