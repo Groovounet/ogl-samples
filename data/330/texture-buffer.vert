@@ -4,7 +4,7 @@ uniform samplerBuffer Displacement;
 uniform mat4 MVP;
 
 in vec2 Position;
-flat out int Instance;
+flat out mediump int Instance;
 
 void main()
 {	
