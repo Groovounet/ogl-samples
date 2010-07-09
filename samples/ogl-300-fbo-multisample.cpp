@@ -77,9 +77,15 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
-		glBindAttribLocation(ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
