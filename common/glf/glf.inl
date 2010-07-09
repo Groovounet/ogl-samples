@@ -310,58 +310,6 @@ namespace glf
 		return Name;
 	}
 
-	inline GLuint createProgram
-	(
-		std::string const & VertShader, 
-		std::string const & FragShader
-	)
-	{
-		bool Validated = true;
-		GLuint ProgramName = 0;
-
-		// Compile a shader
-		GLuint VertexShaderName = 0;
-		if(Validated && !VertShader.empty())
-		{
-			std::string Source0 = glf::loadFile(VertShader);
-			char const * Source = Source0.c_str();
-			VertexShaderName = glCreateShader(GL_VERTEX_SHADER);
-			glShaderSource(VertexShaderName, 1, &Source, NULL);
-			glCompileShader(VertexShaderName);
-			Validated = glf::checkShader(VertexShaderName, Source);
-		}
-
-		// Compile a shader
-		GLuint FragmentShaderName = 0;
-		if(Validated && !FragShader.empty())
-		{
-			std::string Source0 = glf::loadFile(FragShader);
-			char const * Source = Source0.c_str();
-			FragmentShaderName = glCreateShader(GL_FRAGMENT_SHADER);
-			glShaderSource(FragmentShaderName, 1, &Source, NULL);
-			glCompileShader(FragmentShaderName);
-			Validated = glf::checkShader(FragmentShaderName, Source);
-		}
-
-		// Link a program
-		if(Validated)
-		{
-			ProgramName = glCreateProgram();
-			if(VertexShaderName != 0)
-				glAttachShader(ProgramName, VertexShaderName);
-			if(FragmentShaderName != 0)
-				glAttachShader(ProgramName, FragmentShaderName);
-			glDeleteShader(VertexShaderName);
-			glDeleteShader(FragmentShaderName);
-			// Bind fragment output to color buffer 0
-			//glBindFragDataLocation(ProgramName, 0, "FragColor");
-			//glLinkProgram(ProgramName);
-			//Validated = glf::checkProgram(ProgramName);
-		}
-
-		return ProgramName;
-	}
-
 	inline int version(int Major, int Minor)
 	{
 		return Major * 100 + Minor * 10;
