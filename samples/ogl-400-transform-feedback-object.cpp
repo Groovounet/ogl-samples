@@ -237,16 +237,9 @@ void display()
 	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
-<<<<<<< HEAD
-	{
-		glUseProgram(FeedbackProgramName);
-		glUniformMatrix4fv(FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-=======
 	glUseProgram(FeedbackProgramName);
 	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
->>>>>>> 4.0.1.0
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
