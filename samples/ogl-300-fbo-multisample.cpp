@@ -86,6 +86,8 @@ bool initProgram()
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 
+		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glBindAttribLocation(ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
