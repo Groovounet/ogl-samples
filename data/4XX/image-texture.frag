@@ -1,4 +1,5 @@
 #version 400 core
+#extension GL_EXT_shader_image_load_store : enable
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -14,18 +15,17 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
+coherent uniform layout(size1x32) image2D ImageData;
+uniform uvec2 ImageSize;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
-
-out vert
+in vert
 {
-	layout(location = VERT_TEXCOORD) vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+
 void main()
-{	
-	Vert.Texcoord = Texcoord;
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+{
+	Color = imageLoad(ImageData, Vert.Texcoord * ImageSize);
 }

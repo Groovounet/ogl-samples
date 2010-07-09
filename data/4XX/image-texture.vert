@@ -21,7 +21,7 @@ layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vert
 {
-	layout(location = VERT_TEXCOORD) vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
 void main()
