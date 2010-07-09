@@ -55,6 +55,7 @@ namespace
 
 	GLuint VertexArrayName = 0;
 	GLuint ProgramName = 0;
+	GLuint SamplerName = 0;
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName = 0;
@@ -106,16 +107,33 @@ bool initArrayBuffer()
 	return glf::checkError("initArrayBuffer");;
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	// Parameters part of the sampler object:
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
+
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	// Set image
 	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
@@ -144,8 +162,6 @@ bool initFramebuffer()
 		return false;
 
 	glBindTexture(GL_TEXTURE_2D, ColorbufferName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
@@ -185,6 +201,8 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initTexture2D();
@@ -204,6 +222,7 @@ bool end()
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return glf::checkError("end");
 }
@@ -237,6 +256,7 @@ void display()
 	glScissor(0, 0, Window.Size.x, Window.Size.y);
 	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glBindSampler(0, SamplerName);
 
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
