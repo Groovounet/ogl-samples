@@ -359,7 +359,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, TextureName[TEXTURE_RGB8]);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	// Pass 2
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
