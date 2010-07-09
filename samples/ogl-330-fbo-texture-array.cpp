@@ -109,8 +109,8 @@ bool initProgram()
 
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE1);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE1);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE2);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE2);
 
 		ProgramNameSingle = glCreateProgram();
 		glAttachShader(ProgramNameSingle, VertexShaderName);
@@ -169,9 +169,6 @@ bool initTexture2D()
 		GL_RGB, 
 		GL_UNSIGNED_BYTE, 
 		NULL);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
 	return glf::checkError("initTexture2D");
 }
@@ -313,9 +310,6 @@ void display()
 		glBindVertexArray(VertexArrayImageName);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
