@@ -88,7 +88,15 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameMultiple = glf::createProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE1);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE1);
+
+		ProgramNameMultiple = glCreateProgram();
+		glAttachShader(ProgramNameMultiple, VertexShaderName);
+		glAttachShader(ProgramNameMultiple, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		glLinkProgram(ProgramNameMultiple);
 		Validated = glf::checkProgram(ProgramNameMultiple);
 	}
@@ -100,7 +108,15 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameSingle = glf::createProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE2);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE2);
+
+		ProgramNameSingle = glCreateProgram();
+		glAttachShader(ProgramNameSingle, VertexShaderName);
+		glAttachShader(ProgramNameSingle, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
 		glLinkProgram(ProgramNameSingle);
 		Validated = glf::checkProgram(ProgramNameSingle);
 	}
