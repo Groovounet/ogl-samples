@@ -146,7 +146,7 @@ glCreateSampleGTC(blend-rtt)
 set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
 glCreateSampleGTC(buffer-texture-rgb)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
-#glCreateSampleGTC(buffer-uniform)
+glCreateSampleGTC(buffer-uniform)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(draw-indirect)
