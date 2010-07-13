@@ -66,18 +66,27 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	// Create program
+	if(Validated)
 	{
-		::ProgramName = glf::createProgram(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
-		glBindAttribLocation(::ProgramName, glf::semantic::attr::POSITION, "Position");
-		glBindAttribLocation(::ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
-		glLinkProgram(::ProgramName);
-		Validated = glf::checkProgram(::ProgramName);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
+		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		::UniformMVP = glGetUniformLocation(::ProgramName, "MVP");
-		::UniformDiffuse = glGetUniformLocation(::ProgramName, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
