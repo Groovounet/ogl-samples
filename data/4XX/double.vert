@@ -1,4 +1,5 @@
 #version 400 core
+#extension EXT_vertex_attrib_64bit : require
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -12,10 +13,10 @@
 
 uniform dmat4 MVP;
 
-layout(location = ATTR_POSITION) in vec3 Position;
+layout(location = ATTR_POSITION) in dvec2 Position;
 
 void main()
 {	
-	gl_Position = vec4(MVP * dvec4(Position, 1.0));
+	gl_Position = vec4(MVP * dvec4(Position, 0.0, 1.0));
 }
 

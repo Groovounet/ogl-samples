@@ -81,6 +81,7 @@
 	PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC glProgramUniformMatrix3x4dvEXT = 0;
 	PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC glProgramUniformMatrix4x2dvEXT = 0;
 	PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC glProgramUniformMatrix4x3dvEXT = 0;
+
 #endif//WIN32
 
 bool check();
@@ -213,6 +214,42 @@ namespace glf
 		glUniformMatrix3x4dv = (PFNGLUNIFORMMATRIX3X4DVPROC)glfGetProcAddress("glUniformMatrix3x4dv");
 		glUniformMatrix4x2dv = (PFNGLUNIFORMMATRIX4X2DVPROC)glfGetProcAddress("glUniformMatrix4x2dv");
 		glUniformMatrix4x3dv = (PFNGLUNIFORMMATRIX4X3DVPROC)glfGetProcAddress("glUniformMatrix4x3dv");
+
+		// Load GL_EXT_separate_shader_objects extension
+		glCreateShaderProgramEXT = (PFNGLCREATESHADERPROGRAMEXTPROC)glfGetProcAddress("glCreateShaderProgramEXT");
+		glUseShaderProgramEXT = (PFNGLUSESHADERPROGRAMEXTPROC)glfGetProcAddress("glUseShaderProgramEXT");
+
+		// Load GL_EXT_direct_state_access extension
+		glNamedBufferDataEXT = (PFNGLNAMEDBUFFERDATAEXTPROC)glfGetProcAddress("glNamedBufferDataEXT");
+		glTextureParameteriEXT = (PFNGLTEXTUREPARAMETERIEXTPROC)glfGetProcAddress("glTextureParameteriEXT");
+		glCompressedTextureImage2DEXT = (PFNGLCOMPRESSEDTEXTUREIMAGE2DEXTPROC)glfGetProcAddress("glCompressedTextureImage2DEXT");
+		glVertexArrayVertexAttribOffsetEXT = (PFNGLVERTEXARRAYVERTEXATTRIBOFFSETEXTPROC)glfGetProcAddress("glVertexArrayVertexAttribOffsetEXT");
+		glEnableVertexArrayAttribEXT = (PFNGLENABLEVERTEXARRAYATTRIBEXTPROC)glfGetProcAddress("glEnableVertexArrayAttribEXT");
+		glBindMultiTextureEXT = (PFNGLBINDMULTITEXTUREEXTPROC)glfGetProcAddress("glBindMultiTextureEXT");
+		glProgramUniformMatrix4fvEXT = (PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC)glfGetProcAddress("glProgramUniformMatrix4fvEXT");
+		glProgramUniform1iEXT = (PFNGLPROGRAMUNIFORM1IEXTPROC)glfGetProcAddress("glProgramUniform1iEXT");
+		glProgramUniform1dEXT = (PFNGLPROGRAMUNIFORM1DEXTPROC)glfGetProcAddress("glProgramUniform1dEXT");
+		glProgramUniform2dEXT = (PFNGLPROGRAMUNIFORM2DEXTPROC)glfGetProcAddress("glProgramUniform2dEXT");
+		glProgramUniform3dEXT = (PFNGLPROGRAMUNIFORM3DEXTPROC)glfGetProcAddress("glProgramUniform3dEXT");
+		glProgramUniform4dEXT = (PFNGLPROGRAMUNIFORM4DEXTPROC)glfGetProcAddress("glProgramUniform4dEXT");
+		glProgramUniform1dvEXT = (PFNGLPROGRAMUNIFORM1DVEXTPROC)glfGetProcAddress("glProgramUniform1dvEXT");
+		glProgramUniform2dvEXT = (PFNGLPROGRAMUNIFORM2DVEXTPROC)glfGetProcAddress("glProgramUniform2dvEXT");
+		glProgramUniform3dvEXT = (PFNGLPROGRAMUNIFORM3DVEXTPROC)glfGetProcAddress("glProgramUniform3dvEXT");
+		glProgramUniform4dvEXT = (PFNGLPROGRAMUNIFORM4DVEXTPROC)glfGetProcAddress("glProgramUniform4dvEXT");
+		glProgramUniformMatrix2dvEXT = (PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix2dvEXT");
+		glProgramUniformMatrix3dvEXT = (PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix3dvEXT");
+		glProgramUniformMatrix4dvEXT = (PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix4dvEXT");
+		glProgramUniformMatrix2x3dvEXT = (PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix2x3dvEXT");
+		glProgramUniformMatrix2x4dvEXT = (PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix2x4dvEXT");
+		glProgramUniformMatrix3x2dvEXT = (PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix3x2dvEXT");
+		glProgramUniformMatrix3x4dvEXT = (PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix3x4dvEXT");
+		glProgramUniformMatrix4x2dvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix4x2dvEXT");
+		glProgramUniformMatrix4x3dvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix4x3dvEXT");
+		glVertexArrayVertexAttribLOffsetEXT = (PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC)glfGetProcAddress("glVertexArrayVertexAttribLOffsetEXT");
+		glEnableVertexArrayAttribEXT = (PFNGLENABLEVERTEXARRAYATTRIBEXTPROC)glfGetProcAddress("glEnableVertexArrayAttribEXT");
+
+		// Load GL_EXT_shader_image_load_store extension
+		glBindImageTextureEXT = (PFNGLBINDIMAGETEXTUREEXTPROC)glfGetProcAddress("glBindImageTextureEXT");
 #endif//WIN32
 	}
 
@@ -454,8 +491,8 @@ namespace glf
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 300)
 		{
-			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 			glutInitContextProfile(GLUT_CORE_PROFILE);
+			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);// | GLUT_DEBUG);
 		}
 
 		glutCreateWindow(argv[0]);

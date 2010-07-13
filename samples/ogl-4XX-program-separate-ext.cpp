@@ -170,8 +170,8 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_direct_state_access;
-	Validated = Validated && GLEW_EXT_separate_shader_objects;
+	//Validated = Validated && (GLEW_EXT_direct_state_access == GL_TRUE);
+	//Validated = Validated && (GLEW_EXT_separate_shader_objects == GL_TRUE);
 
 	if(Validated)
 		Validated = initProgram();

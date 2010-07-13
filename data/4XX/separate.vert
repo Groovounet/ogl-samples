@@ -1,4 +1,6 @@
 #version 400 core
+#extension EXT_separate_shader_objects : require
+#extension ARB_texture_query_lod : require
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -21,7 +23,7 @@ layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vert
 {
-	layout(location = VERT_TEXCOORD) vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
 void main()

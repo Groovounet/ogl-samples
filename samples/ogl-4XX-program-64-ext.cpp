@@ -42,16 +42,6 @@ namespace
 		2, 3, 0
 	};
 
-	namespace program
-	{
-		enum type
-		{
-			VERTEX,
-			FRAGMENT,
-			MAX
-		};
-	}//namespace program
-
 	namespace buffer
 	{
 		enum type
@@ -62,7 +52,7 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint ProgramName[program::MAX];
+	GLuint ProgramName;
 	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName;
 	GLint UniformMVP = 0;
@@ -74,24 +64,26 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	// Create program
 	if(Validated)
 	{
-		std::string VertexSource = glf::loadFile(VERTEX_SHADER_SOURCE);
-		ProgramName[program::VERTEX] = glCreateShaderProgramEXT(GL_VERTEX_SHADER, VertexSource.c_str());
-		Validated = glf::checkProgram(ProgramName[program::VERTEX]);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
+	// Get variables locations
 	if(Validated)
 	{
-		std::string FragmentSource = glf::loadFile(FRAGMENT_SHADER_SOURCE);
-		ProgramName[program::FRAGMENT] = glCreateShaderProgramEXT(GL_FRAGMENT_SHADER, FragmentSource.c_str());
-		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
-	}
-
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName[program::VERTEX], "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAGMENT], "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -109,7 +101,7 @@ bool initVertexBuffer()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
-	glVertexArrayVertexAttribLOffsetEXT(VertexArrayName, BufferName[buffer::F64], glf::semantic::attr::POSITION, 2, GL_FLOAT, sizeof(glm::dvec2), 0);
+	glVertexArrayVertexAttribLOffsetEXT(VertexArrayName, BufferName[buffer::F64], glf::semantic::attr::POSITION, 2, GL_DOUBLE, sizeof(glm::dvec2), 0);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 
 	return glf::checkError("initVertexArray");
@@ -122,10 +114,10 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_direct_state_access;
-	Validated = Validated && GLEW_EXT_direct_state_access_memory;
-	Validated = Validated && GLEW_EXT_vertex_attrib_64bit;
-	Validated = Validated && GLEW_EXT_separate_shader_objects;
+	//Validated = Validated && GLEW_EXT_direct_state_access;
+	//Validated = Validated && GLEW_EXT_direct_state_access_memory;
+	//Validated = Validated && GLEW_EXT_vertex_attrib_64bit;
+	//Validated = Validated && GLEW_EXT_separate_shader_objects;
 	 
 	if(Validated)
 		Validated = initProgram();
@@ -142,8 +134,7 @@ bool end()
 	// Delete objects
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteProgram(ProgramName[program::VERTEX]);
-	glDeleteProgram(ProgramName[program::FRAGMENT]);
+	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
 }
@@ -159,15 +150,14 @@ void display()
 	glm::dmat4 Model = glm::dmat4(1.0f);
 	glm::dmat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4dvEXT(ProgramName[program::VERTEX], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform4dvEXT(ProgramName[program::FRAGMENT], UniformDiffuse, 1, &glm::dvec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glProgramUniformMatrix4dvEXT(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform4dvEXT(ProgramName, UniformDiffuse, 1, &glm::dvec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glUseShaderProgramEXT(GL_VERTEX_SHADER, ProgramName[program::VERTEX]);
-	glUseShaderProgramEXT(GL_FRAGMENT_SHADER, ProgramName[program::FRAGMENT]);
-	
+	glUseProgram(ProgramName);
+
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
