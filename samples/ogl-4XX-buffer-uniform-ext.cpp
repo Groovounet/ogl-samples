@@ -41,13 +41,15 @@ namespace
 		2, 3, 0
 	};
 
+	GLuint const Instances = 2;
+
 	GLuint ProgramName = 0;
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
 	GLuint TransformBufferName = 0;
 	GLuint MaterialBufferName = 0;
-	GLint UniformTransform = 0;
+	GLint UniformTransform[Instances];
 	GLint UniformMaterial = 0;
 
 }//namespace
@@ -59,26 +61,28 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		ProgramName = glCreateProgram();
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramName, VertexShader);
-		glDeleteShader(VertexShader);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, FragmentShader);
-		glDeleteShader(FragmentShader);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
+
+		glDeleteShader(VertexShader);
+		glDeleteShader(FragmentShader);
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
+		glf::checkError("initProgram 4");
 		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material");
-		UniformTransform = glGetUniformBlockIndex(ProgramName, "transform");
-
-		// Associate the uniform blocks to their indices.
-		glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM);
-		glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
+		glf::checkError("initProgram 5");
+		UniformTransform[0] = glGetUniformBlockIndex(ProgramName, "transform[0]");
+		glf::checkError("initProgram 6");
+		UniformTransform[1] = glGetUniformBlockIndex(ProgramName, "transform[1]");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -118,7 +122,7 @@ bool initUniformBuffer()
 
 	glGetActiveUniformBlockiv(
 		ProgramName,
-		UniformTransform,
+		UniformTransform[0],
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSize);
 	glGenBuffers(1, &TransformBufferName);
@@ -143,7 +147,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_direct_state_access;
+	//Validated = Validated && GLEW_EXT_direct_state_access;
 
 	if(Validated)
 		Validated = initProgram();
@@ -182,9 +186,15 @@ void display()
 	glNamedBufferSubDataEXT(TransformBufferName, 0, sizeof(MVP), &MVP[0][0]);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName);
+	glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM0);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
+
+	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
+	glUniformBlockBinding(ProgramName, UniformTransform[1], glf::semantic::uniform::TRANSFORM1);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM1, TransformBufferName);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
+	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
 
 	// Set the display viewport
@@ -200,7 +210,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, Instances, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

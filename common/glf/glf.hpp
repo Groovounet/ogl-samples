@@ -89,8 +89,9 @@ namespace glf
 		{
 			enum type
 			{
-				TRANSFORM = 0,
-				MATERIAL  = 1
+				TRANSFORM0 = 0,
+				TRANSFORM1 = 1,
+				MATERIAL = 2
 			};
 		};
 
