@@ -1,5 +1,5 @@
 #version 400 core
-#extension EXT_vertex_attrib_64bit : require
+#extension GL_EXT_vertex_attrib_64bit : require
 
 // Declare all the semantics
 #define ATTR_POSITION	0
