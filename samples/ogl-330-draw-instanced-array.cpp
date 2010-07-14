@@ -112,8 +112,11 @@ bool initVertexArray()
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, PositionBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
+
 		glBindBuffer(GL_ARRAY_BUFFER, ColorBufferName);
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -179,7 +182,6 @@ void display()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindVertexArray(VertexArrayName);
-	glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, InstanceCount);
 
 	// Unbind program
