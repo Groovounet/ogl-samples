@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Multiple render to texture
-// 20/10/2009 - 16/06/2010
+// 20/10/2009 - 14/07/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -63,13 +63,9 @@ namespace
 	GLuint FramebufferName = 0;
 	GLuint VertexArrayName = 0;
 
-	GLuint ProgramNameSingle = 0;
-	GLuint UniformMVPSingle = 0;
-	GLuint UniformDiffuseSingle = 0;
-
-	GLuint ProgramNameMultiple = 0;
-	GLuint UniformMVPMultiple = 0;
-	GLuint UniformDiffuseMultiple = 0;
+	GLuint ProgramName = 0;
+	GLuint UniformMVP = 0;
+	GLuint UniformDiffuse = 0;
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];
@@ -84,24 +80,22 @@ bool initProgram()
 
 	if(Validated)
 	{
-		ProgramNameSingle = glCreateProgram();
+		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		glAttachShader(ProgramNameSingle, VertexShaderName);
-		glDeleteShader(VertexShaderName);
-
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-		glAttachShader(ProgramNameSingle, FragmentShaderName);
-		glDeleteShader(FragmentShaderName);
-
-		glLinkProgram(ProgramNameSingle);
-		Validated = glf::checkProgram(ProgramNameSingle);
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShader);
+		glAttachShader(ProgramName, FragmentShader);
+		glDeleteShader(VertexShader);
+		glDeleteShader(FragmentShader);
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		UniformMVPSingle = glGetUniformLocation(ProgramNameSingle, "MVP");
-		UniformDiffuseSingle = glGetUniformLocation(ProgramNameSingle, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -182,7 +176,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_direct_state_access;
+	//Validated = Validated && GLEW_EXT_direct_state_access;
 
 	if(Validated)
 		Validated = initProgram();
@@ -201,8 +195,7 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramNameMultiple);
-	glDeleteProgram(ProgramNameSingle);
+	glDeleteProgram(ProgramName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
 
@@ -226,14 +219,14 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fvEXT(ProgramNameSingle, UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1iEXT(ProgramNameSingle, UniformDiffuseSingle, 0);
+	glProgramUniformMatrix4fvEXT(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1iEXT(ProgramName, UniformDiffuse, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramNameSingle);
+	glUseProgram(ProgramName);
 
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
@@ -253,9 +246,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
+		glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT), 
+		SAMPLE_MAJOR_VERSION, 
+		SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

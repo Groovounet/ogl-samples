@@ -1,4 +1,5 @@
 #version 400 core
+#extension EXT_separate_shader_objects : require
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -18,7 +19,7 @@ uniform sampler2D Diffuse;
 
 in vert
 {
-	layout(location = VERT_TEXCOORD) vec2 Texcoord;
+	vec2 Texcoord;
 } Vert;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;

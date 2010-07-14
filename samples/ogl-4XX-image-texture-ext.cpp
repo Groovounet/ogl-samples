@@ -68,18 +68,8 @@ namespace
 		};
 	}//namespace buffer
 
-	namespace program
-	{
-		enum type
-		{
-			VERTEX,
-			FRAGMENT,
-			MAX
-		};
-	}//namespace program
-
 	GLuint VertexArrayName = 0;
-	GLuint ProgramName[program::MAX];
+	GLuint ProgramName;
 
 	GLuint BufferName[buffer::MAX];
 	GLuint Image2DName = 0;
@@ -96,23 +86,23 @@ bool initProgram()
 
 	if(Validated)
 	{
-		std::string VertexSource = glf::loadFile(VERTEX_SHADER_SOURCE);
-		ProgramName[program::VERTEX] = glCreateShaderProgramEXT(GL_VERTEX_SHADER, VertexSource.c_str());
-		Validated = glf::checkProgram(ProgramName[program::VERTEX]);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		std::string FragmentSource = glf::loadFile(FRAGMENT_SHADER_SOURCE);
-		ProgramName[program::FRAGMENT] = glCreateShaderProgramEXT(GL_FRAGMENT_SHADER, FragmentSource.c_str());
-		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
-	}
-
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName[program::VERTEX], "MVP");
-		UniformImageData = glGetUniformLocation(ProgramName[program::FRAGMENT], "ImageData");
-		UniformImageSize = glGetUniformLocation(ProgramName[program::FRAGMENT], "ImageSize");
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformImageData = glGetUniformLocation(ProgramName, "ImageData");
+		UniformImageSize = glGetUniformLocation(ProgramName, "ImageSize");
 	}
 
 	return glf::checkError("initProgram");
@@ -178,9 +168,9 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_direct_state_access;
-	Validated = Validated && GLEW_EXT_separate_shader_objects;
-	Validated = Validated && GLEW_EXT_shader_image_load_store;
+	//Validated = Validated && GLEW_EXT_direct_state_access;
+	//Validated = Validated && GLEW_EXT_separate_shader_objects;
+	//Validated = Validated && GLEW_EXT_shader_image_load_store;
 
 	if(Validated)
 		Validated = initProgram();
@@ -197,8 +187,7 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(buffer::MAX, BufferName);
-	glDeleteProgram(ProgramName[program::VERTEX]);
-	glDeleteProgram(ProgramName[program::FRAGMENT]);
+	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Image2DName);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -216,18 +205,17 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fvEXT(ProgramName[program::VERTEX], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1iEXT(ProgramName[program::FRAGMENT], UniformImageData, 0);
-	glProgramUniform2uivEXT(ProgramName[program::FRAGMENT], UniformImageSize, 1, &ImageSize[0]);
-
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseShaderProgramEXT(GL_VERTEX_SHADER, ProgramName[program::VERTEX]);
-	glUseShaderProgramEXT(GL_FRAGMENT_SHADER, ProgramName[program::FRAGMENT]);
+	glUseProgram(ProgramName);
+	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(UniformImageData, 0);
+	glUniform2uiv(UniformImageSize, 1, &ImageSize[0]);
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
+	glBindTexture(GL_TEXTURE_2D, Image2DName);
 	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA8UI);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);

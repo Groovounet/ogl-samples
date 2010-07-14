@@ -303,7 +303,7 @@ void display()
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
 
-	//glMinSampleShading(2.0f);
+	glMinSampleShading(2.0f);
 	//glEnable(GL_SAMPLE_MASK);
 	//glSampleMaski(0, 0xFF);
 

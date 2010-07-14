@@ -41,15 +41,13 @@ namespace
 		2, 3, 0
 	};
 
-	GLuint const Instances = 2;
-
 	GLuint ProgramName = 0;
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
 	GLuint TransformBufferName = 0;
 	GLuint MaterialBufferName = 0;
-	GLint UniformTransform[Instances];
+	GLint UniformTransform;
 	GLint UniformMaterial = 0;
 
 }//namespace
@@ -77,12 +75,8 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
-		glf::checkError("initProgram 4");
 		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material");
-		glf::checkError("initProgram 5");
-		UniformTransform[0] = glGetUniformBlockIndex(ProgramName, "transform[0]");
-		glf::checkError("initProgram 6");
-		UniformTransform[1] = glGetUniformBlockIndex(ProgramName, "transform[1]");
+		UniformTransform = glGetUniformBlockIndex(ProgramName, "transform");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -122,7 +116,7 @@ bool initUniformBuffer()
 
 	glGetActiveUniformBlockiv(
 		ProgramName,
-		UniformTransform[0],
+		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSize);
 	glGenBuffers(1, &TransformBufferName);
@@ -186,12 +180,8 @@ void display()
 	glNamedBufferSubDataEXT(TransformBufferName, 0, sizeof(MVP), &MVP[0][0]);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-	glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM0);
+	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM0);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
-
-	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-	glUniformBlockBinding(ProgramName, UniformTransform[1], glf::semantic::uniform::TRANSFORM1);
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM1, TransformBufferName);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
 	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
@@ -210,7 +200,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, Instances, 0);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
