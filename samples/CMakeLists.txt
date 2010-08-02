@@ -158,10 +158,10 @@ glCreateSampleGTC(fbo-rtt)
 set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-texture-array)
 
-set(GL_SHADER_GTC subroutine.vert subroutine.frag)
-glCreateSampleGTC(program-subroutine)
 set(GL_SHADER_GTC double.vert double.frag)
 glCreateSampleGTC(program-64)
+set(GL_SHADER_GTC subroutine.vert subroutine.frag)
+glCreateSampleGTC(program-subroutine)
 
 set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
 glCreateSampleGTC(primitive-instanced)
@@ -174,5 +174,13 @@ set(GL_SHADER_GTC gather.vert gather.frag)
 glCreateSampleGTC(sampler-gather)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
+
+# OpenGL 4.1 samples
+set(GL_VERSION_GTC 410)
+
+set(GL_SHADER_GTC double.vert double.frag)
+glCreateSampleGTC(program-64)
+set(GL_SHADER_GTC separate.vert separate.frag)
+glCreateSampleGTC(program-separate)
 
 endif(APPLE)
