@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Double
-// 28/06/2010 - 28/06/2010
+// 02/08/2010 - 02/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Double";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/double.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/double.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/double.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/double.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MINOR_VERSION = 1;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 

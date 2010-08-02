@@ -8,6 +8,10 @@
 #		define APIENTRYP APIENTRY *
 #	endif
 
+// Declare OpenGL 4.1 functions
+typedef void (APIENTRYP PFNGLVERTEXATTRIBLPOINTERPROC) (GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+
+PFNGLVERTEXATTRIBLPOINTERPROC glVertexAttribLPointer = 0;
 
 #endif//WIN32
 
@@ -141,6 +145,9 @@ namespace glf
 		glUniformMatrix3x4dv = (PFNGLUNIFORMMATRIX3X4DVPROC)glfGetProcAddress("glUniformMatrix3x4dv");
 		glUniformMatrix4x2dv = (PFNGLUNIFORMMATRIX4X2DVPROC)glfGetProcAddress("glUniformMatrix4x2dv");
 		glUniformMatrix4x3dv = (PFNGLUNIFORMMATRIX4X3DVPROC)glfGetProcAddress("glUniformMatrix4x3dv");
+
+		// Load OpenGL 4.1 functions
+		glVertexAttribLPointer = (PFNGLVERTEXATTRIBLPOINTERPROC)glfGetProcAddress("glVertexAttribLPointer");
 #endif//WIN32
 	}
 

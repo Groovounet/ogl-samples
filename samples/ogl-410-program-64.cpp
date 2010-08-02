@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Double
-// 28/06/2010 - 28/06/2010
+// 02/08/2010 - 02/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Double";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/double.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/double.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/double.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/double.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MINOR_VERSION = 1;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -32,20 +32,20 @@ namespace
 	};
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::dvec2);
+	glm::dvec2 const PositionData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f)
+		glm::dvec2(-1.0f,-1.0f),
+		glm::dvec2( 1.0f,-1.0f),
+		glm::dvec2( 1.0f, 1.0f),
+		glm::dvec2(-1.0f, 1.0f)
 	};
 
 	namespace buffer
 	{
 		enum type
 		{
-			F32,
+			F64,
 			ELEMENT,
 			MAX
 		};
@@ -97,7 +97,7 @@ bool initVertexBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::F32]);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::F64]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -109,8 +109,8 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
 
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::F32]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::F64]);
+		glVertexAttribLPointer(glf::semantic::attr::POSITION, 2, GL_DOUBLE, sizeof(glm::dvec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);

@@ -1,4 +1,4 @@
-#version 400 core
+#version 410 core
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -12,7 +12,7 @@
 
 uniform dmat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = ATTR_POSITION) in dvec2 Position;
 
 void main()
 {	
