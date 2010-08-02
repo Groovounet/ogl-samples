@@ -216,6 +216,9 @@ bool begin()
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	//glEnable(GL_SAMPLE_MASK);
+	//glSampleMaski(0, 0xFF);
+
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -302,9 +305,9 @@ void display()
 
 	// Pass 1, render the scene in a multisampled framebuffer
 	glEnable(GL_MULTISAMPLE);
-	//glEnable(GL_SAMPLE_MASK);
-	//glMinSampleShadingARB(2.0f);
-	//glSampleMaski(0, 0xFF);
+	glEnable(GL_SAMPLE_SHADING);
+	glMinSampleShading(2.0f);
+
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
 
