@@ -5,12 +5,12 @@ layout(vertices = 4) out;
 in vert
 {
 	vec4 Color;
-} Vert[gl_in.length()];
+} Vert[4];//gl_in.length()
 
 out cont
 {
 	vec4 Color;
-} Cont[gl_in.length()];
+} Cont[4];//gl_in.length()
 
 void main()
 {	
