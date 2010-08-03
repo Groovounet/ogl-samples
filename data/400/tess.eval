@@ -5,7 +5,7 @@ layout(quads, equal_spacing, ccw) in;
 in cont
 {
 	vec4 Color;
-} Cont[gl_in.length()];
+} Cont[];//[gl_in.length()];
 
 out eval
 {
