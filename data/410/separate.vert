@@ -16,10 +16,14 @@
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec3 Position;
+layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
+
+layout(location = VERT_TEXCOORD) out vec2 VertTexcoord;
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position, 1.0);
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	VertTexcoord = Texcoord;
 }
 

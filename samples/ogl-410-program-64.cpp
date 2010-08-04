@@ -160,6 +160,9 @@ void display()
 	glm::dmat4 Model = glm::dmat4(1.0f);
 	glm::dmat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4dv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform4dv(ProgramName, UniformDiffuse, 1, &glm::dvec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
@@ -168,9 +171,6 @@ void display()
 
 	// Bind program
 	glUseProgram(ProgramName);
-
-	glUniformMatrix4dv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform4dv(UniformDiffuse, 1, &glm::dvec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
