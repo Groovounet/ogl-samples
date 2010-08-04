@@ -181,6 +181,7 @@ set(GL_VERSION_GTC 410)
 set(GL_SHADER_GTC double.vert double.frag)
 glCreateSampleGTC(program-64)
 set(GL_SHADER_GTC separate.vert separate.frag)
+glCreateSampleGTC(program-binary)
 glCreateSampleGTC(program-separate)
 
 endif(APPLE)
