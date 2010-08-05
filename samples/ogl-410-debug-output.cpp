@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Separate program
+// OpenGL Debug output
 // 02/08/2010 - 02/08/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Separate program";
+	std::string const SAMPLE_NAME = "OpenGL Debug output";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -71,6 +71,12 @@ namespace
 	GLuint Texture2DName = 0;
 
 }//namespace
+
+bool initDebugOutput()
+{
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	
+}
 
 bool initProgram()
 {
