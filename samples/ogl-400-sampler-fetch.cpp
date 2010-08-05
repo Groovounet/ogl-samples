@@ -174,6 +174,9 @@ bool begin()
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	//glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	//glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

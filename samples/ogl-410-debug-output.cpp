@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Separate program
+// OpenGL Debug output
 // 02/08/2010 - 02/08/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Separate program";
+	std::string const SAMPLE_NAME = "OpenGL Debug output";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -71,6 +71,14 @@ namespace
 	GLuint Texture2DName = 0;
 
 }//namespace
+
+bool initDebugOutput()
+{
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
 
 bool initProgram()
 {
@@ -180,6 +188,8 @@ bool begin()
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
+		Validated = initDebugOutput();
+	if(Validated)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initVertexBuffer();
@@ -238,6 +248,7 @@ void display()
 	glBindProgramPipeline(0);
 
 	glf::checkError("display");
+	//glf::checkDebugOutput();
 	glf::swapBuffers();
 }
 

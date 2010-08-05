@@ -16,6 +16,8 @@
 
 layout(triangles, invocations = 6) in;
 
+in vec3 Color[];
+
 layout(stream = 0) out geom
 {
 	vec3 Color;
@@ -28,7 +30,7 @@ void main()
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = MVP * (gl_in[i].gl_Position + vec4(vec2(0.0), - 0.3 + float(0.1) * float(gl_InvocationID), 0.0));
-		Geom.Color = vec3(gl_InvocationID + 1) / 6.0;
+		Geom.Color = (vec3(gl_InvocationID + 1) / 6.0 + Color[i]) / 2.0; 
 		EmitVertex();
 	}
 	EndPrimitive();
