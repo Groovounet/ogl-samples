@@ -85,6 +85,17 @@ typedef void (GLAPIENTRY * PFNGLGETPROGRAMPIPELINEIV) (GLuint pipeline, GLenum p
 typedef void (GLAPIENTRY * PFNGLVALIDATEPROGRAMPIPELINE) (GLuint pipeline);
 typedef void (GLAPIENTRY * PFNGLGETPROGRAMPIPELINEINFOLOG) (GLuint pipeline, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
 
+typedef void (GLAPIENTRY * PFNGLVIEWPORTARRAYV) (GLuint first, GLsizei count, const GLfloat * v);
+typedef void (GLAPIENTRY * PFNGLVIEWPORTINDEXEDF) (GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+typedef void (GLAPIENTRY * PFNGLVIEWPORTINDEXEDFV) (GLuint index, const GLfloat * v);
+typedef void (GLAPIENTRY * PFNGLSCISSORARRAYV) (GLuint first, GLsizei count, const GLint * v);
+typedef void (GLAPIENTRY * PFNGLSCISSORINDEXED) (GLuint index, GLint left, GLint bottom, GLsizei width, GLsizei height);
+typedef void (GLAPIENTRY * PFNGLSCISSORINDEXEDV) (GLuint index, const GLint * v);
+typedef void (GLAPIENTRY * PFNGLDEPTHRANGEARRAYV) (GLuint first, GLsizei count, const GLclampd * v);
+typedef void (GLAPIENTRY * PFNGLDEPTHRANGEINDEXED) (GLuint index, GLclampd n, GLclampd f);
+typedef void (GLAPIENTRY * PFNGLGETFLOATI_V) (GLenum target, GLuint index, GLfloat *data);
+typedef void (GLAPIENTRY * PFNGLGETDOUBLEI_V) (GLenum target, GLuint index, GLdouble *data);
+
 PFNGLVERTEXATTRIBLPOINTERPROC glVertexAttribLPointer = 0;
 
 PFNGLPROGRAMUNIFORM1FPROC glProgramUniform1f = 0;
@@ -154,6 +165,17 @@ PFNGLPROGRAMPARAMETERI glProgramParameteri = 0;
 PFNGLGETPROGRAMPIPELINEIV glGetProgramPipelineiv = 0;
 PFNGLVALIDATEPROGRAMPIPELINE glValidateProgramPipeline = 0;
 PFNGLGETPROGRAMPIPELINEINFOLOG glGetProgramPipelineInfoLog = 0;
+
+PFNGLVIEWPORTARRAYV glViewportArrayv = 0;
+PFNGLVIEWPORTINDEXEDF glViewportIndexedf = 0;
+PFNGLVIEWPORTINDEXEDFV glViewportIndexedfv = 0;
+PFNGLSCISSORARRAYV glScissorArrayv = 0;
+PFNGLSCISSORINDEXED glScissorIndexed = 0;
+PFNGLSCISSORINDEXEDV glScissorIndexedv = 0;
+PFNGLDEPTHRANGEARRAYV glDepthRangeArrayv = 0;
+PFNGLDEPTHRANGEINDEXED glDepthRangeIndexed = 0;
+PFNGLGETFLOATI_V glGetFloati_v = 0;
+PFNGLGETDOUBLEI_V glGetDoublei_v = 0;
 
 #endif//WIN32
 
@@ -358,6 +380,17 @@ namespace glf
 		glGetProgramPipelineiv = (PFNGLGETPROGRAMPIPELINEIV)glfGetProcAddress("glGetProgramPipelineiv");
 		glValidateProgramPipeline = (PFNGLVALIDATEPROGRAMPIPELINE)glfGetProcAddress("glValidateProgramPipeline");
 		glGetProgramPipelineInfoLog = (PFNGLGETPROGRAMPIPELINEINFOLOG)glfGetProcAddress("glGetProgramPipelineInfoLog");
+
+		glViewportArrayv = (PFNGLVIEWPORTARRAYV)glfGetProcAddress("glViewportArrayv");;
+		glViewportIndexedf = (PFNGLVIEWPORTINDEXEDF)glfGetProcAddress("glViewportIndexedf");
+		glViewportIndexedfv = (PFNGLVIEWPORTINDEXEDFV)glfGetProcAddress("glViewportIndexedfv");
+		glScissorArrayv = (PFNGLSCISSORARRAYV)glfGetProcAddress("glScissorArrayv");
+		glScissorIndexed = (PFNGLSCISSORINDEXED)glfGetProcAddress("glScissorIndexed");
+		glScissorIndexedv = (PFNGLSCISSORINDEXEDV)glfGetProcAddress("glScissorIndexedv");
+		glDepthRangeArrayv = (PFNGLDEPTHRANGEARRAYV)glfGetProcAddress("glDepthRangeArrayv");
+		glDepthRangeIndexed = (PFNGLDEPTHRANGEINDEXED)glfGetProcAddress("glDepthRangeIndexed");
+		glGetFloati_v = (PFNGLGETFLOATI_V)glfGetProcAddress("glGetFloati_v");
+		glGetDoublei_v = (PFNGLGETDOUBLEI_V)glfGetProcAddress("glGetDoublei_v");
 
 #endif//WIN32
 	}

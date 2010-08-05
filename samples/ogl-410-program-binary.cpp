@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Separate program
+// OpenGL Program binary
 // 02/08/2010 - 02/08/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Separate program";
+	std::string const SAMPLE_NAME = "OpenGL Program binary";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -85,6 +85,12 @@ bool initProgram()
 		char const * VertexSourcePointer = VertexSourceContent.c_str();
 		ProgramName[program::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &VertexSourcePointer);
 		Validated = glf::checkProgram(ProgramName[program::VERTEX]);
+
+		GLint BinaryLength = 0;
+        glGetProgramiv(ProgramName[program::VERTEX], GL_PROGRAM_BINARY_LENGTH, &BinaryLength);
+		std::vector<glm::byte> BinaryData(BinaryLength);
+        glGetProgramBinary(ProgramName[program::VERTEX], BinaryData.size(), NULL, binaryFormat, &BinaryData[0]);
+		glf::saveFile(glf::DATA_DIRECTORY + "410/separate.vert.bin", BinaryData);
 	}
 
 	if(Validated)
@@ -93,6 +99,12 @@ bool initProgram()
 		char const * FragmentSourcePointer = FragmentSourceContent.c_str();
 		ProgramName[program::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &FragmentSourcePointer);
 		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
+
+		GLint BinaryLength = 0;
+        glGetProgramiv(ProgramName[program::FRAGMENT], GL_PROGRAM_BINARY_LENGTH, &BinaryLength);
+		std::vector<glm::byte> BinaryData(BinaryLength);
+        glGetProgramBinary(ProgramName[program::FRAGMENT], BinaryData.size(), NULL, binaryFormat, &BinaryData[0]);
+		glf::saveFile(glf::DATA_DIRECTORY + "410/separate.frag.bin", BinaryData);
 	}
 
 	// Get variables locations
@@ -220,7 +232,7 @@ void display()
 	glProgramUniform1i(ProgramName[program::FRAGMENT], UniformDiffuse, 0);
 
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
