@@ -75,7 +75,9 @@ namespace
 bool initDebugOutput()
 {
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
 }
 
 bool initProgram()
@@ -186,6 +188,8 @@ bool begin()
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
+		Validated = initDebugOutput();
+	if(Validated)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initVertexBuffer();
@@ -244,6 +248,7 @@ void display()
 	glBindProgramPipeline(0);
 
 	glf::checkError("display");
+	//glf::checkDebugOutput();
 	glf::swapBuffers();
 }
 

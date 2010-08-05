@@ -1,9 +1,9 @@
 #include <GL/freeglut.h>
 
 #ifdef WIN32
-#	ifndef APIENTRY
+//#	ifndef APIENTRY
 #		define APIENTRY
-#	endif
+//#	endif
 #	ifndef APIENTRYP
 #		define APIENTRYP APIENTRY *
 #	endif
@@ -200,19 +200,24 @@ PFNGLGETDOUBLEI_V glGetDoublei_v = 0;
 #define GL_DEBUG_SEVERITY_HIGH_ARB                    0x9146
 #define GL_DEBUG_SEVERITY_MEDIUM_ARB                  0x9147
 #define GL_DEBUG_SEVERITY_LOW_ARB                     0x9148
- 
+
+typedef void (APIENTRY *GLDEBUGPROCARB)(GLenum source,
+                                        GLenum type,
+                                        GLuint id,
+                                        GLenum severity,
+                                        GLsizei length,
+                                        const GLchar* message,
+                                        GLvoid* userParam);
+
 typedef void (APIENTRYP PFNGLDEBUGMESSAGECONTROLARBPROC) (unsigned int source, unsigned int type,
-unsigned int severity, int count, const unsigned int* ids, bool enabled);
+	unsigned int severity, int count, const unsigned int* ids, bool enabled);
 typedef void (APIENTRYP PFNGLDEBUGMESSAGEINSERTARBPROC) (unsigned int source, unsigned int type,
-unsigned int id, unsigned int severity, int length, const char* buf);
-typedef void (APIENTRY *GLDEBUGPROCARB)(unsigned int source, unsigned int type, unsigned int id,
-unsigned int severity, int length, const char* message, void* userParam);
+	unsigned int id, unsigned int severity, int length, const char* buf);
 typedef void (APIENTRYP PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callback,
-void* userParam);
+	void* userParam);
 typedef unsigned int (APIENTRYP PFNGLGETDEBUGMESSAGELOGARBPROC) (unsigned int count, int bufsize,
-unsigned int* sources,unsigned int* types, unsigned int* ids,
-unsigned int* severities, int* lengths, char* messageLog);
-#endif
+	unsigned int* sources,unsigned int* types, unsigned int* ids,
+	unsigned int* severities, int* lengths, char* messageLog);
  
 extern PFNGLDEBUGMESSAGECONTROLARBPROC  glDebugMessageControlARB;
 extern PFNGLDEBUGMESSAGEINSERTARBPROC   glDebugMessageInsertARB;
@@ -579,6 +584,91 @@ namespace glf
 
 		return Name;
 	}
+
+	static void debugOutput
+	(
+		GLenum source,
+		GLenum type,
+		GLuint id,
+		GLenum severity,
+		GLsizei length,
+		const GLchar* message,
+		GLvoid* userParam
+	)
+	{
+		FILE* f;
+		f = fopen("debug_output.txt","a");
+		if(f)
+		{
+			 char debSource[16], debType[20], debSev[5];
+			 if(source == 0x8246)
+					strcpy(debSource, "OpenGL");
+			 else if(source == 0x8247)
+					strcpy(debSource, "Windows");
+			 else if(source == 0x8248)
+					strcpy(debSource, "Shader Compiler");
+			 else if(source == 0x8249)
+					strcpy(debSource, "Third Party");
+			 else if(source == 0x824A)
+					strcpy(debSource, "Application");
+			 else if(source == 0x824B)
+					strcpy(debSource, "Other");
+
+			 if(type == 0x824C)
+					strcpy(debType, "Error");
+			 else if(type == 0x824D)
+					strcpy(debType, "Deprecated behavior");
+			 else if(type == 0x824E)
+					strcpy(debType, "Undefined behavior");
+			 else if(type == 0x824F)
+					strcpy(debType, "Portability");
+			 else if(type == 0x8250)
+					strcpy(debType, "Performance");
+			 else if(type == 0x8251)
+					strcpy(debType, "Other");
+
+			 if(severity == 0x9146)
+					strcpy(debSev, "High");
+			 else if(severity == 0x9147)
+					strcpy(debSev, "Medium");
+			 else if(severity == 0x9148)
+					strcpy(debSev, "Low");
+
+			 fprintf(f,"Source:%s\tType:%s\tID:%d\tSeverity:%s\tMessage:%s\n", debSource,debType,id,debSev,message);
+			 fclose(f);
+		}
+	}
+
+	//void checkDebugOutput()
+	//{
+	//	   unsigned int count = 10; // max. num. of messages that will be read from the log
+	//	   int bufsize = 2048;
+	// 
+	//	   unsigned int* sources      = new unsigned int[count];
+	//	   unsigned int* types        = new unsigned int[count];
+	//	   unsigned int* ids   = new unsigned int[count];
+	//	   unsigned int* severities = new unsigned int[count];
+	//	   int* lengths = new int[count];
+	// 
+	//	   char* messageLog = new char[bufsize];
+	// 
+	//	   unsigned int retVal = glGetDebugMessageLogARB(count, bufsize, sources, types, ids, severities, lengths, messageLog);
+	//	   if(retVal > 0)
+	//	   {
+	//			 unsigned int pos = 0;
+	//			 for(unsigned int i=0; i<retVal; i++)
+	//			 {
+	//					debugOutput(sources[i], types[i], ids[i], severities[i], &messageLog[pos]);
+	//					pos += lengths[i];
+	//			  }
+	//	   }
+	//	   delete [] sources;
+	//	   delete [] types;
+	//	   delete [] ids;
+	//	   delete [] severities;
+	//	   delete [] lengths;
+	//	   delete [] messageLog;
+	//}
 
 	inline int version(int Major, int Minor)
 	{
