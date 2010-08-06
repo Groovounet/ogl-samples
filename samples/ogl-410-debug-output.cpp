@@ -217,6 +217,8 @@ bool end()
 
 void display()
 {
+	//glf::checkDebugOutput();
+
 	// Compute the MVP (Model View Projection matrix)
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslateZ = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
@@ -242,13 +244,12 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
-	glBindVertexArray(VertexArrayName);
+	glBindVertexArray(5);//VertexArrayName);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 
 	glBindProgramPipeline(0);
 
-	glf::checkError("display");
-	//glf::checkDebugOutput();
+	//glf::checkError("display");
 	glf::swapBuffers();
 }
 

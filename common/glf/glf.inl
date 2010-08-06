@@ -596,9 +596,9 @@ namespace glf
 		GLvoid* userParam
 	)
 	{
-		FILE* f;
-		f = fopen("debug_output.txt","a");
-		if(f)
+		//FILE* f;
+		//f = fopen("debug_output.txt","a");
+		//if(f)
 		{
 			 char debSource[16], debType[20], debSev[5];
 			 if(source == 0x8246)
@@ -634,41 +634,41 @@ namespace glf
 			 else if(severity == 0x9148)
 					strcpy(debSev, "Low");
 
-			 fprintf(f,"Source:%s\tType:%s\tID:%d\tSeverity:%s\tMessage:%s\n", debSource,debType,id,debSev,message);
-			 fclose(f);
+			 fprintf(stderr,"Source:%s\tType:%s\tID:%d\tSeverity:%s\tMessage:%s\n", debSource,debType,id,debSev,message);
+			 //fclose(f);
 		}
 	}
 
-	//void checkDebugOutput()
-	//{
-	//	   unsigned int count = 10; // max. num. of messages that will be read from the log
-	//	   int bufsize = 2048;
-	// 
-	//	   unsigned int* sources      = new unsigned int[count];
-	//	   unsigned int* types        = new unsigned int[count];
-	//	   unsigned int* ids   = new unsigned int[count];
-	//	   unsigned int* severities = new unsigned int[count];
-	//	   int* lengths = new int[count];
-	// 
-	//	   char* messageLog = new char[bufsize];
-	// 
-	//	   unsigned int retVal = glGetDebugMessageLogARB(count, bufsize, sources, types, ids, severities, lengths, messageLog);
-	//	   if(retVal > 0)
-	//	   {
-	//			 unsigned int pos = 0;
-	//			 for(unsigned int i=0; i<retVal; i++)
-	//			 {
-	//					debugOutput(sources[i], types[i], ids[i], severities[i], &messageLog[pos]);
-	//					pos += lengths[i];
-	//			  }
-	//	   }
-	//	   delete [] sources;
-	//	   delete [] types;
-	//	   delete [] ids;
-	//	   delete [] severities;
-	//	   delete [] lengths;
-	//	   delete [] messageLog;
-	//}
+	void checkDebugOutput()
+	{
+		   unsigned int count = 10; // max. num. of messages that will be read from the log
+		   int bufsize = 2048;
+	 
+		   unsigned int* sources      = new unsigned int[count];
+		   unsigned int* types        = new unsigned int[count];
+		   unsigned int* ids   = new unsigned int[count];
+		   unsigned int* severities = new unsigned int[count];
+		   int* lengths = new int[count];
+	 
+		   char* messageLog = new char[bufsize];
+	 
+		   unsigned int retVal = glGetDebugMessageLogARB(count, bufsize, sources, types, ids, severities, lengths, messageLog);
+		   if(retVal > 0)
+		   {
+				 unsigned int pos = 0;
+				 for(unsigned int i=0; i<retVal; i++)
+				 {
+						debugOutput(sources[i], types[i], ids[i], severities[i], NULL, &messageLog[pos], NULL);
+						pos += lengths[i];
+				  }
+		   }
+		   delete [] sources;
+		   delete [] types;
+		   delete [] ids;
+		   delete [] severities;
+		   delete [] lengths;
+		   delete [] messageLog;
+	}
 
 	inline int version(int Major, int Minor)
 	{
