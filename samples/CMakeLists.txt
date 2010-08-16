@@ -178,6 +178,8 @@ glCreateSampleGTC(transform-feedback-object)
 # OpenGL 4.1 samples
 set(GL_VERSION_GTC 410)
 
+set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
+glCreateSampleGTC(primitive-instanced)
 set(GL_SHADER_GTC separate.vert separate.frag)
 glCreateSampleGTC(debug-output)
 set(GL_SHADER_GTC double.vert double.frag)

@@ -205,7 +205,6 @@ bool end()
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteProgram(ProgramName[program::VERTEX]);
 	glDeleteProgram(ProgramName[program::FRAGMENT]);
-	//glBindProgramPipeline(0);
 	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
