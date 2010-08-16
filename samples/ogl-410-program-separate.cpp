@@ -88,12 +88,18 @@ bool initProgram()
 	}
 
 	if(Validated)
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
+
+	if(Validated)
 	{
 		std::string FragmentSourceContent = glf::loadFile(FRAGMENT_SHADER_SOURCE);
 		char const * FragmentSourcePointer = FragmentSourceContent.c_str();
 		ProgramName[program::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &FragmentSourcePointer);
 		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 
 	// Get variables locations
 	if(Validated)
@@ -199,7 +205,7 @@ bool end()
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteProgram(ProgramName[program::VERTEX]);
 	glDeleteProgram(ProgramName[program::FRAGMENT]);
-	glBindProgramPipeline(0);
+	//glBindProgramPipeline(0);
 	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
@@ -226,8 +232,6 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	glBindProgramPipeline(PipelineName);
-	glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
-	glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
