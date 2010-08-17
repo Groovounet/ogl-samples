@@ -13,7 +13,7 @@
 
 uniform sampler2D Diffuse;
 
-in
+in vert
 {
 	vec2 Texcoord;
 } Vert;

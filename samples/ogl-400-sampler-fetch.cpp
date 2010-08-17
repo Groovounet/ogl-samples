@@ -158,8 +158,6 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -224,6 +222,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
 	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 
 	glf::checkError("display");
