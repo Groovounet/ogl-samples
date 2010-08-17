@@ -784,9 +784,6 @@ namespace glf
 
 		glutCreateWindow(argv[0]);
 		glewInit();
-#ifdef WIN32
-		glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORARBPROC)glfGetProcAddress("glVertexAttribDivisor");
-#endif//WIN32
 		glGetError();
 		glf::init();
 

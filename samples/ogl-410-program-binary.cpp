@@ -85,13 +85,10 @@ bool initProgram()
 		char const * VertexSourcePointer = VertexSourceContent.c_str();
 		ProgramName[program::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &VertexSourcePointer);
 		Validated = glf::checkProgram(ProgramName[program::VERTEX]);
-
-		GLint BinaryLength = 0;
-        glGetProgramiv(ProgramName[program::VERTEX], GL_PROGRAM_BINARY_LENGTH, &BinaryLength);
-		std::vector<glm::byte> BinaryData(BinaryLength);
-        glGetProgramBinary(ProgramName[program::VERTEX], BinaryData.size(), NULL, binaryFormat, &BinaryData[0]);
-		glf::saveFile(glf::DATA_DIRECTORY + "410/separate.vert.bin", BinaryData);
 	}
+
+	if(Validated)	
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
 
 	if(Validated)
 	{
@@ -99,13 +96,10 @@ bool initProgram()
 		char const * FragmentSourcePointer = FragmentSourceContent.c_str();
 		ProgramName[program::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &FragmentSourcePointer);
 		Validated = glf::checkProgram(ProgramName[program::FRAGMENT]);
-
-		GLint BinaryLength = 0;
-        glGetProgramiv(ProgramName[program::FRAGMENT], GL_PROGRAM_BINARY_LENGTH, &BinaryLength);
-		std::vector<glm::byte> BinaryData(BinaryLength);
-        glGetProgramBinary(ProgramName[program::FRAGMENT], BinaryData.size(), NULL, binaryFormat, &BinaryData[0]);
-		glf::saveFile(glf::DATA_DIRECTORY + "410/separate.frag.bin", BinaryData);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 
 	// Get variables locations
 	if(Validated)
@@ -176,8 +170,6 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -203,8 +195,36 @@ bool begin()
 	return Validated && glf::checkError("begin");
 }
 
+bool saveProgram()
+{
+	GLint Size = 0;
+	{
+		glGetProgramiv(ProgramName[program::VERTEX], GL_PROGRAM_BINARY_LENGTH, &Size);
+		std::vector<glm::byte> Data(Size);
+		glGetProgramBinary(ProgramName[program::VERTEX], Size, NULL, binaryFormat, &Data[0]);
+		glf::saveBinary(glf::DATA_DIRECTORY + "410/separate.vert.bin", Data);
+	}
+
+	{
+		glGetProgramiv(ProgramName[program::VERTEX], GL_PROGRAM_BINARY_LENGTH, &Size);
+		std::vector<glm::byte> Data(Size);
+		glGetProgramBinary(ProgramName[program::VERTEX], Size, NULL, binaryFormat, &Data[0]);
+		glf::saveBinary(glf::DATA_DIRECTORY + "410/separate.frag.bin", Data);
+	}
+
+    //
+    //  Cache the program binary for future runs
+    //
+    outfile = fopen(myBinaryFileName, "wb");
+    fwrite(binary, binaryLength, 1, outfile);
+    fclose(outfile);
+    free(binary);
+}
+
 bool end()
 {
+	saveProgram();
+
 	// Delete objects
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -238,16 +258,13 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	glBindProgramPipeline(PipelineName);
-	glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
-	glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
 	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]); //!\ Need to be called after glBindVertexArray
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
-
-	glBindProgramPipeline(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
