@@ -60,6 +60,14 @@ namespace
 
 }//namespace
 
+bool initDebugOutput()
+{
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool initProgram()
 {
 	bool Validated = true;
@@ -135,6 +143,8 @@ bool begin()
 
 	glEnable(GL_DEPTH_TEST);
 
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
