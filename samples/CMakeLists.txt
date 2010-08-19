@@ -151,6 +151,8 @@ set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(draw-indirect)
 
+set(GL_SHADER_GTC layer.vert layer.geom layer.frag)
+glCreateSampleGTC(fbo-layering)
 set(GL_SHADER_GTC multisample.vert multisample.frag)
 glCreateSampleGTC(fbo-multisample)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag multiple-output.vert multiple-output.frag)
