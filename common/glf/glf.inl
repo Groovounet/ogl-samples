@@ -505,6 +505,40 @@ namespace glf
 		return Error == GL_NO_ERROR;
 	}
 
+	bool checkFramebuffer(GLuint FramebufferName)
+	{
+		GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		switch(Status)
+		{
+		case GL_FRAMEBUFFER_UNDEFINED:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_UNDEFINED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_UNSUPPORTED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			fprintf(stdout, "OpenGL Error(%s)\n", "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+			break;
+		}
+
+		return Status != GL_FRAMEBUFFER_COMPLETE;
+	}
+
 	inline bool validateProgram(GLuint ProgramName)
 	{
 		if(!ProgramName)
