@@ -1,103 +1,185 @@
-//**********************************\\
-// Render to vertex buffer			\\
-//**********************************\\
-// OpenGL 2.1						\\
-//**********************************\\
-// 13/12/2008 - Christophe Riccio	\\
-// G-Truc Creation - www.g-truc.net \\
-//**********************************\\
+//**********************************
+// OpenGL Render to vertex buffer
+// 13/12/2008 - 19/08/2010
+//**********************************
+// Christophe Riccio
+// g.truc.creation@gmail.com
+//**********************************
+// G-Truc Creation
+// www.g-truc.net
+//**********************************
 
-#include "main.h"
-#include "image/loader.hpp"
-#include <vector>
-
-namespace glm
-{
-    using GLM_GTX_transform;
-    using GLM_GTX_matrix_projection;
-    using GLM_GTX_number_precision;
-}
+#include <glf/glf.hpp>
 
 namespace
 {
-	const char* TITLE = "Render to vertex buffer, OpenGL 2.1";
+	std::string const SAMPLE_NAME = "OpenGL Viewport";
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/r2vb1.vert");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/r2vb1.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/r2vb2.vert");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/r2vb2.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
+	std::string const TEXTURE_HEIGHTMAP(glf::DATA_DIRECTORY + "heightmap.dds");
+	int const SAMPLE_SIZE_WIDTH = 640;
+	int const SAMPLE_SIZE_HEIGHT = 480;
+	int const SAMPLE_MAJOR_VERSION = 3;
+	int const SAMPLE_MINOR_VERSION = 3;
 
-	std::string loadFile(const char* Filename)
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
+
+	GLsizei const VertexCount = 4;
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
+	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
-		std::ifstream stream(Filename, std::ios::in);
-
-		if(!stream.is_open())
-			return "";
-
-		std::string Line = "";
-		std::string Text = "";
-
-		while(getline(stream, Line))
-    		Text += "\n" + Line;
-
-		stream.close();
-
-		return Text;
-	}
-
-	bool checkError(const char* Title)
-	{
-	    int Error;
-	    if((Error = glGetError()) != GL_NO_ERROR)
-	    {
-		    const char* Message = (const char*)gluErrorString(Error);
-            fprintf(stdout, "OpenGL Error(%s): %s\n", Title, Message);
-	    }
-
-		return Error == GL_NO_ERROR;
-	}
-
-	const GLsizei VertexCount = 6;
-
-	const GLsizeiptr PositionSize = VertexCount * sizeof(vec2);
-	const vec2 PositionData[VertexCount] =
-	{
-		vec2(-1.0f,-1.0f),
-		vec2( 1.0f,-1.0f),
-		vec2( 1.0f, 1.0f),
-		vec2( 1.0f, 1.0f),
-		vec2(-1.0f, 1.0f),
-		vec2(-1.0f,-1.0f)
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f))
 	};
 
-	const GLsizeiptr TexcoordSize = VertexCount * sizeof(vec2);
-	const vec2 TexcoordData[] =
+	GLsizei const ElementCount = 6;
+	GLsizeiptr const ElementSize = ElementCount * sizeof(GLuint);
+	GLuint const ElementData[ElementCount] =
 	{
-		 vec2(0.0f, 0.0f),
-		 vec2(1.0f, 0.0f),
-		 vec2(1.0f, 1.0f),
-		 vec2(1.0f, 1.0f),
-		 vec2(0.0f, 1.0f),
-		 vec2(0.0f, 0.0f)
+		0, 1, 2, 
+		2, 3, 0
 	};
 
-	const char* VERTEX_SHADER_SOURCE1 = "./data/shader.vert";
-	const char* FRAGMENT_SHADER_SOURCE1 = "./data/shader.frag";
-	const char* VERTEX_SHADER_SOURCE2 = "./data/shader2.vert";
-	const char* FRAGMENT_SHADER_SOURCE2 = "./data/shader2.frag";
-	const char* TEXTURE_DIFFUSE = "./data/diffuse.tga";
-	const char* TEXTURE_HEIGHT = "./data/heightmap.tga";
+
+}//namespace
+
+bool CMain::initTexture2D()
+{
+	stuff::mipmap2D<u8vec3> ColorMap = stuff::load2D<u8vec3>(TEXTURE_DIFFUSE);
+	glGenTextures(1, &texture2DName);
+	glBindTexture(GL_TEXTURE_2D, texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(ColorMap.width()), GLsizei(ColorMap.height()), 0, GL_BGR, GL_UNSIGNED_BYTE, &ColorMap[0]);
+
+	stuff::mipmap2D<u8vec3> HeightMap = stuff::load2D<u8vec3>(TEXTURE_HEIGHT);
+	glGenTextures(1, &heightmapName);
+	glBindTexture(GL_TEXTURE_2D, heightmapName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(HeightMap.width()), GLsizei(HeightMap.height()), 0, GL_RGB, GL_UNSIGNED_BYTE, &HeightMap[0]);
+	
+
+
+	return true;
 }
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-CMain::CMain()
+bool initSampler()
 {
-	title = TITLE;
+
 }
 
-CMain::~CMain()
-{}
-
-bool CMain::Begin(const ivec2& WindowSize)
+bool initTexture2D()
 {
-	windowSize = WindowSize;
+	glGenTextures(1, &Texture2DName);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+
+	// Set image
+	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
+	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGB, 
+			GLsizei(Image[Level].dimensions().x), 
+			GLsizei(Image[Level].dimensions().y), 
+			0,  
+			GL_BGR, 
+			GL_UNSIGNED_BYTE, 
+			Image[Level].data());
+	}
+
+	return glf::checkError("initTexture2D");
+}
+
+bool initProgram()
+{
+	bool Validated = true;
+	
+	if(Validated)
+	{
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
+		glLinkProgram(ProgramName);
+		Validated = glf::checkProgram(ProgramName);
+	}
+
+	if(Validated)
+	{
+		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+	}
+
+	if(Validated)
+	{
+		glUseProgram(ProgramName);
+		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	}
+
+	return Validated;
+}
+
+bool initArrayBuffer()
+{
+	heightmapWidth = GLsizei(HeightMap.width());
+	heightmapHeight = GLsizei(HeightMap.height());
+
+	for(GLint j = 0; j < heightmapHeight - 1; ++j)
+	for(GLint i = 0; i < heightmapWidth - 1; ++i)
+	{
+		indexes.push_back((i + 0) + (j + 0) * heightmapWidth);
+		indexes.push_back((i + 1) + (j + 0) * heightmapWidth);
+		indexes.push_back((i + 1) + (j + 1) * heightmapWidth);
+		indexes.push_back((i + 0) + (j + 0) * heightmapWidth);
+		indexes.push_back((i + 1) + (j + 1) * heightmapWidth);
+		indexes.push_back((i + 0) + (j + 1) * heightmapWidth);
+	}
+
+    glGenBuffers(1, &indexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(unsigned int), &indexes[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	return true;
+}
+
+bool initVertexArray()
+{
+	glGenVertexArrays(1, &VertexArrayName);
+	glBindVertexArray(VertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
 	bool Result = true;
 	if(Result)
 	{
@@ -115,20 +197,39 @@ bool CMain::Begin(const ivec2& WindowSize)
 
 	Result = Result && checkError("Begin");
 	return Result;
+
+	GLint MajorVersion = 0;
+	GLint MinorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
+	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initProgram();
+	if(Validated)
+		Validated = initArrayBuffer();
+	if(Validated)
+		Validated = initVertexArray();
+
+	return Validated && glf::checkError("begin");
 }
 
-bool CMain::End()
+bool end()
 {
 	glDeleteBuffers(1, &indexBuffer);
 	glDeleteProgram(programName[PASS_BUFFER]);
 	glDeleteProgram(programName[PASS_RENDER]);
 	glDeleteTextures(1, &texture2DName);
 	glDeleteTextures(1, &heightmapName);
-	
-	return checkError("End");
+
+	glDeleteBuffers(1, &BufferName);
+	glDeleteProgram(ProgramName);
+	glDeleteVertexArrays(1, &VertexArrayName);
+
+	return glf::checkError("end");
 }
 
-void CMain::Render()
+void display()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -217,140 +318,13 @@ void CMain::Render()
 	checkError("Render");
 }
 
-GLuint CMain::initProgram(const char* VertexShader, const char* FragmentShader)
+int main(int argc, char* argv[])
 {
-	GLuint VertexShaderName = 0;
-
-	fprintf(stdout, "Compiling shader...\n");
-
-	// Compile a shader
-	bool Success = true;
-	if(Success)
-	{
-		std::string VertexSource0 = loadFile(VertexShader);
-		const char* VertexSource = VertexSource0.c_str();
-		VertexShaderName = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(VertexShaderName, 1, &VertexSource, NULL);
-		glCompileShader(VertexShaderName);
-	}
-
-	// Check compiling
-	if(VertexShaderName)
-	{
-		GLint Result = GL_FALSE;
-		glGetShaderiv(VertexShaderName, GL_COMPILE_STATUS, &Result);
-		if(Result == GL_FALSE)
-			Success = false;
-		fprintf(stdout, "%s\n", VertexShader);
-        int InfoLogLength;
-        glGetShaderiv(VertexShaderName, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		std::vector<char> Buffer(InfoLogLength);
-		glGetShaderInfoLog(VertexShaderName, InfoLogLength, NULL, &Buffer[0]);
-		if(InfoLogLength > 1)
-			fprintf(stdout, "%s\n", &Buffer[0]);
-	}
-
-	GLuint FragmentShaderName = 0;
-
-	// Compile a shader
-	if(Success)
-	{
-		std::string Source0 = loadFile(FragmentShader);
-		const char* Source = Source0.c_str();
-		FragmentShaderName = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(FragmentShaderName, 1, &Source, NULL);
-		glCompileShader(FragmentShaderName);
-	}
-
-	// Check compiling
-	if(FragmentShaderName)
-	{
-		GLint Result = GL_FALSE;
-		glGetShaderiv(FragmentShaderName, GL_COMPILE_STATUS, &Result);
-		if(Result == GL_FALSE)
-			Success = false;
-		fprintf(stdout, "%s\n", FragmentShader);
-        int InfoLogLength;
-        glGetShaderiv(FragmentShaderName, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		std::vector<char> Buffer(InfoLogLength);
-		glGetShaderInfoLog(FragmentShaderName, InfoLogLength, NULL, &Buffer[0]);
-		if(InfoLogLength > 1)
-			fprintf(stdout, "%s\n", &Buffer[0]);
-	}
-
-	// Link a program
-	GLuint ProgramName = 0;
-	if(Success)
-	{
-		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glDeleteShader(VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(FragmentShaderName);
-		glLinkProgram(ProgramName);
-	}
-
-	fprintf(stdout, "\nLinking program...\n");
-
-	// Check linking
-	if(ProgramName)
-	{
-		GLint Result = GL_FALSE;
-		glGetProgramiv(ProgramName, GL_LINK_STATUS, &Result);
-		if(Result == GL_FALSE)
-			Success = false;
-
-        int InfoLogLength;
-        glGetProgramiv(ProgramName, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		std::vector<char> Buffer(InfoLogLength);
-		glGetProgramInfoLog(ProgramName, InfoLogLength, NULL, &Buffer[0]);
-		if(InfoLogLength > 1)
-			fprintf(stdout, "%s\n", &Buffer[0]);
-	}
-
-	return ProgramName;
-}
-
-bool CMain::initTexture2D()
-{
-	stuff::mipmap2D<u8vec3> ColorMap = stuff::load2D<u8vec3>(TEXTURE_DIFFUSE);
-	glGenTextures(1, &texture2DName);
-	glBindTexture(GL_TEXTURE_2D, texture2DName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(ColorMap.width()), GLsizei(ColorMap.height()), 0, GL_BGR, GL_UNSIGNED_BYTE, &ColorMap[0]);
-
-	stuff::mipmap2D<u8vec3> HeightMap = stuff::load2D<u8vec3>(TEXTURE_HEIGHT);
-	glGenTextures(1, &heightmapName);
-	glBindTexture(GL_TEXTURE_2D, heightmapName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(HeightMap.width()), GLsizei(HeightMap.height()), 0, GL_RGB, GL_UNSIGNED_BYTE, &HeightMap[0]);
-	
-	heightmapWidth = GLsizei(HeightMap.width());
-	heightmapHeight = GLsizei(HeightMap.height());
-
-	for(GLint j = 0; j < heightmapHeight - 1; ++j)
-	for(GLint i = 0; i < heightmapWidth - 1; ++i)
-	{
-		indexes.push_back((i + 0) + (j + 0) * heightmapWidth);
-		indexes.push_back((i + 1) + (j + 0) * heightmapWidth);
-		indexes.push_back((i + 1) + (j + 1) * heightmapWidth);
-		indexes.push_back((i + 0) + (j + 0) * heightmapWidth);
-		indexes.push_back((i + 1) + (j + 1) * heightmapWidth);
-		indexes.push_back((i + 0) + (j + 1) * heightmapWidth);
-	}
-
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(unsigned int), &indexes[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	return true;
+	if(glf::run(
+		argc, argv,
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
+		return 0;
+	return 1;
 }
