@@ -259,38 +259,50 @@ void display()
 
 	// Pass 1
 	{
+		glf::checkError("display A");
+
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		glf::checkError("display 0");
 
 		glUseProgram(ProgramName[LAYERING]);
 		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
+		glf::checkError("display 1");
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+		glf::checkError("display 2");
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+		glf::checkError("display 3");
 	}
 
 	// Pass 2
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glf::checkError("display 4");
 
 		glUseProgram(ProgramName[IMAGE_2D]);
 		glUniformMatrix4fv(UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuse, 0);
+		glf::checkError("display 5");
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
+		glf::checkError("display 6");
 
 		glBindVertexArray(VertexArrayName[IMAGE_2D]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+		glf::checkError("display 7");
 
 		for(std::size_t i = 0; i < 4; ++i)
 		{
 			glUniform1i(UniformLayer, i);
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
+			glf::checkError("display 8");
 
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+			glf::checkError("display 9");
 		}
 	}
 

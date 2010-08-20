@@ -20,7 +20,7 @@ precision highp int;
 
 layout(triangles, invocations = 4) in;
 
-layout(location = VERT_TEXCOORD) in vec2 Texcoord;
+layout(location = VERT_TEXCOORD) in vec2 Texcoord[];
 layout(location = GEOM_TEXCOORD) out vec2 GeomTexcoord;
 layout(location = GEOM_INSTANCE) flat out int GeomInstance;
 
@@ -34,7 +34,7 @@ void main()
 		gl_Layer = gl_InvocationID;
 		gl_ViewportIndex = gl_InvocationID;
 		GeomInstance = gl_InvocationID;
-		GeomTexcoord = Texcoord;
+		GeomTexcoord = Texcoord[i];
 		EmitVertex();
 	}
 
