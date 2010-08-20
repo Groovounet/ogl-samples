@@ -20,11 +20,11 @@ const vec4 Color[4] = vec4[]
 	vec4(0.0, 0.0, 1.0, 1.0)
 );
 
-in float GeomInstance;
+in int GeomInstance;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	FragColor = Color[int(GeomInstance)];
+	FragColor = Color[GeomInstance];
 }

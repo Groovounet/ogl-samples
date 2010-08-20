@@ -14,7 +14,7 @@ precision mediump int;
 
 layout(triangles, invocations = 4) in;
 
-out float GeomInstance;
+out int GeomInstance;
 
 uniform mat4 MVP;
 

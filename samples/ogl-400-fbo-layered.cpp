@@ -212,10 +212,11 @@ bool initVertexArray()
 
 bool begin()
 {
-	Viewport[0] = glm::ivec4(1, 1, FRAMEBUFFER_SIZE - 2);
-	Viewport[1] = glm::ivec4((Window.Size.x >> 1) + 1, 1, FRAMEBUFFER_SIZE - 2);
-	Viewport[2] = glm::ivec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2);
-	Viewport[3] = glm::ivec4(0, (Window.Size.y >> 1), FRAMEBUFFER_SIZE - 2);
+	int Border = 2;
+	Viewport[0] = glm::ivec4(Border, Border, FRAMEBUFFER_SIZE - 2 * Border);
+	Viewport[1] = glm::ivec4((Window.Size.x >> 1) + Border, 1, FRAMEBUFFER_SIZE - 2 * Border);
+	Viewport[2] = glm::ivec4((Window.Size.x >> 1) + Border, (Window.Size.y >> 1) + Border, FRAMEBUFFER_SIZE - 2 * Border);
+	Viewport[3] = glm::ivec4(Border, (Window.Size.y >> 1) + Border, FRAMEBUFFER_SIZE - 2 * Border);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
