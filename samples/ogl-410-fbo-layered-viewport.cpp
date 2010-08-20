@@ -14,17 +14,17 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Layered rendering";
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.vert");
-	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.geom");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.vert");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.frag");
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "410/layer.vert");
+	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "410/layer.geom");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "410/layer.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "410/viewport.vert");
+	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "410/viewport.geom");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "410/viewport.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MINOR_VERSION = 1;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -56,7 +56,7 @@ namespace
 	enum program 
 	{
 		LAYERING,
-		IMAGE_2D,
+		VIEWPORT,
 		PROGRAM_MAX
 	};
 
@@ -66,12 +66,9 @@ namespace
 	GLuint ProgramName[PROGRAM_MAX];
 	GLuint UniformMVP[PROGRAM_MAX];
 	GLuint UniformDiffuse = 0;
-	GLuint UniformLayer = 0;
 
 	GLuint BufferName[BUFFER_MAX];
 	GLuint TextureColorbufferName = 0;
-
-	glm::ivec4 Viewport[4];
 
 }//namespace
 
@@ -99,15 +96,18 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE2);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE2);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE2);
 
-		ProgramName[IMAGE_2D] = glCreateProgram();
-		glAttachShader(ProgramName[IMAGE_2D], VertShaderName);
-		glAttachShader(ProgramName[IMAGE_2D], FragShaderName);
+		ProgramName[VIEWPORT] = glCreateProgram();
+		glAttachShader(ProgramName[VIEWPORT], VertShaderName);
+		glAttachShader(ProgramName[VIEWPORT], GeomShaderName);
+		glAttachShader(ProgramName[VIEWPORT], FragShaderName);
 		glDeleteShader(VertShaderName);
+		glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
-		glLinkProgram(ProgramName[IMAGE_2D]);
-		Validated = glf::checkProgram(ProgramName[IMAGE_2D]);
+		glLinkProgram(ProgramName[VIEWPORT]);
+		Validated = glf::checkProgram(ProgramName[VIEWPORT]);
 	}
 
 	if(Validated)
@@ -115,8 +115,7 @@ bool initProgram()
 		for(std::size_t i = 0; i < PROGRAM_MAX; ++i)
 			UniformMVP[i] = glGetUniformLocation(ProgramName[i], "MVP");
 
-		UniformDiffuse = glGetUniformLocation(ProgramName[IMAGE_2D], "Diffuse");
-		UniformLayer = glGetUniformLocation(ProgramName[IMAGE_2D], "Layer");
+		UniformDiffuse = glGetUniformLocation(ProgramName[VIEWPORT], "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -190,7 +189,7 @@ bool initVertexArray()
 {
 	glGenVertexArrays(PROGRAM_MAX, VertexArrayName);
 
-    glBindVertexArray(VertexArrayName[IMAGE_2D]);
+    glBindVertexArray(VertexArrayName[VIEWPORT]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
@@ -213,11 +212,6 @@ bool initVertexArray()
 
 bool begin()
 {
-	Viewport[0] = glm::ivec4(0, 0, FRAMEBUFFER_SIZE);
-	Viewport[1] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE);
-	Viewport[2] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
-	Viewport[3] = glm::ivec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
-
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
@@ -244,7 +238,7 @@ bool end()
 	glDeleteBuffers(BUFFER_MAX, BufferName);
 	glDeleteTextures(1, &TextureColorbufferName);
 	glDeleteFramebuffers(1, &FramebufferName);
-	glDeleteProgram(ProgramName[IMAGE_2D]);
+	glDeleteProgram(ProgramName[VIEWPORT]);
 	glDeleteProgram(ProgramName[LAYERING]);
 
 	return glf::checkError("end");
@@ -260,7 +254,7 @@ void display()
 	// Pass 1
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		glViewportIndexedfv(0, &glm::vec4(0, 0, FRAMEBUFFER_SIZE)[0]);
 
 		glUseProgram(ProgramName[LAYERING]);
 		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
@@ -274,24 +268,22 @@ void display()
 	// Pass 2
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewportIndexedfv(0, &glm::vec4(1, 1, FRAMEBUFFER_SIZE - 2)[0]);
+		glViewportIndexedfv(1, &glm::vec4((Window.Size.x >> 1) + 1, 0, FRAMEBUFFER_SIZE - 2)[0]);
+		glViewportIndexedfv(2, &glm::vec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2)[0]);
+		glViewportIndexedfv(3, &glm::vec4(1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2)[0]);
 
-		glUseProgram(ProgramName[IMAGE_2D]);
-		glUniformMatrix4fv(UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
+		glUseProgram(ProgramName[VIEWPORT]);
+		glUniformMatrix4fv(UniformMVP[VIEWPORT], 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuse, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
 
-		glBindVertexArray(VertexArrayName[IMAGE_2D]);
+		glBindVertexArray(VertexArrayName[VIEWPORT]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 
-		for(std::size_t i = 0; i < 4; ++i)
-		{
-			glUniform1i(UniformLayer, i);
-			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-
-			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
-		}
+		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
 	glf::checkError("display");

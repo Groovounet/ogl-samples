@@ -14,7 +14,6 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Layered rendering";
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.vert");
 	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.geom");
 	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.frag");
@@ -213,10 +212,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	Viewport[0] = glm::ivec4(0, 0, FRAMEBUFFER_SIZE);
-	Viewport[1] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE);
-	Viewport[2] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
-	Viewport[3] = glm::ivec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
+	Viewport[0] = glm::ivec4(1, 1, FRAMEBUFFER_SIZE - 2);
+	Viewport[1] = glm::ivec4((Window.Size.x >> 1) + 1, 1, FRAMEBUFFER_SIZE - 2);
+	Viewport[2] = glm::ivec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2);
+	Viewport[3] = glm::ivec4(0, (Window.Size.y >> 1), FRAMEBUFFER_SIZE - 2);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
