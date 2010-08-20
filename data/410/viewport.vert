@@ -1,6 +1,6 @@
 #version 410 core
 
-precision mediump int;
+precision highp int;
 
 // Declare all the semantics
 #define ATTR_POSITION	0

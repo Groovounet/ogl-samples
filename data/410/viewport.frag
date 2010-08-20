@@ -1,6 +1,6 @@
 #version 410 core
 
-precision mediump int;
+precision highp int;
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -21,10 +21,10 @@ precision mediump int;
 uniform sampler2DArray Diffuse;
 
 layout(location = GEOM_TEXCOORD) in vec2 Texcoord;
-layout(location = GEOM_INSTANCE) in int Instance;
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = GEOM_INSTANCE) flat in int Instance;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	Color = texture(Diffuse, vec3(Vert.Texcoord, Instance));
+	FragColor = texture(Diffuse, vec3(Texcoord, Instance));
 }

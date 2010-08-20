@@ -1,6 +1,6 @@
 #version 410 core
 
-precision mediump int;
+precision highp int;
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -22,7 +22,7 @@ layout(triangles, invocations = 4) in;
 
 layout(location = VERT_TEXCOORD) in vec2 Texcoord;
 layout(location = GEOM_TEXCOORD) out vec2 GeomTexcoord;
-layout(location = GEOM_INSTANCE) out int GeomInstance;
+layout(location = GEOM_INSTANCE) flat out int GeomInstance;
 
 uniform mat4 MVP;
 

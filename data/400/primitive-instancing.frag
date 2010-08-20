@@ -16,15 +16,12 @@
 
 uniform vec4 Diffuse;
 
-in geom
-{
-	vec3 Color;
-} Geom;
+in vec3 GeomColor;
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	Color = vec4(Geom.Color, 1.0) * Diffuse;
+	FragColor = vec4(GeomColor, 1.0) * Diffuse;
 }
 
