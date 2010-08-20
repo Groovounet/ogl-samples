@@ -302,12 +302,13 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
 
+	glBindVertexArray(VertexArrayImageName);
+
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 		glUniform1f(UniformLayer, float(i));
 
-		glBindVertexArray(VertexArrayImageName);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
 

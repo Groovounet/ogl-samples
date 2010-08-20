@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Layering rendering
-// 19/08/2010 - 19/08/2010
+// OpenGL Layered rendering
+// 19/08/2010 - 20/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Layering rendering";
+	std::string const SAMPLE_NAME = "OpenGL Layered rendering";
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.vert");
 	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.geom");
@@ -53,14 +53,6 @@ namespace
 		BUFFER_MAX
 	};
 
-	enum texture_type
-	{
-		TEXTURE_R,
-		TEXTURE_G,
-		TEXTURE_B,
-		TEXTURE_MAX
-	};
-
 	enum program 
 	{
 		LAYERING,
@@ -69,7 +61,7 @@ namespace
 	};
 
 	GLuint FramebufferName = 0;
-	GLuint VertexArrayName = 0;
+	GLuint VertexArrayName[PROGRAM_MAX];
 
 	GLuint ProgramName[PROGRAM_MAX];
 	GLuint UniformMVP[PROGRAM_MAX];
@@ -77,10 +69,9 @@ namespace
 	GLuint UniformLayer = 0;
 
 	GLuint BufferName[BUFFER_MAX];
-	GLuint Texture2DName;//[TEXTURE_MAX];
-	GLuint Texture2DDiffuseName = 0;
+	GLuint TextureColorbufferName = 0;
 
-	glm::ivec4 Viewport[TEXTURE_MAX];
+	glm::ivec4 Viewport[4];
 
 }//namespace
 
@@ -146,74 +137,47 @@ bool initVertexBuffer()
 	return glf::checkError("initArrayBuffer");
 }
 
-bool initTexture2D()
+bool initTexture()
 {
+	glGenTextures(1, &TextureColorbufferName);
+
 	glActiveTexture(GL_TEXTURE0);
-	{
-		glGenTextures(1, &Texture2DName);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 
-		glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexImage3D(
+		GL_TEXTURE_2D_ARRAY, 
+		0, 
+		GL_RGB, 
+		GLsizei(FRAMEBUFFER_SIZE.x), 
+		GLsizei(FRAMEBUFFER_SIZE.y), 
+		GLsizei(4), //depth
+		0,  
+		GL_RGB, 
+		GL_UNSIGNED_BYTE, 
+		NULL);
 
-		glTexImage3D(
-			GL_TEXTURE_2D_ARRAY, 
-			0, 
-			GL_RGB, 
-			GLsizei(FRAMEBUFFER_SIZE.x), 
-			GLsizei(FRAMEBUFFER_SIZE.y), 
-			GLsizei(3), //depth
-			0,  
-			GL_RGB, 
-			GL_UNSIGNED_BYTE, 
-			NULL);
-	}
-
-	{
-		glGenTextures(1, &Texture2DDiffuseName);
-		glBindTexture(GL_TEXTURE_2D, Texture2DDiffuseName);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-
-		// Set image
-		gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
-		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-		{
-			glCompressedTexImage2D(
-				GL_TEXTURE_2D,
-				GLint(Level),
-				GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-				GLsizei(Image[Level].dimensions().x), 
-				GLsizei(Image[Level].dimensions().y), 
-				0, 
-				GLsizei(Image[Level].capacity()), 
-				Image[Level].data());
-		}
-	}
-
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	for(std::size_t i = 0; i < 3; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName, 0, GLint(i));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureColorbufferName, 0, 0);
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureColorbufferName, 0, 1);
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureColorbufferName, 0, 2);
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, TextureColorbufferName, 0, 3);
 
-	GLenum DrawBuffers[3];
-	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
-	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
-	DrawBuffers[2] = GL_COLOR_ATTACHMENT2;
-	glDrawBuffers(3, DrawBuffers);
+	GLenum DrawBuffers[4]= {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+	glDrawBuffers(4, DrawBuffers);
 
 	if(glf::checkFramebuffer(FramebufferName))
 		return false;
@@ -224,8 +188,9 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
-	glGenVertexArrays(1, &VertexArrayName);
-    glBindVertexArray(VertexArrayName);
+	glGenVertexArrays(PROGRAM_MAX, VertexArrayName);
+
+    glBindVertexArray(VertexArrayName[IMAGE_2D]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
@@ -235,14 +200,23 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
+    glBindVertexArray(VertexArrayName[LAYERING]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
 	return glf::checkError("initVertexArray");
 }
 
 bool begin()
 {
-	Viewport[TEXTURE_R] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	Viewport[TEXTURE_G] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	Viewport[TEXTURE_B] = glm::ivec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	Viewport[0] = glm::ivec4(0, 0, FRAMEBUFFER_SIZE);
+	Viewport[1] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE);
+	Viewport[2] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
+	Viewport[3] = glm::ivec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
@@ -257,7 +231,7 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 	if(Validated)
 		Validated = initFramebuffer();
 
@@ -266,9 +240,9 @@ bool begin()
 
 bool end()
 {
+	glDeleteVertexArrays(PROGRAM_MAX, VertexArrayName);
 	glDeleteBuffers(BUFFER_MAX, BufferName);
-	glDeleteTextures(1, &Texture2DName);
-	glDeleteTextures(1, &Texture2DDiffuseName);
+	glDeleteTextures(1, &TextureColorbufferName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteProgram(ProgramName[IMAGE_2D]);
 	glDeleteProgram(ProgramName[LAYERING]);
@@ -291,8 +265,7 @@ void display()
 		glUseProgram(ProgramName[LAYERING]);
 		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
 
-		glBindVertexArray(VertexArrayName);
-		glDisableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
@@ -301,30 +274,23 @@ void display()
 	// Pass 2
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-		glf::checkError("display 5");
 
 		glUseProgram(ProgramName[IMAGE_2D]);
 		glUniformMatrix4fv(UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuse, 0);
-		glf::checkError("display 6");
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
 
-		glBindVertexArray(VertexArrayName);
-		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+		glBindVertexArray(VertexArrayName[IMAGE_2D]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-		glf::checkError("display 8");
 
-		for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
+		for(std::size_t i = 0; i < 4; ++i)
 		{
-			glUniform1f(UniformLayer, float(i));
+			glUniform1i(UniformLayer, i);
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-			glf::checkError("display 7");
 
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
-			glf::checkError("display 9");
 		}
 	}
 
