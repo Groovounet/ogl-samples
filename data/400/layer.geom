@@ -1,7 +1,5 @@
 #version 400 core
 
-precision mediump int;
-
 // Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
@@ -14,7 +12,7 @@ precision mediump int;
 
 layout(triangles, invocations = 4) in;
 
-out int GeomInstance;
+flat out mediump int GeomInstance;
 
 uniform mat4 MVP;
 

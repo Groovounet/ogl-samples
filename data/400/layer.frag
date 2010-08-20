@@ -20,7 +20,7 @@ const vec4 Color[4] = vec4[]
 	vec4(0.0, 0.0, 1.0, 1.0)
 );
 
-in int GeomInstance;
+flat in mediump int GeomInstance;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
