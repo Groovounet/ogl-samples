@@ -7,12 +7,8 @@ precision highp int;
 #define ATTR_COLOR		3
 #define ATTR_TEXCOORD	4
 #define FRAG_COLOR		0
-#define FRAG_RED		0
-#define FRAG_GREEN		1
-#define FRAG_BLUE		2
-#define FRAG_ALPHA		3
 
-layout(triangles, invocations = 1) in;
+layout(triangles, invocations = 4) in;
 
 flat out int GeomInstance;
 
@@ -20,18 +16,15 @@ uniform mat4 MVP;
 
 void main()
 {	
-	for(int Layer = 0; Layer < 4; ++Layer)
+	gl_Layer = gl_InvocationID;
+
+	for(int i = 0; i < gl_in.length(); ++i)
 	{
-		gl_Layer = Layer;
-
-		for(int i = 0; i < gl_in.length(); ++i)
-		{
-			gl_Position = MVP * gl_in[i].gl_Position;
-			GeomInstance = Layer;
-			EmitVertex();
-		}
-
-		EndPrimitive();
+		gl_Position = MVP * gl_in[i].gl_Position;
+		GeomInstance = gl_InvocationID;
+		EmitVertex();
 	}
+
+	EndPrimitive();
 }
 

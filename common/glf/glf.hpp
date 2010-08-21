@@ -76,10 +76,6 @@ namespace glf
 	bool validateProgram(GLuint ProgramName);
 
 	int version(int Major, int Minor);
-	GLuint createProgram(
-		std::string const & VertShader, 
-		std::string const & FragShader);
-
 	int run();
 
 	namespace semantic
@@ -88,8 +84,9 @@ namespace glf
 		{
 			enum type
 			{
-				TRANSFORM = 0,
-				MATERIAL  = 1
+				MATERIAL  = 0,
+				TRANSFORM0 = 1,
+				TRANSFORM1 = 2
 			};
 		};
 

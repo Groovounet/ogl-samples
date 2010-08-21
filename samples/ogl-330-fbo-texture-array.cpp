@@ -307,7 +307,7 @@ void display()
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-		glUniform1f(UniformLayer, float(i));
+		glUniform1i(UniformLayer, i);
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}

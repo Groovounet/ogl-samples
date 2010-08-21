@@ -14,16 +14,16 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Layered rendering";
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.vert");
-	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.geom");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.vert");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.frag");
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/layer.vert");
+	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/layer.geom");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/layer.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/rtt-array.vert");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/rtt-array.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MAJOR_VERSION = 3;
+	int const SAMPLE_MINOR_VERSION = 3;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -142,8 +142,8 @@ bool initTexture()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -174,7 +174,6 @@ bool initFramebuffer()
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureColorbufferName, 0, 1);
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureColorbufferName, 0, 2);
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, TextureColorbufferName, 0, 3);
-
 	GLenum DrawBuffers[4]= {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
 	glDrawBuffers(4, DrawBuffers);
 
@@ -295,9 +294,10 @@ void display()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 		glf::checkError("display 7");
 
-		for(std::size_t i = 0; i < 4; ++i)
+		for(int i = 0; i < 4; ++i)
 		{
 			glUniform1i(UniformLayer, i);
+			glf::checkError("display 8a");
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 			glf::checkError("display 8");
 
