@@ -10,10 +10,18 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-in vec4 GeomColor;
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+uniform mat4 MVP;
+
+layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = ATTR_COLOR) in vec4 Color;
+
+out vert
+{
+	vec4 Color;
+} Vert;
 
 void main()
-{
-	FragColor = GeomColor;
+{	
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	Vert.Color = Color;
 }

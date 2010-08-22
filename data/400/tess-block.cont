@@ -2,8 +2,15 @@
 
 layout(vertices = 4) out;
 
-in vec4 VertColor[];
-out vec4 ContColor[];
+in vert
+{
+	vec4 Color;
+} Vert[gl_in.length()];
+
+out cont
+{
+	vec4 Color;
+} Cont[gl_in.length()];
 
 void main()
 {	
@@ -14,6 +21,6 @@ void main()
 	gl_TessLevelOuter[2] = 8.0;
 	gl_TessLevelOuter[3] = 8.0;
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-	ContColor[gl_InvocationID] = VertColor[gl_InvocationID];
+	Cont[gl_InvocationID].Color = Vert[gl_InvocationID].Color;
 }
 

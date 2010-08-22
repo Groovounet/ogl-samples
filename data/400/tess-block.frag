@@ -10,10 +10,14 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-in vec4 GeomColor;
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+
+in prim
+{
+	vec4 Color;
+} Prim;
 
 void main()
 {
-	FragColor = GeomColor;
+	Color = Prim.Color;
 }
