@@ -128,6 +128,8 @@ bool initSampler()
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
+	glBindSampler(0, SamplerName);
+
 	return glf::checkError("initSampler");
 }
 
@@ -162,7 +164,6 @@ bool initFramebuffer()
 {
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
-
 	// The second parameter is the number of samples.
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_FALSE);
 
@@ -176,7 +177,6 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
@@ -222,11 +222,11 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
+		Validated = initSampler();
+	if(Validated)
 		Validated = initVertexBuffer();
 	if(Validated)
 		Validated = initVertexArray();
-	if(Validated)
-		Validated = initSampler();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -266,7 +266,6 @@ void renderFBO(GLuint Framebuffer)
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
@@ -286,7 +285,6 @@ void renderFB(GLuint Texture2DName)
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
