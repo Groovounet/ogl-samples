@@ -810,7 +810,7 @@ namespace glf
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 		glutInitContextVersion(Major, Minor);
-		if(glf::version(Major, Minor) >= 300)
+		if(glf::version(Major, Minor) >= 320)
 		{
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 			glutInitContextProfile(GLUT_CORE_PROFILE);
