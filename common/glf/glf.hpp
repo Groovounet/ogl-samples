@@ -5,7 +5,7 @@
 #ifdef WIN32
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
-#	include <GL/glext.h>
+//#	include <GL/glext.h>
 #	define glfGetProcAddress wglGetProcAddress
 #elif defined(linux) || defined(__linux)
 #	define GL_GLEXT_PROTOTYPES 1

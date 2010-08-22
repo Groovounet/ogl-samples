@@ -9,18 +9,23 @@
 #	endif
 
 // Declare OpenGL 4.1 enums
-#define GL_VERTEX_SHADER_BIT                      0x00000001
-#define GL_FRAGMENT_SHADER_BIT                    0x00000002
-#define GL_GEOMETRY_SHADER_BIT                    0x00000004
-#define GL_TESS_CONTROL_SHADER_BIT                0x00000008
-#define GL_TESS_EVALUATION_SHADER_BIT             0x00000010
-#define GL_ALL_SHADER_BITS                        0xFFFFFFFF
-#define GL_PROGRAM_SEPARABLE                      0x8258
-#define GL_ACTIVE_PROGRAM                         0x8259
-#define GL_PROGRAM_PIPELINE_BINDING               0x825A
+#define GL_VERTEX_SHADER_BIT				0x00000001
+#define GL_FRAGMENT_SHADER_BIT				0x00000002
+#define GL_GEOMETRY_SHADER_BIT				0x00000004
+#define GL_TESS_CONTROL_SHADER_BIT			0x00000008
+#define GL_TESS_EVALUATION_SHADER_BIT		0x00000010
+#define GL_ALL_SHADER_BITS					0xFFFFFFFF
+#define GL_PROGRAM_SEPARABLE				0x8258
+#define GL_ACTIVE_PROGRAM					0x8259
+#define GL_PROGRAM_PIPELINE_BINDING			0x825A
+#define GL_PROGRAM_BINARY_RETRIEVABLE_HINT	0x8257
+#define GL_PROGRAM_BINARY_LENGTH			0x8741
+#define GL_NUM_PROGRAM_BINARY_FORMATS		0x87FE
+#define GL_PROGRAM_BINARY_FORMATS			0x87FF
 
 // Declare OpenGL 4.1 functions
 typedef void (APIENTRYP PFNGLVERTEXATTRIBLPOINTERPROC) (GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+/*
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1FPROC) (GLuint program, GLint location, GLfloat x);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM1FVPROC) (GLuint program, GLint location, GLsizei count, const GLfloat* value);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM2FPROC) (GLuint program, GLint location, GLfloat x, GLfloat y);
@@ -53,7 +58,7 @@ typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3UIPROC) (GLuint program, GLint lo
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM3UIVPROC) (GLuint program, GLint location, GLsizei count, const GLuint* value);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4UIPROC) (GLuint program, GLint location, GLuint x, GLuint y, GLuint z, GLuint w);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORM4UIVPROC) (GLuint program, GLint location, GLsizei count, const GLuint* value);
-
+*/
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORMMATRIX2FVPROC) (GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC) (GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC) (GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
@@ -96,6 +101,9 @@ typedef void (GLAPIENTRY * PFNGLDEPTHRANGEINDEXED) (GLuint index, GLclampd n, GL
 typedef void (GLAPIENTRY * PFNGLGETFLOATI_V) (GLenum target, GLuint index, GLfloat *data);
 typedef void (GLAPIENTRY * PFNGLGETDOUBLEI_V) (GLenum target, GLuint index, GLdouble *data);
 
+typedef void (GLAPIENTRY * PFNGLGETPROGRAMBINARY) (GLuint program, GLsizei bufSize, GLsizei *length, GLenum *binaryFormat, void *binary);
+typedef void (GLAPIENTRY * PFNGLPROGRAMBINARY) (GLuint program, GLenum binaryFormat, const void *binary, GLsizei length);
+/*
 PFNGLVERTEXATTRIBLPOINTERPROC glVertexAttribLPointer = 0;
 
 PFNGLPROGRAMUNIFORM1FPROC glProgramUniform1f = 0;
@@ -177,6 +185,9 @@ PFNGLDEPTHRANGEINDEXED glDepthRangeIndexed = 0;
 PFNGLGETFLOATI_V glGetFloati_v = 0;
 PFNGLGETDOUBLEI_V glGetDoublei_v = 0;
 
+PFNGLGETPROGRAMBINARY glGetProgramBinary = 0;
+PFNGLPROGRAMBINARY glProgramBinary = 0;
+*/
 #ifndef GL_ARB_debug_output
 #define GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB               0x8242
 #define GL_MAX_DEBUG_MESSAGE_LENGTH_ARB               0x9143
@@ -446,6 +457,9 @@ namespace glf
 		glGetFloati_v = (PFNGLGETFLOATI_V)glfGetProcAddress("glGetFloati_v");
 		glGetDoublei_v = (PFNGLGETDOUBLEI_V)glfGetProcAddress("glGetDoublei_v");
 
+		glGetProgramBinary = (PFNGLGETPROGRAMBINARY)glfGetProcAddress("glGetProgramBinary");
+		glProgramBinary = (PFNGLPROGRAMBINARY)glfGetProcAddress("glProgramBinary");
+
 		// Load GL_ARB_debug_output
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glfGetProcAddress("glDebugMessageControlARB");
 		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC) glfGetProcAddress("glDebugMessageInsertARB");
@@ -453,6 +467,34 @@ namespace glf
 		glGetDebugMessageLogARB = (PFNGLGETDEBUGMESSAGELOGARBPROC) glfGetProcAddress("glGetDebugMessageLogARB");
 
 #endif//WIN32
+	}
+
+	inline void saveBinary
+	(
+		std::string const & Filename, 
+		GLenum const & Format,
+		std::vector<glm::byte> const & Data,
+		std::size_t const & Size
+	)
+	{
+		FILE* File = fopen(Filename.c_str(), "w");
+		fwrite(&Format, sizeof(GLenum), 1, File);
+		fwrite(&Data[0], Size, 1, File);
+		fclose(File);
+	}
+
+	inline std::string loadBinary
+	(
+		std::string const & Filename,
+		GLenum & Format,
+		std::vector<glm::byte> & Data,
+		std::size_t & Size
+	)
+	{
+		FILE* File = fopen(Filename.c_str(), "r");
+		fread(&Format, sizeof(GLenum), 1, File);
+		fread(&Data[0], Size, 1, File);
+		fclose(File);
 	}
 
 	inline std::string loadFile(std::string const & Filename)
