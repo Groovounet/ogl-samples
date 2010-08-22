@@ -128,8 +128,8 @@ bool initUniformBuffer()
 		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName);
+		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
+		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
 	}
 
 	{
@@ -208,7 +208,7 @@ void display()
 
 	// Bind program
 	glUseProgram(ProgramName);
-	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM);
+	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM0);
 	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 
 	// Bind vertex array & draw 

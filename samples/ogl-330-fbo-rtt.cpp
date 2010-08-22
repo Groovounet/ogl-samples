@@ -177,14 +177,10 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-	for(std::size_t i = TEXTURE_R; i <= TEXTURE_B; ++i)
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName[i], 0);
-
-	GLenum DrawBuffers[3];
-	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
-	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
-	DrawBuffers[2] = GL_COLOR_ATTACHMENT2;
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture2DName[0], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Texture2DName[1], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Texture2DName[2], 0);
+	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -304,9 +300,6 @@ void display()
 
 		glBindVertexArray(VertexArrayImageName);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	glf::checkError("display");

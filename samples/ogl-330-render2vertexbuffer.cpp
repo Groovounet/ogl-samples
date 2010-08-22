@@ -45,14 +45,20 @@ namespace
 		2, 3, 0
 	};
 
+	GLuint TextureName = 0;
 
 }//namespace
 
-bool CMain::initTexture2D()
+bool initSampler()
 {
-	stuff::mipmap2D<u8vec3> ColorMap = stuff::load2D<u8vec3>(TEXTURE_DIFFUSE);
-	glGenTextures(1, &texture2DName);
-	glBindTexture(GL_TEXTURE_2D, texture2DName);
+
+}
+
+bool initTexture()
+{
+	gli::image ColorMap = gli::import_as(TEXTURE_DIFFUSE);
+	glGenTextures(1, &TextureName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -60,50 +66,17 @@ bool CMain::initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(ColorMap.width()), GLsizei(ColorMap.height()), 0, GL_BGR, GL_UNSIGNED_BYTE, &ColorMap[0]);
 
-	stuff::mipmap2D<u8vec3> HeightMap = stuff::load2D<u8vec3>(TEXTURE_HEIGHT);
-	glGenTextures(1, &heightmapName);
-	glBindTexture(GL_TEXTURE_2D, heightmapName);
+	gli::image HeightMap = gli::import_as(TEXTURE_HEIGHT);
+	glGenTextures(1, &HeightmapName);
+	glBindTexture(GL_TEXTURE_2D, HeightmapName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // GL_NEAREST GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GLsizei(HeightMap.width()), GLsizei(HeightMap.height()), 0, GL_RGB, GL_UNSIGNED_BYTE, &HeightMap[0]);
-	
 
-
-	return true;
-}
-
-bool initSampler()
-{
-
-}
-
-bool initTexture2D()
-{
-	glGenTextures(1, &Texture2DName);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
-	// Set image
-	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-	{
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGB, 
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
-			0,  
-			GL_BGR, 
-			GL_UNSIGNED_BYTE, 
-			Image[Level].data());
-	}
-
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initProgram()
@@ -180,24 +153,6 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Result = true;
-	if(Result)
-	{
-		programName[PASS_BUFFER] = initProgram(VERTEX_SHADER_SOURCE1, FRAGMENT_SHADER_SOURCE1);
-		programName[PASS_RENDER] = initProgram(VERTEX_SHADER_SOURCE2, FRAGMENT_SHADER_SOURCE2);
-	}
-
-	if(Result)
-		Result = initTexture2D();
-	
-	glViewport(0, 0, windowSize.x, windowSize.y);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-
-	Result = Result && checkError("Begin");
-	return Result;
-
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
@@ -210,17 +165,21 @@ bool begin()
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
-
+	if(Validated)
+		Validated = initTexture();
+	if(Validated)
+		Validated = initSampler();
+	
 	return Validated && glf::checkError("begin");
 }
 
 bool end()
 {
-	glDeleteBuffers(1, &indexBuffer);
-	glDeleteProgram(programName[PASS_BUFFER]);
-	glDeleteProgram(programName[PASS_RENDER]);
-	glDeleteTextures(1, &texture2DName);
-	glDeleteTextures(1, &heightmapName);
+	glDeleteBuffers(1, &IndexBuffer);
+	glDeleteProgram(ProgramName[PASS_BUFFER]);
+	glDeleteProgram(ProgramName[PASS_RENDER]);
+	glDeleteTextures(1, &Texture2DName);
+	glDeleteTextures(1, &HeightmapName);
 
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
@@ -231,6 +190,11 @@ bool end()
 
 void display()
 {
+	glViewport(0, 0, windowSize.x, windowSize.y);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -239,25 +203,25 @@ void display()
 		mat4 Projection = glm::ortho2D(0.f, 1.f, 0.f, 1.f);
 		mat4 ModelView = glm::mat4(1.0f);
 
-		glUseProgram(programName[PASS_BUFFER]);
+		glUseProgram(ProgramName[PASS_BUFFER]);
 
-		glViewport(0, 0, heightmapWidth, heightmapHeight);
+		glViewport(0, 0, HeightmapWidth, HeightmapHeight);
 
-		GLint MVP = glGetUniformLocation(programName[PASS_BUFFER], "MVP");
+		GLint MVP = glGetUniformLocation(ProgramName[PASS_BUFFER], "MVP");
 		glUniformMatrix4fv(MVP, 1, GL_FALSE, Projection * ModelView);
 
-		GLint Sampler = glGetUniformLocation(programName[PASS_BUFFER], "DiffuseSampler");
+		GLint Sampler = glGetUniformLocation(ProgramName[PASS_BUFFER], "DiffuseSampler");
 		glUniform1i(Sampler, 0);
 		
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, heightmapName);
+		glBindTexture(GL_TEXTURE_2D, HeightmapName);
 
 		GLuint Buffer = 0;
 		glGenBuffers(1, &Buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, Buffer);
 		glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STREAM_DRAW);
 
-		GLuint Attrib = glGetAttribLocation(programName[PASS_BUFFER], "Position");
+		GLuint Attrib = glGetAttribLocation(ProgramName[PASS_BUFFER], "Position");
 		glVertexAttribPointer(Attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(Attrib);
@@ -275,9 +239,9 @@ void display()
 		ModelView = glm::rotate(ModelView, rotationCurrent.x, 0.f, 0.f, 1.f);
 		ModelView = glm::translate(ModelView, -0.5f,-0.5f,-0.5f);
 
-		glUseProgram(programName[PASS_RENDER]);
-		GLint MVP = glGetUniformLocation(programName[PASS_RENDER], "MVP");
-		GLuint Attrib = glGetAttribLocation(programName[PASS_RENDER], "Position");
+		glUseProgram(ProgramName[PASS_RENDER]);
+		GLint MVP = glGetUniformLocation(ProgramName[PASS_RENDER], "MVP");
+		GLuint Attrib = glGetAttribLocation(ProgramName[PASS_RENDER], "Position");
 
 		glViewport(0, 0, windowSize.x, windowSize.y);
 		glUniformMatrix4fv(MVP, 1, GL_FALSE, Projection * ModelView);
@@ -285,10 +249,10 @@ void display()
 		GLuint Buffer = 0;
         glGenBuffers(1, &Buffer);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, Buffer);
-        glBufferData(GL_PIXEL_PACK_BUFFER, heightmapWidth * heightmapHeight * sizeof(u8vec4), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_PIXEL_PACK_BUFFER, HeightmapWidth * heightmapHeight * sizeof(u8vec4), NULL, GL_DYNAMIC_DRAW);
 
 		glReadBuffer(GL_BACK);
-        glReadPixels(0, 0, heightmapWidth, heightmapHeight, GL_RGBA, GL_UNSIGNED_BYTE, BUFFER_OFFSET(0));
+        glReadPixels(0, 0, HeightmapWidth, HeightmapHeight, GL_RGBA, GL_UNSIGNED_BYTE, BUFFER_OFFSET(0));
 
         glBindBuffer(GL_ARRAY_BUFFER, Buffer);
 		glVertexAttribPointer(Attrib, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, 0);
@@ -304,7 +268,7 @@ void display()
         glBindBuffer(GL_ARRAY_BUFFER, Buffer);
 		glVertexAttribPointer(Attrib, 4, GL_FLOAT, GL_TRUE, 0, 0);
 */
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer);
 
 		glEnableVertexAttribArray(Attrib);
 			glDrawElements(GL_TRIANGLES, GLint(indexes.size()), GL_UNSIGNED_INT, 0);
