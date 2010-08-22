@@ -134,15 +134,11 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-	GLenum DrawBuffers[3];
-	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
-	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
-	DrawBuffers[2] = GL_COLOR_ATTACHMENT2;
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture2DName, 0, GLint(0));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Texture2DName, 0, GLint(1));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Texture2DName, 0, GLint(2));
+	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
-
-	for(std::size_t i = TEXTURE_R; i <= TEXTURE_B; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName, 0, GLint(i));
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
@@ -248,10 +244,10 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
 
-	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
+	for(GLint i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-		glUniform1f(UniformLayer, float(i));
+		glUniform1i(UniformLayer, i);
 
 		glBindVertexArray(VertexArrayName);
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);

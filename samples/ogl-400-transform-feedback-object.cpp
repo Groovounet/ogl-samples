@@ -49,7 +49,6 @@ namespace
 	GLuint FeedbackArrayBufferName = 0;
 	GLuint FeedbackVertexArrayName = 0;
 	GLint FeedbackUniformDiffuse = 0;
-	GLint FeedbackUniformMVP = 0;
 
 	GLuint Query = 0;
 
@@ -103,7 +102,6 @@ bool initProgram()
 	// Get variables locations
 	if(Validated)
 	{
-		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
 		FeedbackUniformDiffuse = glGetUniformLocation(FeedbackProgramName, "Diffuse");
 	}
 
@@ -238,13 +236,11 @@ void display()
 
 	// Second draw, reuse the captured attributes
 	glUseProgram(FeedbackProgramName);
-	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 
