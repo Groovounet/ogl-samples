@@ -1,8 +1,12 @@
-uniform sampler2D DiffuseSampler;
-varying vec2 VertTexcoord;
+#version 330 core
+
+uniform sampler2D Diffuse;
+
+in vec2 VertTexcoord;
+out vec4 FragColor;
 
 void main()
 {
-	float Height = texture2D(DiffuseSampler, VertTexcoord).x;
-	gl_FragColor = vec4(VertTexcoord, Height, 1.0);
+	float Height = texture2D(Diffuse, VertTexcoord).x;
+	FragColor = vec4(VertTexcoord, Height, 1.0);
 }

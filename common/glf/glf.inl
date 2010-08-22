@@ -469,7 +469,7 @@ namespace glf
 #endif//WIN32
 	}
 
-	inline void saveBinary
+	inline bool saveBinary
 	(
 		std::string const & Filename, 
 		GLenum const & Format,
@@ -477,24 +477,39 @@ namespace glf
 		std::size_t const & Size
 	)
 	{
-		FILE* File = fopen(Filename.c_str(), "w");
-		fwrite(&Format, sizeof(GLenum), 1, File);
-		fwrite(&Data[0], Size, 1, File);
-		fclose(File);
+		FILE* File = fopen(Filename.c_str(), "wb");
+
+		if(File)
+		{
+			fwrite(&Format, sizeof(GLenum), 1, File);
+			fwrite(&Size, sizeof(Size), 1, File);
+			fwrite(&Data[0], Size, 1, File);
+			fclose(File);
+			return true;
+		}
+		return false;
 	}
 
-	inline std::string loadBinary
+	inline bool loadBinary
 	(
 		std::string const & Filename,
 		GLenum & Format,
 		std::vector<glm::byte> & Data,
-		std::size_t & Size
+		GLint & Size
 	)
 	{
-		FILE* File = fopen(Filename.c_str(), "r");
-		fread(&Format, sizeof(GLenum), 1, File);
-		fread(&Data[0], Size, 1, File);
-		fclose(File);
+		FILE* File = fopen(Filename.c_str(), "rb");
+
+		if(File)
+		{
+			fread(&Format, sizeof(GLenum), 1, File);
+			fread(&Size, sizeof(Size), 1, File);
+			Data.resize(Size);
+			fread(&Data[0], Size, 1, File);
+			fclose(File);
+			return true;
+		}
+		return false;
 	}
 
 	inline std::string loadFile(std::string const & Filename)

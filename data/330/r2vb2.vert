@@ -1,7 +1,9 @@
+#version 330 core
+
 uniform mat4 MVP;
 
-attribute vec4 Position;
-varying vec4 VertColor;
+in vec4 Position;
+out vec4 VertColor;
 
 void main()
 {	

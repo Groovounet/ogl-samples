@@ -1,8 +1,9 @@
+#version 330 core
+
 uniform mat4 MVP;
 
-attribute vec2 Position;
-
-varying vec2 VertTexcoord;
+in vec2 Position;
+out vec2 VertTexcoord;
 
 void main()
 {	
