@@ -45,8 +45,7 @@ namespace
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
-	GLuint TransformBufferName = 0;
-	GLuint MaterialBufferName = 0;
+	GLuint UniformBufferName = 0;
 	GLint UniformTransform = 0;
 	GLint UniformMaterial = 0;
 
@@ -114,41 +113,32 @@ bool initArrayBuffer()
 
 bool initUniformBuffer()
 {
-	GLint UniformBlockSize = 0;
+	glGenBuffers(1, &UniformBufferName);
 
-	{
-		glGetActiveUniformBlockiv(
-			ProgramName, 
-			UniformTransform,
-			GL_UNIFORM_BLOCK_DATA_SIZE,
-			&UniformBlockSize);
+	GLint UniformBlockSizeTransform = 0;
+	glGetActiveUniformBlockiv(
+		ProgramName, 
+		UniformTransform,
+		GL_UNIFORM_BLOCK_DATA_SIZE,
+		&UniformBlockSizeTransform);
 
-		glGenBuffers(1, &TransformBufferName);
-		glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
-		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, 0, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	GLint UniformBlockSizeMaterial = 0;
+	glGetActiveUniformBlockiv(
+		ProgramName, 
+		UniformTransform,
+		GL_UNIFORM_BLOCK_DATA_SIZE,
+		&UniformBlockSizeMaterial);
 
-		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
-		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
-	}
+	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
+	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_READ);
 
-	{
-		glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
-
-		glGetActiveUniformBlockiv(
-			ProgramName, 
-			UniformMaterial,
-			GL_UNIFORM_BLOCK_DATA_SIZE,
-			&UniformBlockSize);
-
-		glGenBuffers(1, &MaterialBufferName);
-		glBindBuffer(GL_UNIFORM_BUFFER, MaterialBufferName);
-		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, &Diffuse[0], GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
-		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
-	}
+	glf::checkError("initUniformBuffer 7");
+	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, sizeof(glm::mat4));
+	glf::checkError("initUniformBuffer 8");
+	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, UniformBufferName, sizeof(glm::mat4), sizeof(glm::vec4));
+	glf::checkError("initUniformBuffer 9");
 
 	return glf::checkError("initUniformBuffer");
 }
@@ -178,8 +168,7 @@ bool end()
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
 	glDeleteBuffers(1, &ElementBufferName);
-	glDeleteBuffers(1, &TransformBufferName);
-	glDeleteBuffers(1, &MaterialBufferName);
+	glDeleteBuffers(1, &UniformBufferName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -195,8 +184,11 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, TransformBufferName);
+	glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(glm::vec4), &Diffuse[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Set the display viewport
@@ -215,7 +207,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
