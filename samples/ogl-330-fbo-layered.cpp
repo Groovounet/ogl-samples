@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Layered rendering
-// 19/08/2010 - 20/08/2010
+// 19/08/2010 - 23/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -170,12 +170,7 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureColorbufferName, 0, 0);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureColorbufferName, 0, 1);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureColorbufferName, 0, 2);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, TextureColorbufferName, 0, 3);
-	GLenum DrawBuffers[4]= {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, DrawBuffers);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureColorbufferName, 0);
 
 	if(glf::checkFramebuffer(FramebufferName))
 		return false;
@@ -258,51 +253,38 @@ void display()
 
 	// Pass 1
 	{
-		glf::checkError("display A");
-
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		glf::checkError("display 0");
 
 		glUseProgram(ProgramName[LAYERING]);
 		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
-		glf::checkError("display 1");
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-		glf::checkError("display 2");
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
-		glf::checkError("display 3");
 	}
 
 	// Pass 2
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glf::checkError("display 4");
 
 		glUseProgram(ProgramName[IMAGE_2D]);
 		glUniformMatrix4fv(UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuse, 0);
-		glf::checkError("display 5");
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
-		glf::checkError("display 6");
 
 		glBindVertexArray(VertexArrayName[IMAGE_2D]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-		glf::checkError("display 7");
 
 		for(int i = 0; i < 4; ++i)
 		{
 			glUniform1i(UniformLayer, i);
-			glf::checkError("display 8a");
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-			glf::checkError("display 8");
 
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
-			glf::checkError("display 9");
 		}
 	}
 

@@ -9,6 +9,7 @@ precision highp int;
 #define FRAG_COLOR		0
 
 layout(triangles) in;
+layout(triangle_strip, max_vertices = 12) out;
 
 flat out int GeomInstance;
 

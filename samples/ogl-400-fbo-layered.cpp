@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Layered rendering
-// 19/08/2010 - 20/08/2010
+// 19/08/2010 - 23/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -170,13 +170,7 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureColorbufferName, 0, 0);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureColorbufferName, 0, 1);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureColorbufferName, 0, 2);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, TextureColorbufferName, 0, 3);
-
-	GLenum DrawBuffers[4]= {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, DrawBuffers);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureColorbufferName, 0);
 
 	if(glf::checkFramebuffer(FramebufferName))
 		return false;

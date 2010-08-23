@@ -19,6 +19,7 @@ precision highp int;
 #define FRAG_ALPHA		3
 
 layout(triangles, invocations = 4) in;
+layout(triangle_strip, max_vertices = 3) out;
 
 layout(location = VERT_TEXCOORD) in vec2 Texcoord[];
 layout(location = GEOM_TEXCOORD) out vec2 GeomTexcoord;
