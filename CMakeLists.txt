@@ -90,9 +90,9 @@ if(APPLE)
     set(BINARY_FILES "../libGL.dylib")
 	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
 endif(APPLE)
-#if(UNIX and NOT APPLE)
-#	set(BINARY_FILES "GL")
-#endif(UNIX and not APPLE)
+if(UNIX and NOT APPLE)
+	set(BINARY_FILES "glut" "GLEW")
+endif(UNIX and not APPLE)
 
 ################################
 # Add output directory
