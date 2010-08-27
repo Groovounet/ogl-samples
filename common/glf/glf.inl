@@ -1,6 +1,7 @@
 #include <GL/freeglut.h>
 
 #ifdef WIN32
+#	undef APIENTRY
 //#	ifndef APIENTRY
 #		define APIENTRY
 //#	endif
