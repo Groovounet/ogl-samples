@@ -150,8 +150,6 @@ set(GL_VERSION_GTC 400)
 
 set(GL_SHADER_GTC mrt.vert mrt.frag image-2d.vert image-2d.frag)
 glCreateSampleGTC(blend-rtt)
-set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
-glCreateSampleGTC(buffer-texture-rgb)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform)
 glCreateSampleGTC(buffer-uniform-shared)
@@ -184,6 +182,12 @@ set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch)
 set(GL_SHADER_GTC gather.vert gather.frag)
 glCreateSampleGTC(sampler-gather)
+set(GL_SHADER_GTC sampler-array.vert sampler-array.frag)
+glCreateSampleGTC(sampler-array)
+
+set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
+glCreateSampleGTC(texture-buffer-rgb)
+
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
 

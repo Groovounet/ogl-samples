@@ -90,7 +90,7 @@ elseif(APPLE)
 	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
 elseif(UNIX)
 	set(BINARY_FILES "glut" "GLEW")
-endif(UNIX)
+endif()
 
 ################################
 # Add output directory
