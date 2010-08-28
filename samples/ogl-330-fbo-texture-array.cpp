@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Multiple render to texture
+// OpenGL Render to texture
 // 20/10/2009 - 16/06/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
+	std::string const SAMPLE_NAME = "OpenGL Render to texture";
 	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.vert");
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/multiple-output.frag");
 	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/rtt-array.vert");
@@ -307,7 +307,7 @@ void display()
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-		glUniform1i(UniformLayer, i);
+		glUniform1i(UniformLayer, GLint(i));
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}

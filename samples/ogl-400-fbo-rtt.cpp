@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Multiple render to texture
-// 20/10/2009 - 16/06/2010
+// OpenGL Render to texture
+// 20/10/2009 - 28/08/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
+	std::string const SAMPLE_NAME = "OpenGL Render to texture";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
@@ -147,10 +147,9 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-	for(std::size_t i = TEXTURE_R; i <= TEXTURE_B; ++i)
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GLenum(i - TEXTURE_R), Texture2DName[i], 0);
-
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture2DName[0], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Texture2DName[1], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Texture2DName[2], 0);
 	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
 
@@ -158,8 +157,7 @@ bool initFramebuffer()
 		return false;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	return true;
+	return glf::checkError("initFramebuffer");
 }
 
 bool initVertexArray()
