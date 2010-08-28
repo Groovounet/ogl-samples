@@ -85,14 +85,12 @@ include_directories("${GLI_DIRECTORY}")
 
 if(MSVC)
 	set(BINARY_FILES "glew32s" "OpenGL32")
-endif(MSVC)
-if(APPLE)
+elseif(APPLE)
     set(BINARY_FILES "../libGL.dylib")
 	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
-endif(APPLE)
-#if(UNIX and NOT APPLE)
-#	set(BINARY_FILES "GL")
-#endif(UNIX and not APPLE)
+elseif(UNIX)
+	set(BINARY_FILES "glut" "GLEW")
+endif(UNIX)
 
 ################################
 # Add output directory
