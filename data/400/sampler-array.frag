@@ -14,7 +14,7 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform sampler2D Diffuse;
+uniform sampler2D Diffuse[2];
 
 in vert
 {
@@ -25,5 +25,6 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = texture(Diffuse, Vert.Texcoord);
+	int Index = (int(Vert.Texcoord.x * 8) + int(Vert.Texcoord.y * 8)) % 2;
+	Color = texture(Diffuse[Index], Vert.Texcoord);
 }
