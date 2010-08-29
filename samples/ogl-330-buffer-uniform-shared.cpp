@@ -45,14 +45,8 @@ namespace
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
-<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
-	GLuint TransformBufferName = 0;
-	GLuint MaterialBufferName = 0;
-	GLint UniformTransform;
-=======
 	GLuint UniformBufferName = 0;
 	GLint UniformTransform = 0;
->>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 	GLint UniformMaterial = 0;
 
 }//namespace
@@ -64,14 +58,6 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
-		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-
-		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShader);
-		glAttachShader(ProgramName, FragmentShader);
-=======
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
@@ -80,13 +66,8 @@ bool initProgram()
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
-
->>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
-
-		glDeleteShader(VertexShader);
-		glDeleteShader(FragmentShader);
 	}
 
 	// Get variables locations
@@ -122,20 +103,9 @@ bool initArrayBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &ArrayBufferName);
-<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
-    glNamedBufferDataEXT(ArrayBufferName, PositionSize, PositionData, GL_STATIC_DRAW);
-
-	void * Data = glMapNamedBufferRangeEXT(
-		ArrayBufferName, 0, PositionSize, 
-		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
-	memcpy(Data, &PositionData[0], PositionSize);
-	glFlushMappedNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize);
-	glUnmapNamedBufferEXT(ArrayBufferName);
-=======
     glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
->>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	return glf::checkError("initArrayBuffer");
 }
@@ -178,12 +148,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-	//Validated = Validated && GLEW_EXT_direct_state_access;
-=======
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
->>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	if(Validated)
 		Validated = initProgram();
@@ -218,24 +183,12 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
-	glNamedBufferSubDataEXT(TransformBufferName, 0, sizeof(MVP), &MVP[0][0]);
-
-	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM0);
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
-
-	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
-	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
-=======
 	glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(glm::vec4), &Diffuse[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
->>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
