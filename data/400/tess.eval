@@ -2,15 +2,8 @@
 
 layout(quads, equal_spacing, ccw) in;
 
-in cont
-{
-	vec4 Color;
-} Cont[gl_in.length()];
-
-out eval
-{
-	vec4 Color;
-} Eval;
+in vec4 ContColor[];
+out vec4 EvalColor;
 
 vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 {
@@ -22,7 +15,7 @@ vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 void main()
 {	
 	gl_Position = interpolate(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
-	Eval.Color = interpolate(Cont[0].Color, Cont[1].Color, Cont[2].Color, Cont[3].Color);
+	EvalColor = interpolate(ContColor[0], ContColor[1], ContColor[2], ContColor[3]);
 }
 
 /*

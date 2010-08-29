@@ -1,5 +1,7 @@
 #version 400
 
+precision highp int;
+
 uniform samplerBuffer Displacement;
 uniform mat4 MVP;
 

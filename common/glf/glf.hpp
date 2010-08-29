@@ -5,10 +5,11 @@
 #ifdef WIN32
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
-#	include <GL/glext.h>
+//#	include <GL/glext.h>
 #	define glfGetProcAddress wglGetProcAddress
 #	define GLEW_EXT_direct_state_access_memory 0
 #elif defined(linux) || defined(__linux)
+#	include <GL/glew.h>
 #	define GL_GLEXT_PROTOTYPES 1
 #	include <GL/gl.h>
 #	include <GL/glext.h>
@@ -77,10 +78,6 @@ namespace glf
 	bool validateProgram(GLuint ProgramName);
 
 	int version(int Major, int Minor);
-	GLuint createProgram(
-		std::string const & VertShader, 
-		std::string const & FragShader);
-
 	int run();
 
 	namespace semantic
@@ -89,9 +86,9 @@ namespace glf
 		{
 			enum type
 			{
-				TRANSFORM0 = 0,
-				TRANSFORM1 = 1,
-				MATERIAL = 2
+				MATERIAL  = 0,
+				TRANSFORM0 = 1,
+				TRANSFORM1 = 2
 			};
 		};
 

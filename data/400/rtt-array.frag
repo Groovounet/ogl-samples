@@ -15,7 +15,7 @@
 #define FRAG_ALPHA		3
 
 uniform sampler2DArray Diffuse;
-uniform float Layer;
+uniform int Layer;
 
 in vert
 {

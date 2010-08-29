@@ -91,8 +91,6 @@ bool initVertexArray()
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -130,10 +128,8 @@ bool initUniformBuffer()
 		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
-		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM, TransformBufferName);
-		// Associate the uniform block to this binding point.
-		glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM);
+		// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
+		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, TransformBufferName);
 	}
 
 	{
@@ -152,8 +148,6 @@ bool initUniformBuffer()
 
 		// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
 		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
-		// Associate the uniform block to this binding point.
-		glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 	}
 
 	return glf::checkError("initUniformBuffer");
@@ -165,7 +159,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
@@ -214,9 +208,13 @@ void display()
 
 	// Bind program
 	glUseProgram(ProgramName);
+	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM0);
+	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+
 	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1);
 
 	glf::checkError("display");

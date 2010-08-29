@@ -1,10 +1,12 @@
 #version 330
 
+precision highp int;
+
 uniform samplerBuffer Displacement;
 uniform mat4 MVP;
 
 in vec2 Position;
-flat out mediump int Instance;
+flat out int Instance;
 
 void main()
 {	

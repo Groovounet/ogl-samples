@@ -112,8 +112,8 @@ bool initSampler()
 	glGenSamplers(1, &SamplerName);
 
 	// Parameters part of the sampler object:
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -123,6 +123,8 @@ bool initSampler()
 	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	
+	glBindSampler(0, SamplerName);
 
 	return glf::checkError("initSampler");
 }
@@ -256,7 +258,6 @@ void display()
 	glScissor(0, 0, Window.Size.x, Window.Size.y);
 	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glBindSampler(0, SamplerName);
 
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);

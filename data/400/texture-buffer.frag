@@ -1,5 +1,7 @@
 #version 400
 
+precision highp int;
+
 // Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3

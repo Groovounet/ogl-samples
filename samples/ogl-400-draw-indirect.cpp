@@ -136,8 +136,6 @@ bool initVertexArray()
 			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
@@ -198,7 +196,9 @@ void display()
 	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName); //!\ Need to be called after glBindVertexArray...
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
+
 	glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0);
 
 	glf::checkError("display");

@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Uniform Buffer
-// 07/06/2010
+// 06/04/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,30 +14,30 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "4XX/uniform-buffer.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "4XX/uniform-buffer.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MAJOR_VERSION = 3;
+	int const SAMPLE_MINOR_VERSION = 3;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::hvec2);
-	glm::hvec2 const PositionData[VertexCount] =
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
+	glm::vec2 const PositionData[VertexCount] =
 	{
-		glm::hvec2(-1.0f,-1.0f),
-		glm::hvec2( 1.0f,-1.0f),
-		glm::hvec2( 1.0f, 1.0f),
-		glm::hvec2(-1.0f, 1.0f)
+		glm::vec2(-1.0f,-1.0f),
+		glm::vec2( 1.0f,-1.0f),
+		glm::vec2( 1.0f, 1.0f),
+		glm::vec2(-1.0f, 1.0f)
 	};
 
 	GLsizei const ElementCount = 6;
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
 	GLushort const ElementData[ElementCount] =
 	{
-		0, 1, 2,
+		0, 1, 2, 
 		2, 3, 0
 	};
 
@@ -45,9 +45,14 @@ namespace
 	GLuint ElementBufferName = 0;
 	GLuint ArrayBufferName = 0;
 	GLuint VertexArrayName = 0;
+<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
 	GLuint TransformBufferName = 0;
 	GLuint MaterialBufferName = 0;
 	GLint UniformTransform;
+=======
+	GLuint UniformBufferName = 0;
+	GLint UniformTransform = 0;
+>>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 	GLint UniformMaterial = 0;
 
 }//namespace
@@ -55,16 +60,28 @@ namespace
 bool initProgram()
 {
 	bool Validated = true;
-
+	
 	// Create program
 	if(Validated)
 	{
+<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, FragmentShader);
+=======
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+
+		ProgramName = glCreateProgram();
+		glAttachShader(ProgramName, VertexShaderName);
+		glAttachShader(ProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+
+>>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 
@@ -84,20 +101,28 @@ bool initProgram()
 
 bool initVertexArray()
 {
+	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
+    glBindVertexArray(VertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ArrayBufferName, glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
 
 bool initArrayBuffer()
 {
+	// Generate a buffer object
 	glGenBuffers(1, &ElementBufferName);
-    glNamedBufferDataEXT(ElementBufferName, ElementSize, ElementData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &ArrayBufferName);
+<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
     glNamedBufferDataEXT(ArrayBufferName, PositionSize, PositionData, GL_STATIC_DRAW);
 
 	void * Data = glMapNamedBufferRangeEXT(
@@ -106,30 +131,43 @@ bool initArrayBuffer()
 	memcpy(Data, &PositionData[0], PositionSize);
 	glFlushMappedNamedBufferRangeEXT(ArrayBufferName, 0, PositionSize);
 	glUnmapNamedBufferEXT(ArrayBufferName);
+=======
+    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+>>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	return glf::checkError("initArrayBuffer");
 }
 
 bool initUniformBuffer()
 {
-	GLint UniformBlockSize = 0;
+	glGenBuffers(1, &UniformBufferName);
 
+	GLint UniformBlockSizeTransform = 0;
 	glGetActiveUniformBlockiv(
-		ProgramName,
+		ProgramName, 
 		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
-		&UniformBlockSize);
-	glGenBuffers(1, &TransformBufferName);
-	glNamedBufferDataEXT(TransformBufferName, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+		&UniformBlockSizeTransform);
 
-	glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
+	GLint UniformBlockSizeMaterial = 0;
 	glGetActiveUniformBlockiv(
-		ProgramName,
-		UniformMaterial,
+		ProgramName, 
+		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
-		&UniformBlockSize);
-	glGenBuffers(1, &MaterialBufferName);
-	glNamedBufferDataEXT(MaterialBufferName, UniformBlockSize, &Diffuse[0], GL_DYNAMIC_DRAW);
+		&UniformBlockSizeMaterial);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
+	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_READ);
+
+	glf::checkError("initUniformBuffer 7");
+	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, sizeof(glm::mat4));
+	glf::checkError("initUniformBuffer 8");
+	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, UniformBufferName, sizeof(glm::mat4), sizeof(glm::vec4));
+	glf::checkError("initUniformBuffer 9");
 
 	return glf::checkError("initUniformBuffer");
 }
@@ -140,8 +178,12 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
+<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
 	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
 	//Validated = Validated && GLEW_EXT_direct_state_access;
+=======
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+>>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	if(Validated)
 		Validated = initProgram();
@@ -160,8 +202,7 @@ bool end()
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
 	glDeleteBuffers(1, &ElementBufferName);
-	glDeleteBuffers(1, &TransformBufferName);
-	glDeleteBuffers(1, &MaterialBufferName);
+	glDeleteBuffers(1, &UniformBufferName);
 	glDeleteProgram(ProgramName);
 
 	return glf::checkError("end");
@@ -177,6 +218,7 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+<<<<<<< HEAD:samples/ogl-4XX-buffer-uniform-ext.cpp
 	glNamedBufferSubDataEXT(TransformBufferName, 0, sizeof(MVP), &MVP[0][0]);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM
@@ -186,17 +228,28 @@ void display()
 	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
 	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
+=======
+	glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(glm::vec4), &Diffuse[0]);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+>>>>>>> 4.1.1:samples/ogl-330-buffer-uniform-shared.cpp
 
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
-	// Clear color buffer
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
+	// Clear color buffer with black
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Bind program
 	glUseProgram(ProgramName);
+	glUniformBlockBinding(ProgramName, UniformTransform, glf::semantic::uniform::TRANSFORM0);
+	glUniformBlockBinding(ProgramName, UniformMaterial, glf::semantic::uniform::MATERIAL);
 
-	// Bind vertex array & draw
+	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
@@ -210,9 +263,9 @@ int main(int argc, char* argv[])
 {
 	if(glf::run(
 		argc, argv,
-		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT),
-		SAMPLE_MAJOR_VERSION,
-		SAMPLE_MINOR_VERSION))
+		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		::SAMPLE_MAJOR_VERSION, 
+		::SAMPLE_MINOR_VERSION))
 		return 0;
 	return 1;
 }

@@ -45,7 +45,7 @@ endif(MSVC)
 # Add GLEW 
 
 if(MSVC)
-	set(GLEW_VERSION "glew-1.5.5")
+	set(GLEW_VERSION "glew-1.5.5-gl4.1")
 	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
 	add_definitions(-DGLEW_STATIC)
@@ -85,14 +85,12 @@ include_directories("${GLI_DIRECTORY}")
 
 if(MSVC)
 	set(BINARY_FILES "glew32s" "OpenGL32")
-endif(MSVC)
-if(APPLE)
+elseif(APPLE)
     set(BINARY_FILES "../libGL.dylib")
 	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
-endif(APPLE)
-#if(UNIX and NOT APPLE)
-#	set(BINARY_FILES "GL")
-#endif(UNIX and not APPLE)
+elseif(UNIX)
+	set(BINARY_FILES "glut" "GLEW")
+endif()
 
 ################################
 # Add output directory
