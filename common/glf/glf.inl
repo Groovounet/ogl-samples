@@ -475,7 +475,7 @@ namespace glf
 		std::string const & Filename, 
 		GLenum const & Format,
 		std::vector<glm::byte> const & Data,
-		std::size_t const & Size
+		GLint const & Size
 	)
 	{
 		FILE* File = fopen(Filename.c_str(), "wb");
