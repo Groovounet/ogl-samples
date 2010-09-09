@@ -172,6 +172,8 @@ set(GL_SHADER_GTC subroutine.vert subroutine.frag)
 glCreateSampleGTC(program-subroutine)
 set(GL_SHADER_GTC tess-block.vert tess-block.cont tess-block.eval tess-block.geom tess-block.frag)
 glCreateSampleGTC(program-varying-blocks)
+set(GL_SHADER_GTC tess-struct.vert tess-struct.cont tess-struct.eval tess-struct.geom tess-struct.frag)
+glCreateSampleGTC(program-varying-structs)
 
 set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
 glCreateSampleGTC(primitive-instanced)
