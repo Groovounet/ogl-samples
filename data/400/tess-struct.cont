@@ -2,15 +2,13 @@
 
 layout(vertices = 4) out;
 
-in vert
+struct vertex
 {
 	vec4 Color;
-} Vert[];
+};
 
-out cont
-{
-	vec4 Color;
-} Cont[];
+in vertex Vert[];
+out vertex Cont[];
 
 void main()
 {	
