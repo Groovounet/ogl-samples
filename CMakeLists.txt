@@ -45,7 +45,7 @@ endif(MSVC)
 # Add GLEW 
 
 if(MSVC)
-	set(GLEW_VERSION "glew-1.5.5-gl4.1")
+	set(GLEW_VERSION "glew-1.5.6")
 	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
 	add_definitions(-DGLEW_STATIC)
