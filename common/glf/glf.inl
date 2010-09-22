@@ -122,6 +122,7 @@ namespace glf
 		glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC)glfGetProcAddress("glBlendFuncSeparatei");
 		glBlendFunci = (PFNGLBLENDFUNCIPROC)glfGetProcAddress("glBlendFunci");
 		glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)glfGetProcAddress("glMinSampleShading");
+		glSampleMaski = (PFNGLSAMPLEMASKIPROC)glfGetProcAddress("glSampleMaski");
 
 		glUniform1d = (PFNGLUNIFORM1DPROC)glfGetProcAddress("glUniform1d");
 		glUniform2d = (PFNGLUNIFORM2DPROC)glfGetProcAddress("glUniform2d");
