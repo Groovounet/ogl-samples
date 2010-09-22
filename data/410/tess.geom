@@ -7,6 +7,7 @@
 #define FRAG_COLOR		0
 
 layout(triangles, invocations = 1) in;
+layout(triangle_strip, max_vertices = 4) out;
 
 struct vertex
 {

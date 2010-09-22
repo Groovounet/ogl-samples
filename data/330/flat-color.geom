@@ -14,6 +14,8 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
+layout(triangle_strip, max_vertices = 4) out;
+
 void main()
 {	
 	for(int i = 0; i < gl_in.length(); ++i)
