@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Tessellation
-// 14/05/2010 - 26/06/2010
+// 14/05/2010 - 21/09/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -14,15 +14,15 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Tessellation";	
-	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "400/tess.vert");
-	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "400/tess.cont");
-	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "400/tess.eval");
-	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "400/tess.geom");
-	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "400/tess.frag");
+	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
+	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
+	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
+	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
+	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MINOR_VERSION = 1;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
