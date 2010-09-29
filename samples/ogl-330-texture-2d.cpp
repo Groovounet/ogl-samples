@@ -10,6 +10,8 @@
 //**********************************
 
 #include <glf/glf.hpp>
+#include <gli/gtx/loader_dds9.hpp>
+#include <gli/gtx/loader_dds10.hpp>
 
 namespace
 {
@@ -17,6 +19,7 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
+	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
@@ -108,9 +111,9 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-
+/*
 	// Set image
-	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
+	gli::image Image = gli::loadDDS10(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(
@@ -124,6 +127,22 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+*/
+
+	gli::image Image = gli::loadDDS10(TEXTURE_DIFFUSE_DXT1);
+	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+	{
+		glCompressedTexImage2D(
+			GL_TEXTURE_2D,
+			GLint(Level),
+			GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+			GLsizei(Image[Level].dimensions().x), 
+			GLsizei(Image[Level].dimensions().y), 
+			0, 
+			GLsizei(Image[Level].capacity()), 
+			Image[Level].data());
+	}
+	gli::saveDDS10(Image, glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
 
 	return glf::checkError("initTexture2D");
 }

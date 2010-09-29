@@ -75,7 +75,7 @@ include_directories("${GLM_DIRECTORY}")
 ###########
 # Add GLI
 
-set(GLI_VERSION "gli")
+set(GLI_VERSION "gli-0.3.0.0")
 set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
 
 include_directories("${GLI_DIRECTORY}")
