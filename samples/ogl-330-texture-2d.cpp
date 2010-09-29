@@ -113,7 +113,11 @@ bool initTexture2D()
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 /*
 	// Set image
+<<<<<<< HEAD
 	gli::image Image = gli::loadDDS10(TEXTURE_DIFFUSE);
+=======
+	gli::texture Image = gli::load(TEXTURE_DIFFUSE);
+>>>>>>> 1adb6cf6437b1e228a15dba2fd1986e0c40302ae
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(

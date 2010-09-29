@@ -194,7 +194,7 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(TEXTURE_MAX, Texture2DName);
 
-	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
+	gli::texture Image = gli::load(TEXTURE_DIFFUSE);
 
 	// Load image
 	glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
