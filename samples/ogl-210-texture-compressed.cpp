@@ -141,7 +141,7 @@ bool initTexture2D()
 	{
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
 
-		gli::image Image = gli::import_as(TEXTURE_DIFFUSE_RGB8);
+		gli::texture Image = gli::load(TEXTURE_DIFFUSE_RGB8);
 		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 		{
 			glTexImage2D(
