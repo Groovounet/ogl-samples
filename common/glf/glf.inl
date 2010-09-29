@@ -443,7 +443,7 @@ namespace glf
 		return Name;
 	}
 
-	static void debugOutput
+	static void __stdcall debugOutput
 	(
 		GLenum source,
 		GLenum type,

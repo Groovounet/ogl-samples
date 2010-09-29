@@ -111,13 +111,9 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-/*
+
 	// Set image
-<<<<<<< HEAD
-	gli::image Image = gli::loadDDS10(TEXTURE_DIFFUSE);
-=======
 	gli::texture Image = gli::load(TEXTURE_DIFFUSE);
->>>>>>> 1adb6cf6437b1e228a15dba2fd1986e0c40302ae
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(
@@ -131,22 +127,6 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
-*/
-
-	gli::image Image = gli::loadDDS10(TEXTURE_DIFFUSE_DXT1);
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-	{
-		glCompressedTexImage2D(
-			GL_TEXTURE_2D,
-			GLint(Level),
-			GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
-			0, 
-			GLsizei(Image[Level].capacity()), 
-			Image[Level].data());
-	}
-	gli::saveDDS10(Image, glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
 
 	return glf::checkError("initTexture2D");
 }

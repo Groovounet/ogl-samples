@@ -49,8 +49,8 @@ if(MSVC)
 	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
 
 	add_definitions(-DGLEW_STATIC)
-	include_directories("${GLEW_DIRECTORY}/include")
-	link_directories("${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY}")
+	include_directories(${GLEW_DIRECTORY}/include)
+	link_directories(${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY})
 endif(MSVC)
 
 ############
