@@ -15,7 +15,7 @@
 #define FRAG_ALPHA		3
 
 layout(triangles, invocations = 6) in;
-layout(triangle_strip, max_vertices = 3) out;
+layout(triangle_strip, max_vertices = 4) out;
 
 in vec3 VertColor[];
 layout(stream = 0) out vec3 GeomColor;

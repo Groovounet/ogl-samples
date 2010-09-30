@@ -13,8 +13,8 @@ struct vertex
 
 layout(vertices = 4) out;
 
-layout(location = VERTEX) in vertex Input[];
-layout(location = VERTEX) out vertex Output[];
+layout(location = VERT_BLOCK) in vertex Input[];
+layout(location = VERT_BLOCK) out vertex Output[];
 
 void main()
 {	
