@@ -13,7 +13,7 @@ struct vertex
 	vec4 Color;
 };
 
-layout(location = VERTEX) in vertex Input;
+layout(location = VERT_BLOCK) in vertex Input;
 
 void main()
 {
