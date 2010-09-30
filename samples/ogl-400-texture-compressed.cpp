@@ -187,8 +187,10 @@ bool initTexture2D()
 	}
 
 	{
-		//Texture2DName[TEXTURE_BC5] = gli::createTexture2D(TEXTURE_DIFFUSE_BC5);
+		//Texture2DName[TEXTURE_BC6] = gli::createTexture2D(TEXTURE_BC6);
 
+		Texture2DName[TEXTURE_BC6] = 0;
+		/*
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
 
 		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC6);
@@ -204,6 +206,7 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
+		*/
 	}
 
 	glActiveTexture(GL_TEXTURE0);
@@ -230,10 +233,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	Viewport[TEXTURE_BC1] = glm::ivec4(0, 0, Window.Size >> 1);
-	Viewport[TEXTURE_BC3] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
-	Viewport[TEXTURE_BC4] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
-	Viewport[TEXTURE_BC5] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_BC3] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[TEXTURE_BC4] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[TEXTURE_BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_BC7] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
