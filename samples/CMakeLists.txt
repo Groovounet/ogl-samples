@@ -189,6 +189,8 @@ set(GL_SHADER_GTC sampler-array.vert sampler-array.frag)
 
 set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
 glCreateSampleGTC(texture-buffer-rgb)
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(texture-compressed)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
