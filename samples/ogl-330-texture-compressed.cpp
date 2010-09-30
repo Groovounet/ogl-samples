@@ -21,6 +21,12 @@ namespace
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-dxt1.dds");
 	std::string const TEXTURE_DIFFUSE_DXT3(glf::DATA_DIRECTORY + "kueken256-dxt3.dds");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
+
+	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
+	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
+	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
+	std::string const TEXTURE_DIFFUSE_BC5(glf::DATA_DIRECTORY + "kueken256-bc5.dds");
+
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
@@ -58,10 +64,10 @@ namespace
 
 	enum texture_type
 	{
-		TEXTURE_RGB8,
-		TEXTURE_COMP,
-		TEXTURE_DXT1,
-		TEXTURE_DXT5,
+		TEXTURE_BC1,
+		TEXTURE_BC3,
+		TEXTURE_BC4,
+		TEXTURE_BC5,
 		TEXTURE_MAX
 	};
 
@@ -137,48 +143,10 @@ bool initTexture2D()
 
 	// Set image
 	{
-		//Texture2DName[TEXTURE_RGB8] = gli::createTexture2D(TEXTURE_DIFFUSE_RGB8);
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_RGB8]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_RGB8);
-		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
-		{
-			glTexImage2D(
-				GL_TEXTURE_2D, 
-				GLint(Level), 
-				GL_RGB,
-				GLsizei(Texture[Level].dimensions().x), 
-				GLsizei(Texture[Level].dimensions().y), 
-				0,  
-				GL_BGR, 
-				GL_UNSIGNED_BYTE, 
-				Texture[Level].data());
-		}
-	}
+		//Texture2DName[TEXTURE_BC1] = gli::createTexture2D(TEXTURE_DIFFUSE_BC1);
 
-	{
-		//Texture2DName[TEXTURE_COMP] = gli::createTexture2D(TEXTURE_DIFFUSE_RGB8);
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_COMP]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_RGB8);
-		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
-		{
-			glTexImage2D(
-				GL_TEXTURE_2D, 
-				GLint(Level), 
-				GL_COMPRESSED_RGB,
-				GLsizei(Texture[Level].dimensions().x), 
-				GLsizei(Texture[Level].dimensions().y), 
-				0,  
-				GL_BGR, 
-				GL_UNSIGNED_BYTE, 
-				Texture[Level].data());
-		}
-	}
-
-	{
-		//Texture2DName[TEXTURE_DXT1] = gli::createTexture2D(TEXTURE_DIFFUSE_DXT1);
-
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_DXT1]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_DXT1);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC1]);
+		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC1);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -194,10 +162,10 @@ bool initTexture2D()
 	}
 
 	{
-		//Texture2DName[TEXTURE_DXT5] = gli::createTexture2D(TEXTURE_DIFFUSE_DXT5);
+		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_DXT5]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_DXT5);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC3]);
+		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC3);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -207,7 +175,55 @@ bool initTexture2D()
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
 				0, 
-				GLsizei(Texture[Level].capacity()),
+				GLsizei(Texture[Level].capacity()), 
+				Texture[Level].data());
+		}
+	}
+
+	{
+		//Texture2DName[TEXTURE_BC4] = gli::createTexture2D(TEXTURE_DIFFUSE_BC4);
+
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC4]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
+
+		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
+		{
+			glCompressedTexImage2D(
+				GL_TEXTURE_2D,
+				GLint(Level),
+				GL_COMPRESSED_RED_RGTC1,
+				GLsizei(Texture[Level].dimensions().x), 
+				GLsizei(Texture[Level].dimensions().y), 
+				0, 
+				GLsizei(Texture[Level].capacity()), 
+				Texture[Level].data());
+		}
+	}
+
+	{
+		//Texture2DName[TEXTURE_BC5] = gli::createTexture2D(TEXTURE_DIFFUSE_BC5);
+
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC5]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
+
+		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC5);
+		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
+		{
+			glCompressedTexImage2D(
+				GL_TEXTURE_2D,
+				GLint(Level),
+				GL_COMPRESSED_RG_RGTC2,
+				GLsizei(Texture[Level].dimensions().x), 
+				GLsizei(Texture[Level].dimensions().y), 
+				0, 
+				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
 	}
@@ -236,10 +252,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	Viewport[TEXTURE_RGB8] = glm::ivec4(0, 0, Window.Size >> 1);
-	Viewport[TEXTURE_COMP] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
-	Viewport[TEXTURE_DXT1] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
-	Viewport[TEXTURE_DXT5] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_BC1] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[TEXTURE_BC3] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[TEXTURE_BC4] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_BC5] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
