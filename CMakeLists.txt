@@ -76,7 +76,8 @@ include_directories("${GLM_DIRECTORY}")
 # Add GLI
 
 set(GLI_VERSION "gli")
-set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
+#set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
+set(GLI_DIRECTORY ../ogl-image)
 
 include_directories("${GLI_DIRECTORY}")
 

@@ -146,7 +146,7 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC1] = gli::createTexture2D(TEXTURE_DIFFUSE_BC1);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC1]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC1);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC1);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -165,7 +165,7 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC3]);
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC3);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -189,7 +189,7 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
 
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -213,7 +213,7 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
 
-		gli::texture Texture = gli::load(TEXTURE_DIFFUSE_BC5);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC5);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
