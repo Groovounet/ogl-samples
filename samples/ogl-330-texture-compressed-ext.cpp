@@ -10,7 +10,7 @@
 //**********************************
 
 #include <glf/glf.hpp>
-#include <gli/gtx/gl_texture_2d.hpp>
+#include <gli/gtx/gl_texture2d.hpp>
 
 namespace
 {

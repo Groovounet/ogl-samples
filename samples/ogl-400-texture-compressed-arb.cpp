@@ -191,8 +191,8 @@ bool initTexture2D()
 
 	{
 		//Texture2DName[TEXTURE_BC6] = gli::createTexture2D(TEXTURE_BC6);
-		//Texture2DName[TEXTURE_BC6] = 0;
-		
+		Texture2DName[TEXTURE_BC6] = 0;
+		/*
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
 
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC6);
@@ -208,7 +208,7 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
-
+		*/
 		glf::checkError("initTexture2D 9");
 	}
 
