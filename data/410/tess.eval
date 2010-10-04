@@ -13,8 +13,8 @@ struct vertex
 	vec4 Color;
 };
 
-layout(location = VERTEX) in vertex Input[];
-layout(location = VERTEX) out vertex Output;
+layout(location = VERT_BLOCK) in vertex Input[];
+layout(location = VERT_BLOCK) out vertex Output;
 
 vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 {

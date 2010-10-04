@@ -110,7 +110,7 @@ bool initTextureArray2D()
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Set image
-	gli::image Image = gli::import_as(TEXTURE_DIFFUSE);
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{

@@ -28,6 +28,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <gli/gli.hpp>
+#include <gli/gtx/loader.hpp>
 
 // STL
 #include <vector>

@@ -147,7 +147,7 @@ bool initTexture2D()
 	glm::vec4 BorderColor(0.0f, 0.5f, 1.0f, 1.0f);
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &BorderColor[0]);
 
-	gli::image Image = gli::import_as(TEXTURE_DIFFUSE_DXT5);
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glCompressedTexImage2D(
