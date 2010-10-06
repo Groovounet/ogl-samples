@@ -7,7 +7,7 @@ struct vertex
 	vec4 Color;
 };
 
-in vertex Cont[gl_in.length()];
+in vertex Cont[];
 out vertex Eval;
 
 vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
