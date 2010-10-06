@@ -106,19 +106,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform1i(UniformDiffuse, 0);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return glf::checkError("initProgram");
 }
 
@@ -182,7 +169,6 @@ bool initTexture2D()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
