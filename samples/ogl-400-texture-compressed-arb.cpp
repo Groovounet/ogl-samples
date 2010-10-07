@@ -17,10 +17,12 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/image-2d.frag");
+	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
 	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
 	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
 	std::string const TEXTURE_DIFFUSE_BC6(glf::DATA_DIRECTORY + "kueken128-bc6h.dds");
 	std::string const TEXTURE_DIFFUSE_BC7(glf::DATA_DIRECTORY + "kueken256-bc7.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
@@ -128,6 +130,9 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC7] = gli::createTexture2D(TEXTURE_DIFFUSE_BC7);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC7]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -148,6 +153,9 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC3]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -168,18 +176,20 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC4] = gli::createTexture2D(TEXTURE_DIFFUSE_BC4);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC4]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
 
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC1);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
 				GL_TEXTURE_2D,
 				GLint(Level),
-				GL_COMPRESSED_RED_RGTC1,
+				GL_COMPRESSED_RED_RGTC1, //GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
 				0, 
@@ -191,7 +201,27 @@ bool initTexture2D()
 
 	{
 		//Texture2DName[TEXTURE_BC6] = gli::createTexture2D(TEXTURE_BC6);
-		Texture2DName[TEXTURE_BC6] = 0;
+		//Texture2DName[TEXTURE_BC6] = 0;
+
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
+		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+		{
+			glTexImage2D(
+				GL_TEXTURE_2D, 
+				GLint(Level), 
+				GL_RGB, 
+				GLsizei(Image[Level].dimensions().x), 
+				GLsizei(Image[Level].dimensions().y), 
+				0,  
+				GL_BGR, 
+				GL_UNSIGNED_BYTE, 
+				Image[Level].data());
+		}
+
 		/*
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
 
@@ -237,9 +267,9 @@ bool initVertexArray()
 bool begin()
 {
 	Viewport[TEXTURE_BC3] = glm::ivec4(0, 0, Window.Size >> 1);
-	Viewport[TEXTURE_BC4] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[TEXTURE_BC7] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
 	Viewport[TEXTURE_BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
-	Viewport[TEXTURE_BC7] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[TEXTURE_BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	GLint MajorVersion = 0;
 	GLint MinorVersion = 0;
