@@ -164,7 +164,7 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 
-	gli::texture Image = gli::load(TEXTURE_DIFFUSE_DXT5);
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE_DXT5);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glCompressedTexImage2D(

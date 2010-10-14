@@ -1,6 +1,0 @@
-[submodule "external/glm"]
-	path = external/glm
-	url = ssh://groovounet@ogl-math.git.sourceforge.net/gitroot/ogl-math/ogl-math
-[submodule "external/gli"]
-	path = external/gli
-	url = ssh://groovounet@ogl-image.git.sourceforge.net/gitroot/ogl-image/ogl-image

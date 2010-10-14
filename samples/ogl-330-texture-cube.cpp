@@ -102,7 +102,7 @@ bool initArrayBuffer()
 
 void loadTextureFace(GLenum target, GLenum internalformat, std::string const & Filename)
 {
-	gli::texture Image = gli::load(Filename);
+	gli::texture2D Image = gli::load(Filename);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glCompressedTexImage2D(

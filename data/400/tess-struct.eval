@@ -22,20 +22,3 @@ void main()
 	gl_Position = interpolate(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
 	Eval.Color = interpolate(Cont[0].Color, Cont[1].Color, Cont[2].Color, Cont[3].Color);
 }
-
-/*
-void main()
-{	
-	gl_Position = vec4(0);
-    float u = gl_TessCoord.x;
-	float v = gl_TessCoord.y;
-	float a = (1 - u) * (1 - v);
-	float b = u * (1 - v);
-	float c = u * v;
-    float d = (1 - u) * v;
-    gl_Position += a * gl_in[0].gl_Position;
-    gl_Position += b * gl_in[1].gl_Position;
-    gl_Position += c * gl_in[2].gl_Position;
-    gl_Position += d * gl_in[3].gl_Position;
-}
-*/
