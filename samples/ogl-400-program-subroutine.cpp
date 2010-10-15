@@ -71,9 +71,17 @@ namespace
 	GLint UniformDiffuse = 0;
 	GLint UniformRGB8 = 0;
 	GLint UniformDXT1 = 0;
+	GLint UniformDisplacement = 0;
 	GLuint IndexDXT1 = 0;
 	GLuint IndexRGB8 = 0;
 }//namespace
+
+bool initTest()
+{
+	glEnable(GL_DEPTH_TEST);
+
+	return glf::checkError("initTest");
+}
 
 bool initProgram()
 {
@@ -100,6 +108,7 @@ bool initProgram()
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDXT1 = glGetUniformLocation(ProgramName, "DiffuseDXT1");
 		UniformRGB8 = glGetUniformLocation(ProgramName, "DiffuseRGB8");
+		UniformDisplacement = glGetUniformLocation(ProgramName, "Displacement");
 		UniformDiffuse = glGetSubroutineUniformLocation(ProgramName, GL_FRAGMENT_SHADER, "Diffuse");
 		IndexDXT1 = glGetSubroutineIndex(ProgramName, GL_FRAGMENT_SHADER, "diffuseLQ");
 		IndexRGB8 = glGetSubroutineIndex(ProgramName, GL_FRAGMENT_SHADER, "diffuseHQ");
@@ -163,7 +172,7 @@ bool initTexture2D()
 				GLsizei(Image[Level].dimensions().x), 
 				GLsizei(Image[Level].dimensions().y), 
 				0,  
-				GL_BGR, 
+				GL_RGB, 
 				GL_UNSIGNED_BYTE, 
 				Image[Level].data());
 		}
@@ -206,6 +215,8 @@ bool begin()
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
+		Validated = initTest();
+	if(Validated)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initVertexBuffer();
@@ -240,6 +251,8 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
+	float Depth(1.0f);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -255,12 +268,17 @@ void display()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformRGB8, 0);
 	glUniform1i(UniformDXT1, 1);
-	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexDXT1);
-	//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexRGB8);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+
+	glUniform1f(UniformDisplacement,  0.2f);
+	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexDXT1);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
+
+	glUniform1f(UniformDisplacement, -0.2f);
+	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &IndexRGB8);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 
 	glf::checkError("display");
