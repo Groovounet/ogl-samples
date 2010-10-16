@@ -128,9 +128,10 @@ bool initTexture2D()
 	// Set image
 	{
 		//Texture2DName[TEXTURE_BC7] = gli::createTexture2D(TEXTURE_DIFFUSE_BC7);
-
+		//Texture2DName[TEXTURE_BC7] = 0;
+		
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC7]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);//GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
@@ -146,6 +147,7 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
+		
 		glf::checkError("initTexture2D 6");
 	}
 
@@ -153,7 +155,7 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC3]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
@@ -176,14 +178,14 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC4] = gli::createTexture2D(TEXTURE_DIFFUSE_BC4);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC4]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
 
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC1);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
 			glCompressedTexImage2D(
@@ -204,7 +206,7 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC6] = 0;
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);

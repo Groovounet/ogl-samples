@@ -67,7 +67,7 @@ endif(APPLE)
 ###########
 # Add GLM 
 
-set(GLM_VERSION "glm-0.9.0.4")
+set(GLM_VERSION "glm")
 set(GLM_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLM_VERSION})
 
 include_directories("${GLM_DIRECTORY}")
@@ -75,7 +75,7 @@ include_directories("${GLM_DIRECTORY}")
 ###########
 # Add GLI
 
-set(GLI_VERSION "gli-0.3.0.0")
+set(GLI_VERSION "gli")
 #set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
 set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
 
