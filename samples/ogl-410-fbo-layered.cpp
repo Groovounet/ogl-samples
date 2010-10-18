@@ -142,8 +142,8 @@ bool initTexture()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -262,10 +262,10 @@ void display()
 	// Pass 2
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewportIndexedfv(0, &glm::vec4(1, 1, FRAMEBUFFER_SIZE - 2)[0]);
-		glViewportIndexedfv(1, &glm::vec4((Window.Size.x >> 1) + 1, 0, FRAMEBUFFER_SIZE - 2)[0]);
-		glViewportIndexedfv(2, &glm::vec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2)[0]);
-		glViewportIndexedfv(3, &glm::vec4(1, (Window.Size.y >> 1) + 1, FRAMEBUFFER_SIZE - 2)[0]);
+		glViewportIndexedfv(0, &glm::vec4(1, 1, Window.Size / 2 - 2)[0]);
+		glViewportIndexedfv(1, &glm::vec4((Window.Size.x >> 1) + 1, 0, Window.Size / 2 - 2)[0]);
+		glViewportIndexedfv(2, &glm::vec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, Window.Size / 2 - 2)[0]);
+		glViewportIndexedfv(3, &glm::vec4(1, (Window.Size.y >> 1) + 1, Window.Size / 2 - 2)[0]);
 
 		glUseProgram(ProgramName[VIEWPORT]);
 		glUniformMatrix4fv(UniformMVP[VIEWPORT], 1, GL_FALSE, &MVP[0][0]);
