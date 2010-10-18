@@ -153,7 +153,6 @@ set(GL_SHADER_GTC mrt.vert mrt.frag image-2d.vert image-2d.frag)
 glCreateSampleGTC(blend-rtt)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform)
-#glCreateSampleGTC(buffer-uniform-shared)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(draw-indirect)
