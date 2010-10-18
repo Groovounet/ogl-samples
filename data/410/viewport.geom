@@ -29,11 +29,12 @@ uniform mat4 MVP;
 
 void main()
 {	
+	gl_Layer = gl_InvocationID;
+	gl_ViewportIndex = gl_InvocationID;
+
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = MVP * gl_in[i].gl_Position;
-		gl_Layer = gl_InvocationID;
-		gl_ViewportIndex = gl_InvocationID;
 		GeomInstance = gl_InvocationID;
 		GeomTexcoord = Texcoord[i];
 		EmitVertex();
