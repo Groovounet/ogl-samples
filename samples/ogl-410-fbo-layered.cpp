@@ -261,11 +261,13 @@ void display()
 
 	// Pass 2
 	{
+		GLint Border = 2;
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewportIndexedfv(0, &glm::vec4(1, 1, Window.Size / 2 - 2)[0]);
-		glViewportIndexedfv(1, &glm::vec4((Window.Size.x >> 1) + 1, 0, Window.Size / 2 - 2)[0]);
-		glViewportIndexedfv(2, &glm::vec4((Window.Size.x >> 1) + 1, (Window.Size.y >> 1) + 1, Window.Size / 2 - 2)[0]);
-		glViewportIndexedfv(3, &glm::vec4(1, (Window.Size.y >> 1) + 1, Window.Size / 2 - 2)[0]);
+		glViewportIndexedfv(0, &glm::vec4(Border, Border, Window.Size / 2 - 2 * Border)[0]);
+		glViewportIndexedfv(1, &glm::vec4((Window.Size.x >> 1) + Border, Border, Window.Size / 2 - 2 * Border)[0]);
+		glViewportIndexedfv(2, &glm::vec4((Window.Size.x >> 1) + Border, (Window.Size.y >> 1) + 1, Window.Size / 2 - 2 * Border)[0]);
+		glViewportIndexedfv(3, &glm::vec4(Border, (Window.Size.y >> 1) + Border, Window.Size / 2 - 2 * Border)[0]);
 
 		glUseProgram(ProgramName[VIEWPORT]);
 		glUniformMatrix4fv(UniformMVP[VIEWPORT], 1, GL_FALSE, &MVP[0][0]);
