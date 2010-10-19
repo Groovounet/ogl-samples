@@ -6,6 +6,7 @@
 #define FRAG_COLOR		0
 
 layout(triangle_strip, max_vertices = 4) out;
+precision highp float;
 
 in vec4 VertColor[];
 out vec4 GeomColor;

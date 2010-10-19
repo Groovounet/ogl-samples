@@ -7,12 +7,12 @@
 
 precision highp float;
 
-in vec4 VertColor;
+in vec4 GeomColor;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = VertColor;
+	Color = GeomColor;
 }
 
