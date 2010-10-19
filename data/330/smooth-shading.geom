@@ -14,15 +14,15 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
-
-layout(location = ATTR_POSITION) in vec2 AttrPosition;
-layout(location = ATTR_COLOR) in vec4 AttrColor;
-flat out vec4 Color;
+layout(triangle_strip, max_vertices = 4) out;
 
 void main()
 {	
-	gl_Position = MVP * vec4(AttrPosition, 0.0, 1.0);
-	Color = AttrColor;
+	for(int i = 0; i < gl_in.length(); ++i)
+	{
+		gl_Position = gl_in[i].gl_Position;
+		EmitVertex();
+	}
+	EndPrimitive();
 }
 

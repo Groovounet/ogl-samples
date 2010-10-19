@@ -14,7 +14,7 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-/*flat*/ in vec4 Color;
+flat in vec4 Color;
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
