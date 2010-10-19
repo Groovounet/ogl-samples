@@ -181,6 +181,8 @@ set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-
 glCreateSampleGTC(primitive-instanced)
 set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag)
 glCreateSampleGTC(primitive-tessellation)
+set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag smooth-shading-geom.vert smooth-shading-geom.geom smooth-shading-geom.frag)
+glCreateSampleGTC(primitive-smooth-shading)
 
 set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch)

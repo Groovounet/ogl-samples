@@ -14,15 +14,18 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Primitive smooth shading";	
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/smooth-shading.vert");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/smooth-shading.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/smooth-shading-geom.vert");
-	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/smooth-shading-geom.geom");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/smooth-shading-geom.frag");
+	std::string const SAMPLE_VERT_SHADER1(glf::DATA_DIRECTORY + "400/tess.vert");
+	std::string const SAMPLE_CONT_SHADER1(glf::DATA_DIRECTORY + "400/tess.cont");
+	std::string const SAMPLE_EVAL_SHADER1(glf::DATA_DIRECTORY + "400/tess.eval");
+	std::string const SAMPLE_GEOM_SHADER1(glf::DATA_DIRECTORY + "400/tess.geom");
+	std::string const SAMPLE_FRAG_SHADER1(glf::DATA_DIRECTORY + "400/tess.frag");
+	std::string const SAMPLE_VERT_SHADER2(glf::DATA_DIRECTORY + "400/smooth-shading-geom.vert");
+	std::string const SAMPLE_GEOM_SHADER2(glf::DATA_DIRECTORY + "400/smooth-shading-geom.geom");
+	std::string const SAMPLE_FRAG_SHADER2(glf::DATA_DIRECTORY + "400/smooth-shading-geom.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_MAJOR_VERSION = 4;
+	int const SAMPLE_MINOR_VERSION = 0;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -49,7 +52,7 @@ namespace
 	GLushort const ElementData[ElementCount] =
 	{
 		0, 1, 2, 
-		0, 2, 3
+		2, 3, 0
 	};
 
 	GLuint ProgramName[2] = {0, 0};
@@ -68,15 +71,27 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE1);
+		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER1);
 		glf::checkError("VertShader");
-		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE1);
+		GLuint ContShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONT_SHADER1);
+		glf::checkError("ContShader");
+		GLuint EvalShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVAL_SHADER1);
+		glf::checkError("EvalShader");
+		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER1);
+		glf::checkError("GeomShader");
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER1);
 		glf::checkError("FragShader");
 
 		ProgramName[0] = glCreateProgram();
 		glAttachShader(ProgramName[0], VertShader);
+		glAttachShader(ProgramName[0], GeomShader);
+		glAttachShader(ProgramName[0], ContShader);
+		glAttachShader(ProgramName[0], EvalShader);
 		glAttachShader(ProgramName[0], FragShader);
 		glDeleteShader(VertShader);
+		glDeleteShader(GeomShader);
+		glDeleteShader(ContShader);
+		glDeleteShader(EvalShader);
 		glDeleteShader(FragShader);
 
 		glLinkProgram(ProgramName[0]);
@@ -87,17 +102,16 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP[0] = glGetUniformLocation(ProgramName[0], "MVP");
-		UniformDiffuse[0] = glGetUniformLocation(ProgramName[0], "Diffuse");
 	}
 
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE2);
+		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER2);
 		glf::checkError("VertShader");
-		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE2);
+		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER2);
 		glf::checkError("GeomShader");
-		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE2);
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER2);
 		glf::checkError("FragShader");
 
 		ProgramName[1] = glCreateProgram();
@@ -116,7 +130,6 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP[1] = glGetUniformLocation(ProgramName[1], "MVP");
-		UniformDiffuse[1] = glGetUniformLocation(ProgramName[1], "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -207,7 +220,8 @@ void display()
 	glViewport(0, 0, Window.Size.x / 2, Window.Size.y);
 	glUseProgram(ProgramName[0]);
 	glUniformMatrix4fv(UniformMVP[0], 1, GL_FALSE, &MVP[0][0]);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 	
 	// Right side
 	glViewport(Window.Size.x / 2, 0, Window.Size.x / 2, Window.Size.y);
