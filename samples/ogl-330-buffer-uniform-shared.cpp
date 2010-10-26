@@ -48,6 +48,9 @@ namespace
 	GLuint UniformBufferName = 0;
 	GLint UniformTransform = 0;
 	GLint UniformMaterial = 0;
+	GLint UniformBufferOffset = 0;
+	GLint UniformBlockSizeTransform = 0;
+	GLint UniformBlockSizeMaterial = 0;
 
 }//namespace
 
@@ -115,29 +118,29 @@ bool initUniformBuffer()
 {
 	glGenBuffers(1, &UniformBufferName);
 
-	GLint UniformBlockSizeTransform = 0;
 	glGetActiveUniformBlockiv(
 		ProgramName, 
 		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSizeTransform);
+	UniformBlockSizeTransform = ((UniformBlockSizeTransform / UniformBufferOffset) + 1) * UniformBufferOffset;
 
-	GLint UniformBlockSizeMaterial = 0;
 	glGetActiveUniformBlockiv(
 		ProgramName, 
 		UniformTransform,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSizeMaterial);
+	UniformBlockSizeMaterial = ((UniformBlockSizeMaterial / UniformBufferOffset) + 1) * UniformBufferOffset;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
 	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_READ);
 
 	glf::checkError("initUniformBuffer 7");
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
-	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, sizeof(glm::mat4));
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, UniformBlockSizeTransform);
 	glf::checkError("initUniformBuffer 8");
 	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
-	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, UniformBufferName, sizeof(glm::mat4), sizeof(glm::vec4));
+	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, UniformBufferName, UniformBlockSizeTransform, UniformBlockSizeMaterial);
 	glf::checkError("initUniformBuffer 9");
 
 	return glf::checkError("initUniformBuffer");
@@ -150,6 +153,10 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+
+	glGetIntegerv(
+		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+		&UniformBufferOffset);
 
 	if(Validated)
 		Validated = initProgram();
@@ -188,7 +195,7 @@ void display()
 
 	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MVP), sizeof(glm::vec4), &Diffuse[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform, sizeof(glm::vec4), &Diffuse[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Set the display viewport
