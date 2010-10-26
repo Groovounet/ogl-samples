@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Uniform Buffer
-// 06/04/2010
+// OpenGL Uniform Buffer Shared
+// 06/04/2010 - 26/10/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer";
+	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer Shared";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/uniform-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
