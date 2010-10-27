@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
