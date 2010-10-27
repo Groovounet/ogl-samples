@@ -8,8 +8,6 @@ out vec4 GeomColor;
 
 void main()
 {	
-	GeomColor = vec4(0);
-
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
