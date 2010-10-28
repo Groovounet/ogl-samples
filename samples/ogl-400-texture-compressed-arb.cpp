@@ -71,6 +71,7 @@ namespace
 	GLuint VertexArrayName = 0;
 	GLuint ProgramName = 0;
 
+	GLuint SamplerName = 0;
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];
 
@@ -266,6 +267,25 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
+
 bool begin()
 {
 	Viewport[TEXTURE_BC3] = glm::ivec4(0, 0, Window.Size >> 1);
@@ -287,6 +307,8 @@ bool begin()
 		Validated = initVertexArray();
 	if(Validated)
 		Validated = initTexture2D();
+	if(Validated)
+		Validated = initSampler();
 
 	return Validated && glf::checkError("begin");
 }
@@ -297,6 +319,7 @@ bool end()
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return glf::checkError("end");
 }
@@ -322,6 +345,7 @@ void display()
 
 	glBindVertexArray(VertexArrayName);
 
+	glBindSampler(0, SamplerName);
 	glActiveTexture(GL_TEXTURE0);
 	for(std::size_t Index = 0; Index < TEXTURE_MAX; ++Index)
 	{
