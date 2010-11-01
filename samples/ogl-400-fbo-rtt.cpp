@@ -63,6 +63,7 @@ namespace
 	GLuint ProgramName = 0;
 	GLuint UniformMVP = 0;
 	GLuint UniformDiffuse = 0;
+	GLuint SamplerName = 0;
 
 	GLuint BufferName[BUFFER_MAX];
 	GLuint Texture2DName[TEXTURE_MAX];
@@ -176,6 +177,25 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initSampler()
+{
+	glGenSamplers(1, &SamplerName);
+
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	return glf::checkError("initSampler");
+}
+
 bool begin()
 {
 	Viewport[TEXTURE_R] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
@@ -198,7 +218,9 @@ bool begin()
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initFramebuffer();
-
+	if(Validated)
+		Validated = initSampler();
+	
 	return Validated && glf::checkError("begin");
 }
 
@@ -208,6 +230,7 @@ bool end()
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteProgram(ProgramName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return glf::checkError("end");
 }
@@ -215,6 +238,7 @@ bool end()
 void display()
 {
 	// Pass 1
+	glBindSampler(0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
@@ -236,6 +260,7 @@ void display()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformDiffuse, 0);
 
+	glBindSampler(0, SamplerName);
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
