@@ -14,12 +14,11 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
-
-layout(location = ATTR_POSITION) in vec2 Position;
+flat in vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
-{	
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+{
+	FragColor = Color;
 }
 

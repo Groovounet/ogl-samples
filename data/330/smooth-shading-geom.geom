@@ -1,17 +1,22 @@
-#version 400 core
+#version 330 core
 
-layout(triangles, invocations = 1) in;
+#define ATTR_POSITION	0
+#define ATTR_COLOR		3
+#define ATTR_TEXCOORD	4
+#define FRAG_COLOR		0
+
 layout(triangle_strip, max_vertices = 4) out;
+precision highp float;
 
-in vec4 EvalColor[];
+in vec4 VertColor[];
 out vec4 GeomColor;
 
 void main()
-{	
+{
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		GeomColor = EvalColor[i];
+		GeomColor = VertColor[i];
 		EmitVertex();
 	}
 	EndPrimitive();

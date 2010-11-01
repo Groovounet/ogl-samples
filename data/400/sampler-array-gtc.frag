@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 // Declare all the semantics
 #define ATTR_POSITION	0
@@ -14,12 +14,17 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-uniform mat4 MVP;
+uniform sampler2D Diffuse[2];
 
-layout(location = ATTR_POSITION) in vec2 Position;
+in vert
+{
+	vec2 Texcoord;
+} Vert;
+
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
-{	
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+{
+	int Index = (int(Vert.Texcoord.x * 8) + int(Vert.Texcoord.y * 8)) % 2;
+	Color = texture(Diffuse[Index], Vert.Texcoord);
 }
-

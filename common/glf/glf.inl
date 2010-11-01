@@ -663,7 +663,7 @@ namespace glf
 		glutInitWindowSize(Size.x, Size.y);
 		glutInitWindowPosition(64, 64);
 		glutInit(&argc, argv);
-		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);// | GLUT_MULTISAMPLE);
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 320)
 		{
