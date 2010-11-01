@@ -186,6 +186,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && GLEW_ARB_debug_output == GL_TRUE;
 
 	if(Validated)
 		Validated = initDebugOutput();

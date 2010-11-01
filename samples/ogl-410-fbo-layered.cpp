@@ -118,7 +118,7 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName[VIEWPORT], "Diffuse");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
 bool initVertexBuffer()
@@ -176,7 +176,7 @@ bool initFramebuffer()
 		return false;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	return true;
+	return glf::checkError("initFramebuffer");
 }
 
 bool initVertexArray()
