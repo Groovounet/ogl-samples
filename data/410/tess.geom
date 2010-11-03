@@ -17,6 +17,11 @@ struct vertex
 layout(location = VERT_BLOCK) in vertex Input[];
 layout(location = VERT_BLOCK) out vertex Output;
 
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+ 
 void main()
 {	
 	for(int i = 0; i < gl_in.length(); ++i)

@@ -18,6 +18,11 @@ layout(location = ATTR_COLOR) in vec4 Color;
 
 layout(location = VERT_BLOCK) out vertex Output;
 
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+
 void main()
 {	
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);

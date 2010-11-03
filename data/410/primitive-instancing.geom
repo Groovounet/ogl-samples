@@ -24,6 +24,11 @@ layout(triangle_strip, max_vertices = 4) out;
 layout(location = VERT_COLOR) in vec3 Color[];
 layout(location = GEOM_COLOR, stream = 0) out vec3 GeomColor;
 
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+ 
 uniform mat4 MVP;
 
 void main()
