@@ -52,7 +52,18 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint ProgramName = 0;
+	namespace program
+	{
+		enum type
+		{
+			VERT,
+			FRAG,
+			MAX
+		};
+	}//namespace program
+
+	GLuint PipelineName(0);
+	GLuint ProgramName[program::MAX];
 	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName = 0;
 	GLint UniformMVP = 0;
@@ -63,31 +74,53 @@ namespace
 bool initProgram()
 {
 	bool Validated = true;
-	
+
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+	glf::checkError("initProgram 3");
+
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint GeomShader = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
-		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+		glf::checkError("initProgram 4");
 
-		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertShader);
-		glAttachShader(ProgramName, GeomShader);
-		glAttachShader(ProgramName, FragShader);
-		glDeleteShader(VertShader);
-		glDeleteShader(GeomShader);
-		glDeleteShader(FragShader);
+		ProgramName[program::VERT] = glCreateProgram();
+		ProgramName[program::FRAG] = glCreateProgram();
+		glf::checkError("initProgram 5");
 
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		glAttachShader(ProgramName[program::VERT], VertShaderName);
+		glAttachShader(ProgramName[program::VERT], GeomShaderName);
+		glAttachShader(ProgramName[program::FRAG], FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(GeomShaderName);
+		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[program::VERT]);
+		glLinkProgram(ProgramName[program::FRAG]);
+		glf::checkError("initProgram 6");
+
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
+		glf::checkError("initProgram 7");
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
+		glf::checkError("initProgram 8 a");
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
+		glf::checkError("initProgram 8");
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAG], "Diffuse");
+		glf::checkError("initProgram 9");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -149,7 +182,8 @@ bool end()
 {
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteProgram(ProgramName);
+	glDeleteProgram(ProgramName[program::VERT]);
+	glDeleteProgram(ProgramName[program::FRAG]);
 
 	return glf::checkError("end");
 }
@@ -173,7 +207,7 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 
 	// Bind program
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	// Set the value of uniforms
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);

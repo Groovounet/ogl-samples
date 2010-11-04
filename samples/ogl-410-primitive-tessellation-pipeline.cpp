@@ -90,12 +90,14 @@ bool initProgram()
 
 		for(std::size_t i = 0; i < program::MAX; ++i)
 			Validated = Validated && glf::checkProgram(ProgramName[i]);
+		glf::checkError("initProgram 6");
 	}
 
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
+		glf::checkError("initProgram 7");
 	}
 
 	// Get variables locations
