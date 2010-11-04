@@ -3,22 +3,25 @@
 // Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
-#define VERT_BLOCK		0
 #define FRAG_COLOR		0
 
 layout(quads, equal_spacing, ccw) in;
 
-struct vertex
-{
-	vec4 Color;
-};
+in vec4 ContColor[];
+out vec4 EvalColor;
 
-layout(location = VERT_BLOCK) in vertex Input[];
-layout(location = VERT_BLOCK) out vertex Output;
+in gl_PerVertex
+{
+	vec4 gl_Position;
+	float gl_PointSize;
+	float gl_ClipDistance[];
+} gl_in[];
 
 out gl_PerVertex
 {
-    vec4 gl_Position;
+	vec4 gl_Position;
+	float gl_PointSize;
+	float gl_ClipDistance[];
 };
 
 vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
@@ -31,22 +34,6 @@ vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 void main()
 {	
 	gl_Position = interpolate(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
-	Output.Color = interpolate(Input[0].Color, Input[1].Color, Input[2].Color, Input[3].Color);
+	EvalColor = interpolate(ContColor[0], ContColor[1], ContColor[2], ContColor[3]);
 }
 
-/*
-void main()
-{	
-	gl_Position = vec4(0);
-    float u = gl_TessCoord.x;
-	float v = gl_TessCoord.y;
-	float a = (1 - u) * (1 - v);
-	float b = u * (1 - v);
-	float c = u * v;
-    float d = (1 - u) * v;
-    gl_Position += a * gl_in[0].gl_Position;
-    gl_Position += b * gl_in[1].gl_Position;
-    gl_Position += c * gl_in[2].gl_Position;
-    gl_Position += d * gl_in[3].gl_Position;
-}
-*/

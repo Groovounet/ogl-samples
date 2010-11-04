@@ -72,6 +72,8 @@ bool initProgram()
 
 		ProgramName[program::VERT] = glCreateProgram();
 		ProgramName[program::FRAG] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
 
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], ContShaderName);
@@ -187,7 +189,7 @@ void display()
 	glBindProgramPipeline(PipelineName);
 
 	// Set the value of MVP uniform.
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);

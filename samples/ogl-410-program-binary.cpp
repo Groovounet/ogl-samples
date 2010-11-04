@@ -14,8 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Program binary";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.frag");
+	std::string const PROGRAM_BINARY(glf::DATA_DIRECTORY + "410/binary.bin");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
@@ -52,12 +53,12 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint ProgramName = 0;
-	GLuint BufferName[buffer::MAX];
-	GLuint VertexArrayName;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-	GLuint Texture2DName = 0;
+	GLuint ProgramName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0};
+	GLuint VertexArrayName(0);
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
+	GLuint Texture2DName(0);
 
 }//namespace
 
@@ -69,7 +70,7 @@ bool saveProgram()
 	glGetProgramiv(ProgramName, GL_PROGRAM_BINARY_LENGTH, &Size);
 	std::vector<glm::byte> Data(Size);
 	glGetProgramBinary(ProgramName, Size, NULL, &Format, &Data[0]);
-	glf::saveBinary(glf::DATA_DIRECTORY + "410/separate.bin", Format, Data, Size);
+	glf::saveBinary(PROGRAM_BINARY, Format, Data, Size);
 
 	return glf::checkError("saveProgram");
 }
@@ -85,9 +86,10 @@ bool initProgram()
 		GLenum Format = 0;
 		GLint Size = 0;
 		std::vector<glm::byte> Data;
-		if(glf::loadBinary(glf::DATA_DIRECTORY + "410/separate.bin", Format, Data, Size))
+		if(glf::loadBinary(PROGRAM_BINARY, Format, Data, Size))
 		{
 			glProgramBinary(ProgramName, Format, &Data[0], Size);
+			glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 			glGetProgramiv(ProgramName, GL_LINK_STATUS, &Success);
 		}
 	}
