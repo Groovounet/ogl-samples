@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Separate unified
+// OpenGL Explicit varying location
 // 02/11/2010 - 02/11/2010
 //**********************************
 // Christophe Riccio
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Separate unified";
+	std::string const SAMPLE_NAME = "OpenGL Explicit varying location";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
