@@ -222,6 +222,7 @@ set(GL_SHADER_GTC separate.vert separate.frag)
 glCreateSampleGTC(program-separate)
 glCreateSampleGTC(program-separate-dsa-gtc)
 set(GL_SHADER_GTC unified.vert unified.frag)
-glCreateSampleGTC(program-unified-gtc)
+glCreateSampleGTC(program-varying)
+glCreateSampleGTC(program-varying-gtc)
 
 endif(APPLE)
