@@ -14,11 +14,6 @@ layout(location = ATTR_POSITION) in vec2 AttrPosition;
 layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
 out vec2 VertTexcoord;
 
-out gl_PerVertex
-{
-    vec4 gl_Position;
-};
-
 void main()
 {	
 	VertTexcoord = AttrTexcoord;
