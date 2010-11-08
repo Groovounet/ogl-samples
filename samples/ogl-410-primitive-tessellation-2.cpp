@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Primitive instancing
-// 17/08/2010
+// OpenGL Tessellation Pipeline
+// 14/05/2010 - 21/09/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,10 +13,12 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Primitive instancing";	
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/primitive-instancing.vert");
-	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/primitive-instancing.geom");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/primitive-instancing.frag");
+	std::string const SAMPLE_NAME = "OpenGL Tessellation Pipeline";	
+	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
+	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
+	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
+	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
+	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
@@ -25,32 +27,14 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount = 4;
-	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const VertexData[VertexCount] =
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fc4f);
+	glf::vertex_v2fc4f const VertexData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f)
+		glf::vertex_v2fc4f(glm::vec2(-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2( 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2( 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)),
+		glf::vertex_v2fc4f(glm::vec2(-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f))
 	};
-
-	GLsizei const ElementCount = 6;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
-	{
-		0, 1, 2, 
-		2, 3, 0
-	};
-
-	namespace buffer
-	{
-		enum type
-		{
-			VERTEX,
-			ELEMENT,
-			MAX
-		};
-	}//namespace buffer
 
 	namespace program
 	{
@@ -63,66 +47,65 @@ namespace
 	}//namespace program
 
 	GLuint PipelineName(0);
-	GLuint ProgramName[program::MAX];
-	GLuint BufferName[buffer::MAX];
-	GLuint VertexArrayName = 0;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-
+	GLuint ProgramName[program::MAX] = {0, 0};
+	GLuint ArrayBufferName(0);
+	GLuint VertexArrayName(0);
+	GLint UniformMVP(0);
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
-
+	
 	glGenProgramPipelines(1, &PipelineName);
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
-	glf::checkError("initProgram 3");
 
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-		glf::checkError("initProgram 4");
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
+		GLuint ContShaderName = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
+		GLuint EvalShaderName = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
 
 		ProgramName[program::VERT] = glCreateProgram();
 		ProgramName[program::FRAG] = glCreateProgram();
-		glf::checkError("initProgram 5");
-
-		glAttachShader(ProgramName[program::VERT], VertShaderName);
-		glAttachShader(ProgramName[program::VERT], GeomShaderName);
-		glAttachShader(ProgramName[program::FRAG], FragShaderName);
-		glDeleteShader(VertShaderName);
-		glDeleteShader(GeomShaderName);
-		glDeleteShader(FragShaderName);
 		glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glLinkProgram(ProgramName[program::VERT]);
-		glLinkProgram(ProgramName[program::FRAG]);
-		glf::checkError("initProgram 6");
 
-		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
-		Validated = Validated && glf::checkError("initProgram 7");
+		glAttachShader(ProgramName[program::VERT], VertShaderName);
+		glAttachShader(ProgramName[program::VERT], ContShaderName);
+		glAttachShader(ProgramName[program::VERT], EvalShaderName);
+		glAttachShader(ProgramName[program::VERT], GeomShaderName);
+		glLinkProgram(ProgramName[program::VERT]);
+
+		glAttachShader(ProgramName[program::FRAG], FragShaderName);
+		glLinkProgram(ProgramName[program::FRAG]);
+
+		glDeleteShader(VertShaderName);
+		glDeleteShader(ContShaderName);
+		glDeleteShader(EvalShaderName);
+		glDeleteShader(GeomShaderName);
+		glDeleteShader(FragShaderName);
+
+		for(std::size_t i = 0; i < program::MAX; ++i)
+			Validated = Validated && glf::checkProgram(ProgramName[i]);
+		glf::checkError("initProgram 6");
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
-		glf::checkError("initProgram 8 a");
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
-		glf::checkError("initProgram 8");
+		glf::checkError("initProgram 7");
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAG], "Diffuse");
-		glf::checkError("initProgram 9");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -133,27 +116,23 @@ bool initVertexArray()
 	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
 
-bool initVertexBuffer()
+bool initArrayBuffer()
 {
-	glGenBuffers(buffer::MAX, BufferName);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+	// Generate a buffer object
+	glGenBuffers(1, &ArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -168,12 +147,10 @@ bool begin()
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
-	glEnable(GL_DEPTH_TEST);
-
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initVertexBuffer();
+		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -182,16 +159,18 @@ bool begin()
 
 bool end()
 {
-	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteProgram(ProgramName[program::VERT]);
-	glDeleteProgram(ProgramName[program::FRAG]);
+	glDeleteBuffers(1, &ArrayBufferName);
+	for(std::size_t i = 0; i < program::MAX; ++i)
+		glDeleteProgram(ProgramName[i]);
 
 	return glf::checkError("end");
 }
 
 void display()
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
@@ -200,30 +179,22 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glf::checkError("display 4");
-
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
-	// Clear color buffer with white
-	float Depth(1.0f);
-	glClearBufferfv(GL_DEPTH, 0, &Depth);
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
-	glf::checkError("display 5");
+	// Clear color buffer with black
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	// Bind program
 	glBindProgramPipeline(PipelineName);
-	glf::checkError("display 7");
 
-	// Set the value of uniforms
+	// Set the value of MVP uniform.
 	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glf::checkError("display 8");
-	glProgramUniform4fv(ProgramName[program::FRAG], UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-	glf::checkError("display 9");
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();
@@ -239,3 +210,4 @@ int main(int argc, char* argv[])
 		return 0;
 	return 1;
 }
+

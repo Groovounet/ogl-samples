@@ -78,6 +78,7 @@ bool initProgram()
 
 	glGenProgramPipelines(1, &PipelineName);
 	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
 
 	if(Validated)
 	{

@@ -36,44 +36,70 @@ namespace
 		glf::vertex_v2fc4f(glm::vec2(-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f))
 	};
 
-	GLuint ProgramName = 0;
-	GLuint ArrayBufferName = 0;
-	GLuint VertexArrayName = 0;
-	GLint UniformMVP = 0;
+	namespace program
+	{
+		enum type
+		{
+			VERT,
+			CONT,
+			EVAL,
+			GEOM,
+			FRAG,
+			MAX
+		};
+	}//namespace program
+
+	GLuint PipelineName(0);
+	GLuint ProgramName[program::MAX] = {0, 0, 0, 0, 0};
+	GLuint ArrayBufferName(0);
+	GLuint VertexArrayName(0);
+	GLint UniformMVP(0);
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
 	
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
-		GLuint ControlShader = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
-		GLuint EvaluationShader = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
-		GLuint GeometryShader = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
-		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
+		GLuint ShaderName[] = {
+			glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER),
+			glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER),
+			glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER),
+			glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER),
+			glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER)};
 
-		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShader);
-		glAttachShader(ProgramName, ControlShader);
-		glAttachShader(ProgramName, EvaluationShader);
-		glAttachShader(ProgramName, GeometryShader);
-		glAttachShader(ProgramName, FragmentShader);
-		glDeleteShader(VertexShader);
-		glDeleteShader(ControlShader);
-		glDeleteShader(EvaluationShader);
-		glDeleteShader(GeometryShader);
-		glDeleteShader(FragmentShader);
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		for(std::size_t i = 0; i < program::MAX; ++i)
+		{
+			ProgramName[i] = glCreateProgram();
+			glProgramParameteri(ProgramName[i], GL_PROGRAM_SEPARABLE, GL_TRUE);
+			glAttachShader(ProgramName[i], ShaderName[i]);
+			glDeleteShader(ShaderName[i]);
+			glLinkProgram(ProgramName[i]);
+		}
+
+		for(std::size_t i = 0; i < program::MAX; ++i)
+			Validated = Validated && glf::checkProgram(ProgramName[i]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_TESS_CONTROL_SHADER_BIT, ProgramName[program::CONT]);
+		glUseProgramStages(PipelineName, GL_TESS_EVALUATION_SHADER_BIT, ProgramName[program::EVAL]);
+		glUseProgramStages(PipelineName, GL_GEOMETRY_SHADER_BIT, ProgramName[program::GEOM]);
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -129,7 +155,8 @@ bool end()
 {
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
-	glDeleteProgram(ProgramName);
+	for(std::size_t i = 0; i < program::MAX; ++i)
+		glDeleteProgram(ProgramName[i]);
 
 	return glf::checkError("end");
 }
@@ -153,10 +180,10 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	// Bind program
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	// Set the value of MVP uniform.
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);

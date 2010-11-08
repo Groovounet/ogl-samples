@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Program binary
-// 02/08/2010 - 02/08/2010
+// OpenGL Explicit varying location
+// 02/11/2010 - 02/11/2010
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -13,10 +13,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Program binary";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.frag");
-	std::string const PROGRAM_BINARY(glf::DATA_DIRECTORY + "410/binary.bin");
+	std::string const SAMPLE_NAME = "OpenGL Explicit varying location";
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
@@ -53,62 +52,41 @@ namespace
 		};
 	}//namespace buffer
 
+	GLuint PipelineName = 0;
 	GLuint ProgramName(0);
-	GLuint BufferName[buffer::MAX] = {0, 0};
-	GLuint VertexArrayName(0);
-	GLint UniformMVP(0);
-	GLint UniformDiffuse(0);
-	GLuint Texture2DName(0);
+	GLuint BufferName[buffer::MAX];
+	GLuint VertexArrayName;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
+	GLuint Texture2DName = 0;
 
 }//namespace
-
-bool saveProgram()
-{
-	GLint Size = 0;
-	GLenum Format = 0;
-
-	glGetProgramiv(ProgramName, GL_PROGRAM_BINARY_LENGTH, &Size);
-	std::vector<glm::byte> Data(Size);
-	glGetProgramBinary(ProgramName, Size, NULL, &Format, &Data[0]);
-	glf::saveBinary(PROGRAM_BINARY, Format, Data, Size);
-
-	return glf::checkError("saveProgram");
-}
 
 bool initProgram()
 {
 	bool Validated = true;
-	GLint Success = 0;
 
-	ProgramName = glCreateProgram();
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
 
+	if(Validated)
 	{
-		GLenum Format = 0;
-		GLint Size = 0;
-		std::vector<glm::byte> Data;
-		if(glf::loadBinary(PROGRAM_BINARY, Format, Data, Size))
-		{
-			glProgramBinary(ProgramName, Format, &Data[0], Size);
-			glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
-			glGetProgramiv(ProgramName, GL_LINK_STATUS, &Success);
-		}
-	}
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
-	// Create program
-	if(!Success)
-	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-
+		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
-
-		glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_ALL_SHADER_BITS, ProgramName);
 
 	// Get variables locations
 	if(Validated)
@@ -206,13 +184,12 @@ bool begin()
 
 bool end()
 {
-	saveProgram();
-
 	// Delete objects
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteProgram(ProgramName);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -237,14 +214,16 @@ void display()
 	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 
 	glBindVertexArray(VertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]); //!\ Need to be called after glBindVertexArray
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
+
+	glBindProgramPipeline(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

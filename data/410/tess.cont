@@ -3,18 +3,26 @@
 // Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
-#define VERT_BLOCK		0
 #define FRAG_COLOR		0
-
-struct vertex
-{
-	vec4 Color;
-};
 
 layout(vertices = 4) out;
 
-layout(location = VERT_BLOCK) in vertex Input[];
-layout(location = VERT_BLOCK) out vertex Output[];
+in vec4 VertColor[];
+out vec4 ContColor[];
+
+in gl_PerVertex
+{
+	vec4 gl_Position;
+	float gl_PointSize;
+	float gl_ClipDistance[];
+} gl_in[];
+
+out gl_PerVertex
+{
+	vec4 gl_Position;
+	float gl_PointSize;
+	float gl_ClipDistance[];
+} gl_out[];
 
 void main()
 {	
@@ -25,6 +33,6 @@ void main()
 	gl_TessLevelOuter[2] = 8.0;
 	gl_TessLevelOuter[3] = 8.0;
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-	Output[gl_InvocationID].Color = Input[gl_InvocationID].Color;
+	ContColor[gl_InvocationID] = VertColor[gl_InvocationID];
 }
 
