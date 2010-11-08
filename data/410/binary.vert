@@ -14,11 +14,6 @@ layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
 out vec2 Texcoord;
 out vec3 Color;
 
-out gl_PerVertex
-{
-    vec4 gl_Position;
-};
-
 void main()
 {	
 	gl_Position = MVP * vec4(AttrPosition, 0.0, 1.0);

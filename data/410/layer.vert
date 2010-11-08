@@ -15,11 +15,6 @@ precision highp int;
 layout(location = ATTR_POSITION) in vec2 AttrPosition;
 layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
 
-out gl_PerVertex
-{
-    vec4 gl_Position;
-};
-
 void main()
 {	
 	gl_Position = vec4(AttrPosition, 0.0, 1.0);

@@ -10,11 +10,6 @@ uniform dmat4 MVP;
 
 layout(location = ATTR_POSITION) in dvec2 Position;
 
-out gl_PerVertex
-{
-    vec4 gl_Position;
-};
-
 void main()
 {	
 	gl_Position = vec4(MVP * dvec4(Position, 0.0, 1.0));
