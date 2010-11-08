@@ -14,13 +14,13 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Image texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "4XX/image-texture.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "4XX/image-texture.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_MINOR_VERSION = 1;
 
 	struct vertex
 	{
