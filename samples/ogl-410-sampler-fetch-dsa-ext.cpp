@@ -67,16 +67,16 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint VertexArrayName = 0;
+	GLuint VertexArrayName(0);
 	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 
-	GLuint BufferName[buffer::MAX];
-	GLuint Image2DName = 0;
-	GLuint SamplerName = 0;
+	GLuint BufferName[buffer::MAX] = {0, 0};
+	GLuint Image2DName(0);
+	GLuint SamplerName(0);
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;
+	GLuint UniformMVP(0);
+	GLuint UniformDiffuse(0);
 }//namespace
 
 bool initProgram()

@@ -68,21 +68,26 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName;
+	GLuint VertexArrayName(0);
+	GLuint PipelineName(0);
+	GLuint ProgramName(0);
 
-	GLuint BufferName[buffer::MAX];
-	GLuint Image2DName = 0;
-	GLuint SamplerName = 0;
+	GLuint BufferName[buffer::MAX] = {0, 0};
+	GLuint Image2DName(0);
+	GLuint SamplerName(0);
 
-	GLuint UniformMVP = 0;
-	GLuint UniformImageData = 0;
-	GLuint UniformImageSize = 0;
+	GLuint UniformMVP(0);
+	GLuint UniformImageData(0);
+	GLuint UniformImageSize(0);
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
+
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
 
 	if(Validated)
 	{
@@ -96,6 +101,12 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
+		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	if(Validated)
@@ -168,9 +179,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	//Validated = Validated && GLEW_EXT_direct_state_access;
-	//Validated = Validated && GLEW_EXT_separate_shader_objects;
-	//Validated = Validated && GLEW_EXT_shader_image_load_store;
+	Validated = Validated && GLEW_EXT_shader_image_load_store;
 
 	if(Validated)
 		Validated = initProgram();
@@ -191,6 +200,7 @@ bool end()
 	glDeleteTextures(1, &Image2DName);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -205,16 +215,18 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformImageData, 0);
+	glProgramUniform2uiv(ProgramName, UniformImageSize, 1, &ImageSize[0]);
+
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformImageData, 0);
-	glUniform2uiv(UniformImageSize, 1, &ImageSize[0]);
+	glBindProgramPipeline(PipelineName);
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA8UI);
 	glBindVertexArray(VertexArrayName);
