@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 cmake_policy(VERSION 2.6)
 
-project(ogl-samples-pack-4.1.3)
+project(ogl-samples-pack)
 
 ##########################
 # Setup binary directory
