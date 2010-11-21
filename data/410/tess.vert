@@ -21,6 +21,6 @@ out gl_PerVertex
 
 void main()
 {	
-	gl_Position = MVP * vec4(AttrPosition, 0.0, 1.0);
+	gl_Position = MVP * vec4(AttrPosition, 0.0, float(gl_InstanceID));
 	VertColor = AttrColor;
 }

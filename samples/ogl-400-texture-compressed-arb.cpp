@@ -75,8 +75,8 @@ namespace
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
 
 	glm::ivec4 Viewport[TEXTURE_MAX];
 

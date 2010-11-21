@@ -62,8 +62,8 @@ namespace
 	GLuint ColorbufferName = 0;
 	GLuint FramebufferName = 0;
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
 
 }//namespace
 

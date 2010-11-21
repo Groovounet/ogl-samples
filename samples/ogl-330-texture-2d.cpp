@@ -61,8 +61,8 @@ namespace
 	GLuint BufferName = 0;
 	GLuint Texture2DName = 0;
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
 
 }//namespace
 

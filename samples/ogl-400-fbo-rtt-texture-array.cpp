@@ -62,9 +62,9 @@ namespace
 	GLuint SamplerName = 0;
 
 	GLuint ProgramName = 0;
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;
-	GLuint UniformLayer = 0;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuse = 0;
+	GLint UniformLayer = 0;
 
 	GLuint BufferName[BUFFER_MAX];
 	GLuint Texture2DName = 0;
