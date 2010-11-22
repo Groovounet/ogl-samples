@@ -69,9 +69,9 @@ namespace
 	GLuint TextureName[texture::MAX];
 	GLuint SamplerName = 0;
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuseRGB = 0;
-	GLuint UniformDiffuseBGR = 0;
+	GLint UniformMVP = 0;
+	GLint UniformDiffuseRGB = 0;
+	GLint UniformDiffuseBGR = 0;
 }//namespace
 
 bool initProgram()

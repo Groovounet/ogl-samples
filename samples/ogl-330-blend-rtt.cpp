@@ -68,12 +68,12 @@ namespace
 	GLuint VertexArrayName = 0;
 
 	GLuint ProgramNameSingle = 0;
-	GLuint UniformMVPSingle = 0;
-	GLuint UniformDiffuseSingle = 0;
+	GLint UniformMVPSingle = 0;
+	GLint UniformDiffuseSingle = 0;
 
 	GLuint ProgramNameMultiple = 0;
-	GLuint UniformMVPMultiple = 0;
-	GLuint UniformDiffuseMultiple = 0;
+	GLint UniformMVPMultiple = 0;
+	GLint UniformDiffuseMultiple = 0;
 
 	GLuint BufferName = 0;
 	GLuint Texture2DName[TEXTURE_MAX];

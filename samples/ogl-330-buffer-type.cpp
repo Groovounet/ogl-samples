@@ -113,19 +113,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
@@ -241,7 +228,7 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	// Set the value of MVP uniform.
+	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	for(std::size_t Index = 0; Index < BUFFER_MAX; ++Index)

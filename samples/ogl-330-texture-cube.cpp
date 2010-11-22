@@ -50,10 +50,10 @@ namespace
 	GLuint TextureName = 0;
 	GLuint SamplerName = 0;
 
-	GLuint UniformMV = 0;
-	GLuint UniformMVP = 0;
-	GLuint UniformEnvironment = 0;
-	GLuint UniformCamera = 0;
+	GLint UniformMV = 0;
+	GLint UniformMVP = 0;
+	GLint UniformEnvironment = 0;
+	GLint UniformCamera = 0;
 
 	glm::ivec4 Viewport;
 

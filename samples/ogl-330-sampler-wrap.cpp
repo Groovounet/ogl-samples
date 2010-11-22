@@ -70,8 +70,8 @@ namespace
 	GLuint BufferName;
 	GLuint Texture2DName;
 
-	GLuint UniformMVP;
-	GLuint UniformDiffuse;
+	GLint UniformMVP;
+	GLint UniformDiffuse;
 
 	GLuint SamplerName[viewport::MAX];
 	glm::ivec4 Viewport[viewport::MAX];

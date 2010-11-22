@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 cmake_policy(VERSION 2.6)
 
-project(ogl-samples-pack-4.X.0)
+project(ogl-samples-pack)
 
 ##########################
 # Setup binary directory
@@ -24,74 +24,51 @@ if(MSVC AND CMAKE_CL_64)
 	endif(MSVC_VERSION EQUAL 1600)
 endif(MSVC AND CMAKE_CL_64)
 
+#CMAKE_BUILD_TOOL
+
 #####################
 # Add common source 
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 
-############
-# Add GLUT 
+#####################
+# Add package
 
-if(MSVC)
-	set(GLUT_VERSION "freeglut-2.6.0")
-	set(GLUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLUT_VERSION})
+macro(addExternalPackageGTC NAME DIRECTORY)
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY})
+	set(${NAME}_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY})
 
-	add_definitions(-DFREEGLUT_STATIC)
-	include_directories("${GLUT_DIRECTORY}")
-	link_directories("${GLUT_DIRECTORY}/lib/${BINARY_DIRECTORY}")
-endif(MSVC)
-
-############
-# Add GLEW 
-
-if(MSVC)
-	set(GLEW_VERSION "glew-1.5.6")
-	set(GLEW_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLEW_VERSION})
-
-	add_definitions(-DGLEW_STATIC)
-	include_directories(${GLEW_DIRECTORY}/include)
-	link_directories(${GLEW_DIRECTORY}/lib/${BINARY_DIRECTORY})
-endif(MSVC)
+	find_package(${NAME})
+	if(NOT ${NAME}_FOUND)
+		message("ERROR: ${NAME} not found")
+	endif(NOT ${NAME}_FOUND)
+endmacro(addExternalPackageGTC)
 
 ############
 # Add GLEXT 
 
-if(APPLE)
-    set(GL_VERSION "GL")
-    set(GL_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/OpenGL.framework)
+find_package(OpenGL)
+if(NOT OPENGL_FOUND)
+	message("ERROR: OpenGL not found")
+endif(NOT OPENGL_FOUND)
 
-        include_directories("${GL_DIRECTORY}/Headers")
-        link_directories("${GL_DIRECTORY}/Libraries/")
-endif(APPLE)
+############
+# Add External package
 
-###########
-# Add GLM 
-
-set(GLM_VERSION "glm")
-set(GLM_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLM_VERSION})
-
-include_directories("${GLM_DIRECTORY}")
-
-###########
-# Add GLI
-
-set(GLI_VERSION "gli")
-#set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
-set(GLI_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/${GLI_VERSION})
-
-include_directories("${GLI_DIRECTORY}")
+addExternalPackageGTC("GLEW" "glew-1.5.7")
+addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
+addExternalPackageGTC("GLM" "glm")
+addExternalPackageGTC("GLI" "gli")
 
 ################################
 # Add libraries to executables
 
-if(MSVC)
-	set(BINARY_FILES "glew32s" "OpenGL32")
-elseif(APPLE)
-    set(BINARY_FILES "../libGL.dylib")
-	#/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
-elseif(UNIX)
-	set(BINARY_FILES "glut" "GLEW")
-endif()
+set(BINARY_FILES 
+	${OPENGL_LIBRARY} 
+	${FREEGLUT_LIBRARY} 
+	${GLEW_LIBRARY}
+	${GLM_LIBRARY} 
+	${GLI_LIBRARY})
 
 ################################
 # Add output directory
@@ -125,8 +102,9 @@ set(OGL_DATA_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 ################################
 # Add definitions
 
-add_definitions(
-	-D_CRT_SECURE_NO_WARNINGS)
+if(MSVC)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif(MSVC)
 
 ################################
 # Add subdirectory

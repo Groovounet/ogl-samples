@@ -63,9 +63,9 @@ namespace
 	GLuint VertexArrayName[PROGRAM_MAX];
 
 	GLuint ProgramName[PROGRAM_MAX];
-	GLuint UniformMVP[PROGRAM_MAX];
-	GLuint UniformDiffuse = 0;
-	GLuint UniformLayer = 0;
+	GLint UniformMVP[PROGRAM_MAX];
+	GLint UniformDiffuse = 0;
+	GLint UniformLayer = 0;
 
 	GLuint BufferName[BUFFER_MAX];
 	GLuint TextureColorbufferName = 0;
