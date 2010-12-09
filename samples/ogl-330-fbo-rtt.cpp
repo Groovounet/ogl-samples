@@ -280,6 +280,8 @@ bool end()
 
 void display()
 {
+	GLint const Border = 16;
+
 	// Pass 1
 	{
 		// Compute the MVP (Model View Projection matrix)
@@ -291,8 +293,8 @@ void display()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glScissorIndexed(0, Border, Border, FRAMEBUFFER_SIZE.x - Border * 2, FRAMEBUFFER_SIZE.y - Border * 2);
+		glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		glUseProgram(ProgramNameMultiple);
 		glUniformMatrix4fv(UniformMVPMultiple, 1, GL_FALSE, &MVP[0][0]);

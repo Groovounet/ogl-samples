@@ -237,13 +237,23 @@ bool end()
 
 void display()
 {
+	GLint const Border = 16;
+
 	// Pass 1
 	glBindSampler(0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	glDisablei(GL_SCISSOR_TEST, 0);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
+
+	glEnablei(GL_SCISSOR_TEST, 0);
+	glScissorIndexed(0, Viewport[0].x + Border, Viewport[0].y + Border, Viewport[0].z - Border * 2, Viewport[0].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
+	glScissorIndexed(0, Viewport[1].x + Border, Viewport[1].y + Border, Viewport[1].z - Border * 2, Viewport[1].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
+	glScissorIndexed(0, Viewport[2].x + Border, Viewport[2].y + Border, Viewport[2].z - Border * 2, Viewport[2].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 2, &glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)[0]);
+	glScissorIndexed(0, Viewport[3].x + Border, Viewport[3].y + Border, Viewport[3].z - Border * 2, Viewport[3].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 3, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0]);
 
 	// Pass 2
@@ -253,6 +263,7 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisablei(GL_SCISSOR_TEST, 0);
 	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
