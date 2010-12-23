@@ -211,12 +211,14 @@ set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geo
 glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-multisample-dsa-ext)
-set(GL_SHADER_GTC multisample-gtc.vert multisample-gtc.frag)
-glCreateSampleGTC(fbo-multisample-dsa-gtc)
+#TODO
+#set(GL_SHADER_GTC multisample-gtc.vert multisample-gtc.frag)
+#glCreateSampleGTC(fbo-multisample-dsa-gtc)
 set(GL_SHADER_GTC multiple-output.vert multiple-output.frag image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-rtt-dsa-ext)
-set(GL_SHADER_GTC image-texture.vert image-texture.frag)
-glCreateSampleGTC(image-texture-ext)
+#TODO
+#set(GL_SHADER_GTC image-texture.vert image-texture.frag)
+#glCreateSampleGTC(image-texture-ext)
 set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
 glCreateSampleGTC(primitive-instanced)
 set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag)

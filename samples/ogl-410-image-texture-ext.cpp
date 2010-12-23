@@ -95,6 +95,7 @@ bool initProgram()
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -179,7 +180,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_EXT_shader_image_load_store;
+	//Validated = Validated && GLEW_EXT_shader_image_load_store;
 
 	if(Validated)
 		Validated = initProgram();
