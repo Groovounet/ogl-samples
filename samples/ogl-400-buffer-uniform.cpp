@@ -162,11 +162,7 @@ bool initUniformBuffer()
 
 bool begin()
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	glGetIntegerv(
 		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,

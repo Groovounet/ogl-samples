@@ -190,11 +190,7 @@ bool begin()
 	Viewport[viewport::V11] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
 	Viewport[viewport::V01] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();

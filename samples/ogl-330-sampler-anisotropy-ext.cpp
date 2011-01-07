@@ -204,11 +204,7 @@ bool begin()
 
 	glEnable(GL_SCISSOR_TEST);
 
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_texture_filter_anisotropic");
 
 	if(Validated)

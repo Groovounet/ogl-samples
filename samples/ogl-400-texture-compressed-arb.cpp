@@ -293,11 +293,8 @@ bool begin()
 	Viewport[TEXTURE_BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
 	Viewport[TEXTURE_BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_texture_compression_bptc");
 
 	if(Validated)
