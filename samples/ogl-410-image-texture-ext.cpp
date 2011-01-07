@@ -180,7 +180,8 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	//Validated = Validated && GLEW_EXT_shader_image_load_store;
+	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && glf::checkExtension("GL_EXT_shader_image_load_store");
 
 	if(Validated)
 		Validated = initProgram();
