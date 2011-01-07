@@ -23,6 +23,16 @@ namespace glf
 		glGetError(); // 'glutSwapBuffers' generates an here with OpenGL 3 > core profile ... :/
 	}
 
+	inline bool checkExtension(char const * String)
+	{
+		GLint ExtensionCount = 0;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &ExtensionCount);
+		for(GLint i = 0; i < ExtensionCount; ++i)
+			if(std::string((char const*)glGetStringi(GL_EXTENSIONS, i)) == std::string(String))
+				return true;
+		return false;
+	}
+
 	inline void init()
 	{
 #ifdef WIN32

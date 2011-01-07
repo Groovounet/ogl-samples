@@ -298,7 +298,7 @@ bool begin()
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
 	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_ARB_texture_compression_bptc == GL_TRUE;
+	Validated = Validated && glf::checkExtension("GL_ARB_texture_compression_bptc");
 
 	if(Validated)
 		Validated = initProgram();
