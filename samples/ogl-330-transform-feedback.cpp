@@ -11,6 +11,9 @@
 
 #include <glf/glf.hpp>
 
+typedef void (GLAPIENTRY * PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC) (GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLsizei *size, GLenum *type, GLchar *name);
+PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC glGetTransformFeedbackVaryingGTC = 0;
+
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback";
@@ -72,7 +75,26 @@ bool initProgram()
 		GLchar const * Strings[] = {"gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
+
 		Validated = Validated && glf::checkProgram(TransformProgramName);
+
+		// BUG AMD 10.12
+		//char Name[64];
+		//memset(Name, 0, 64);
+		//GLsizei Length(0);
+		//GLsizei Size(0);
+		//GLenum Type(0);
+
+		//glGetTransformFeedbackVaryingGTC(
+		//	TransformProgramName,
+		//	0,
+		//	64,
+		//	&Length,
+		//	&Size,
+		//	&Type,
+		//	Name);
+
+		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
 	}
 
 	// Get variables locations
@@ -154,6 +176,7 @@ bool begin()
 	glGenQueries(1, &Query);
 
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	glGetTransformFeedbackVaryingGTC = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC)glfGetProcAddress("glGetTransformFeedbackVarying");
 
 	if(Validated)
 		Validated = initProgram();
