@@ -206,7 +206,7 @@ glCreateSampleGTC(transform-feedback-object)
 set(GL_VERSION_GTC 410)
 
 set(GL_SHADER_GTC separate.vert separate.frag)
-glCreateSampleGTC(debug-output)
+glCreateSampleGTC(debug-output-arb)
 set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geom layer.frag)
 glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)

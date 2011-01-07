@@ -181,12 +181,9 @@ bool initVertexArray()
 
 bool begin()
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && GLEW_ARB_debug_output == GL_TRUE;
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
 
 	if(Validated)
 		Validated = initDebugOutput();

@@ -23,6 +23,21 @@ namespace glf
 		glGetError(); // 'glutSwapBuffers' generates an here with OpenGL 3 > core profile ... :/
 	}
 
+	inline int version(int Major, int Minor)
+	{
+		return Major * 100 + Minor * 10;
+	}
+
+	inline bool checkGLVersion(GLint MajorVersionRequire, GLint MinorVersionRequire)
+	{
+		GLint MajorVersionContext = 0;
+		GLint MinorVersionContext = 0;
+		glGetIntegerv(GL_MAJOR_VERSION, &MajorVersionContext);
+		glGetIntegerv(GL_MINOR_VERSION, &MinorVersionContext);
+		return glf::version(MajorVersionContext, MinorVersionContext) 
+			>= glf::version(MajorVersionRequire, MinorVersionRequire);
+	}
+
 	inline bool checkExtension(char const * String)
 	{
 		GLint ExtensionCount = 0;
@@ -567,11 +582,6 @@ namespace glf
 		   delete [] severities;
 		   delete [] lengths;
 		   delete [] messageLog;
-	}
-
-	inline int version(int Major, int Minor)
-	{
-		return Major * 100 + Minor * 10;
 	}
 
 	static void keyboard(unsigned char key, int x, int y)
