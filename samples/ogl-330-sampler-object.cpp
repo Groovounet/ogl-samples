@@ -188,7 +188,6 @@ bool initTexture2D()
 
 bool initVertexArray()
 {
-	// Create a dummy vertex array object where all the attribute buffers and element buffers would be attached 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -209,7 +208,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();

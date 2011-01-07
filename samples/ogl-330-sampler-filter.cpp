@@ -209,7 +209,7 @@ bool begin()
 	GLint MinorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
 	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
+	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
@@ -254,7 +254,11 @@ void display()
 	glUseProgram(ProgramName);
 
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuse, 0);
+
+	glBindSampler(0, SamplerName[0]);
+	glBindSampler(1, SamplerName[1]);
+	glBindSampler(2, SamplerName[2]);
+	glBindSampler(3, SamplerName[3]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
@@ -263,13 +267,13 @@ void display()
 
 	for(std::size_t Index = 0; Index < viewport::MAX; ++Index)
 	{
+		glUniform1i(UniformDiffuse, Index);
+
 		glScissor(
 			Viewport[Index].x, 
 			Viewport[Index].y, 
 			Viewport[Index].z, 
 			Viewport[Index].w);
-
-		glBindSampler(0, SamplerName[Index]);
 
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 	}
