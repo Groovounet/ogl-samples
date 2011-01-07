@@ -3,7 +3,7 @@ cmake_policy(VERSION 2.6)
 
 project(ogl-samples-pack)
 
-##########################
+################################
 # Setup binary directory
 
 if(MSVC AND NOT CMAKE_CL_64)
@@ -26,16 +26,16 @@ endif(MSVC AND CMAKE_CL_64)
 
 #CMAKE_BUILD_TOOL
 
-#####################
+################################
 # Add common source 
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 
-#####################
+################################
 # Add package
 
 macro(addExternalPackageGTC NAME DIRECTORY)
-	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY})
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY}/util)
 	set(${NAME}_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY})
 
 	find_package(${NAME})
@@ -44,7 +44,7 @@ macro(addExternalPackageGTC NAME DIRECTORY)
 	endif(NOT ${NAME}_FOUND)
 endmacro(addExternalPackageGTC)
 
-############
+################################
 # Add GLEXT 
 
 find_package(OpenGL)
@@ -52,7 +52,7 @@ if(NOT OPENGL_FOUND)
 	message("ERROR: OpenGL not found")
 endif(NOT OPENGL_FOUND)
 
-############
+################################
 # Add External package
 
 addExternalPackageGTC("GLEW" "glew-1.5.7")
