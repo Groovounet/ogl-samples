@@ -687,8 +687,8 @@ namespace glf
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 320)
 		{
-			glutInitContextProfile(GLUT_CORE_PROFILE);
-			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);// | GLUT_DEBUG);
+			glutInitContextProfile(GLUT_CORE_PROFILE); // GLUT_COMPATIBILITY_PROFILE
+			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 		}
 
 		glutCreateWindow(argv[0]);
