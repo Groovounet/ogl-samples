@@ -241,22 +241,6 @@ void display()
 	glBindSampler(0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	glDisablei(GL_SCISSOR_TEST, 0);
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
-
-	//glEnablei(GL_SCISSOR_TEST, 0);
-	//glScissorIndexed(0, Viewport[0].x + Border, Viewport[0].y + Border, Viewport[0].z - Border * 2, Viewport[0].w - Border * 2);
-	//glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
-
-	//glEnablei(GL_SCISSOR_TEST, 1);
-	//glScissorIndexed(1, Viewport[1].x + Border, Viewport[1].y + Border, Viewport[1].z - Border * 2, Viewport[1].w - Border * 2);
-	//glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
-
-	//glEnablei(GL_SCISSOR_TEST, 2);
-	//glScissorIndexed(2, Viewport[2].x + Border, Viewport[2].y + Border, Viewport[2].z - Border * 2, Viewport[2].w - Border * 2);
-	//glClearBufferfv(GL_COLOR, 2, &glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)[0]);
-
-	glEnable(GL_SCISSOR_TEST);
 
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
 	glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
@@ -269,7 +253,6 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisablei(GL_SCISSOR_TEST, 0);
 	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
@@ -278,16 +261,16 @@ void display()
 	glUniform1i(UniformDiffuse, 0);
 
 	glBindSampler(0, SamplerName);
+
+	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-		glScissor(Viewport[i].x + Border, Viewport[i].y + Border, Viewport[i].z - Border * 2, Viewport[i].w - Border * 2);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
-
-		glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}

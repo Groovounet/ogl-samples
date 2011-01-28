@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Explicit varying location";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified-gtc.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified-gtc.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/unified.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
