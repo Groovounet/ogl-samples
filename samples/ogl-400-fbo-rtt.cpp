@@ -128,6 +128,8 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexImage2D(
 			GL_TEXTURE_2D, 
@@ -242,15 +244,23 @@ void display()
 	glDisablei(GL_SCISSOR_TEST, 0);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glEnablei(GL_SCISSOR_TEST, 0);
-	glScissorIndexed(0, Viewport[0].x + Border, Viewport[0].y + Border, Viewport[0].z - Border * 2, Viewport[0].w - Border * 2);
+	//glEnablei(GL_SCISSOR_TEST, 0);
+	//glScissorIndexed(0, Viewport[0].x + Border, Viewport[0].y + Border, Viewport[0].z - Border * 2, Viewport[0].w - Border * 2);
+	//glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
+
+	//glEnablei(GL_SCISSOR_TEST, 1);
+	//glScissorIndexed(1, Viewport[1].x + Border, Viewport[1].y + Border, Viewport[1].z - Border * 2, Viewport[1].w - Border * 2);
+	//glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
+
+	//glEnablei(GL_SCISSOR_TEST, 2);
+	//glScissorIndexed(2, Viewport[2].x + Border, Viewport[2].y + Border, Viewport[2].z - Border * 2, Viewport[2].w - Border * 2);
+	//glClearBufferfv(GL_COLOR, 2, &glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)[0]);
+
+	glEnable(GL_SCISSOR_TEST);
+
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)[0]);
-	glScissorIndexed(0, Viewport[1].x + Border, Viewport[1].y + Border, Viewport[1].z - Border * 2, Viewport[1].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 1, &glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)[0]);
-	glScissorIndexed(0, Viewport[2].x + Border, Viewport[2].y + Border, Viewport[2].z - Border * 2, Viewport[2].w - Border * 2);
 	glClearBufferfv(GL_COLOR, 2, &glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)[0]);
-	glScissorIndexed(0, Viewport[3].x + Border, Viewport[3].y + Border, Viewport[3].z - Border * 2, Viewport[3].w - Border * 2);
-	glClearBufferfv(GL_COLOR, 3, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0]);
 
 	// Pass 2
 	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
@@ -271,6 +281,7 @@ void display()
 	for(std::size_t i = 0; i < TEXTURE_MAX; ++i)
 	{
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
+		glScissor(Viewport[i].x + Border, Viewport[i].y + Border, Viewport[i].z - Border * 2, Viewport[i].w - Border * 2);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[i]);
