@@ -17,6 +17,11 @@ in vert
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
+float luminosity(in vec3 color)
+{
+	return dot(color, vec3(0.33, 0.59, 0.11));
+}
+
 void main()
 {
 	vec2 Size = textureSize(Diffuse, 0) - 1;
@@ -30,6 +35,6 @@ void main()
 	
 	vec4 Texel0 = mix(Texel00, Texel01, fract(Texcoord.y));
 	vec4 Texel1 = mix(Texel10, Texel11, fract(Texcoord.y));
-	FragColor  = mix(Texel0, Texel1, fract(Texcoord.x));
+	FragColor = mix(Texel0, Texel1, fract(Texcoord.x));
 }
 
