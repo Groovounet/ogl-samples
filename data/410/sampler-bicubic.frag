@@ -17,7 +17,7 @@ in vert
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
-mat4 const Hermite = mat4(
+const mat4 Hermite = mat4(
 	vec4(0,-1, 2,-1), 
 	vec4(2, 0,-5, 3),
 	vec4(0, 1, 4,-3),
@@ -57,7 +57,7 @@ void main()
 	vec4 Texel33 = textureOffset(Diffuse, Vert.Texcoord, ivec2( 2, 2));
 
 	vec2 TexelCoord = Vert.Texcoord * textureSize(Diffuse, 0) - 1;
-	vec2 SplineCoord = fract(TexelCoord);
+	vec2 SplineCoord = clamp(fract(TexelCoord), 0.0, 1.0);
 
 	vec4 Row0 = hermite(Texel00, Texel10, Texel20, Texel30, SplineCoord.x);
 	vec4 Row1 = hermite(Texel01, Texel11, Texel21, Texel31, SplineCoord.x);

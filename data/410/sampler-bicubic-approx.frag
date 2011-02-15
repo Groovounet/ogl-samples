@@ -17,7 +17,7 @@ in vert
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
-mat4 const Hermite = mat4(
+const mat4 Hermite = mat4(
 	vec4(0,-1, 2,-1), 
 	vec4(2, 0,-5, 3),
 	vec4(0, 1, 4,-3),
@@ -53,31 +53,30 @@ vec4 cubic(in vec4 A, in vec4 B, in vec4 C, in vec4 D, in float s)
 	return ((A * s + B) * s + C) * s + D;
 }
 
-/*
 void main()
 {
 	ivec2 TextureSize = textureSize(Diffuse, 0);
-	ivec2 TexelCoord = TextureSize * Vert.Texcoord;
+	ivec2 TexelCoord = ivec2(TextureSize * Vert.Texcoord);
 
-	vec4 Texel00 = texelOffset(Diffuse, TexelCoord, ivec2(-1,-1));
-	vec4 Texel10 = texelOffset(Diffuse, TexelCoord, ivec2( 0,-1));
-	vec4 Texel20 = texelOffset(Diffuse, TexelCoord, ivec2( 1,-1));
-	vec4 Texel30 = texelOffset(Diffuse, TexelCoord, ivec2( 2,-1));
+	vec4 Texel00 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2(-1,-1));
+	vec4 Texel10 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 0,-1));
+	vec4 Texel20 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 1,-1));
+	vec4 Texel30 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 2,-1));
 
-	vec4 Texel01 = texelOffset(Diffuse, TexelCoord, ivec2(-1, 0));
-	vec4 Texel11 = texelOffset(Diffuse, TexelCoord, ivec2( 0, 0));
-	vec4 Texel21 = texelOffset(Diffuse, TexelCoord, ivec2( 1, 0));
-	vec4 Texel31 = texelOffset(Diffuse, TexelCoord, ivec2( 2, 0));
+	vec4 Texel01 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2(-1, 0));
+	vec4 Texel11 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 0, 0));
+	vec4 Texel21 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 1, 0));
+	vec4 Texel31 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 2, 0));
 
-	vec4 Texel02 = texelOffset(Diffuse, TexelCoord, ivec2(-1, 1));
-	vec4 Texel12 = texelOffset(Diffuse, TexelCoord, ivec2( 0, 1));
-	vec4 Texel22 = texelOffset(Diffuse, TexelCoord, ivec2( 1, 1));
-	vec4 Texel32 = texelOffset(Diffuse, TexelCoord, ivec2( 2, 1));
+	vec4 Texel02 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2(-1, 1));
+	vec4 Texel12 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 0, 1));
+	vec4 Texel22 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 1, 1));
+	vec4 Texel32 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 2, 1));
 
-	vec4 Texel03 = texelOffset(Diffuse, TexelCoord, ivec2(-1, 2));
-	vec4 Texel13 = texelOffset(Diffuse, TexelCoord, ivec2( 0, 2));
-	vec4 Texel23 = texelOffset(Diffuse, TexelCoord, ivec2( 1, 2));
-	vec4 Texel33 = texelOffset(Diffuse, TexelCoord, ivec2( 2, 2));
+	vec4 Texel03 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2(-1, 2));
+	vec4 Texel13 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 0, 2));
+	vec4 Texel23 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 1, 2));
+	vec4 Texel33 = texelFetchOffset(Diffuse, TexelCoord, 0, ivec2( 2, 2));
 
 	vec2 SplineCoord = fract(TextureSize * Vert.Texcoord);
 
@@ -88,8 +87,9 @@ void main()
 
 	FragColor = hermite(Row0, Row1, Row2, Row3, SplineCoord.y);
 }
-*/
 
+
+/*
 void main()
 {
 	vec4 Texel00 = textureOffset(Diffuse, Vert.Texcoord, ivec2(-1,-1));
@@ -122,7 +122,7 @@ void main()
 
 	FragColor = hermite(Row0, Row1, Row2, Row3, SplineCoord.y);
 }
-
+*/
 /*
 void main()
 {
