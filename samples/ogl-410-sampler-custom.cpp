@@ -62,17 +62,11 @@ namespace
 		};
 	}//namespace buffer
 
-	std::string const SHADER_VERT[program::MAX] = 
-	{
-		glf::DATA_DIRECTORY + "410/sampler-bicubic-approx.vert",
-		glf::DATA_DIRECTORY + "410/sampler-bicubic.vert",
-		glf::DATA_DIRECTORY + "410/sampler-bilinear.vert",
-		glf::DATA_DIRECTORY + "410/sampler-nearest.vert"
-	};
+	std::string const SHADER_VERT(glf::DATA_DIRECTORY + "410/sampler.vert");
 
 	std::string const SHADER_FRAG[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "410/sampler-bicubic-approx.frag",
+		glf::DATA_DIRECTORY + "410/sampler-bicubic-approx-2eq.frag",
 		glf::DATA_DIRECTORY + "410/sampler-bicubic.frag",
 		glf::DATA_DIRECTORY + "410/sampler-bilinear.frag",
 		glf::DATA_DIRECTORY + "410/sampler-nearest.frag"
@@ -94,7 +88,7 @@ bool initProgram()
 
 	for(int i = 0; i < program::MAX; ++i)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT[i]);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG[i]);
 
 		ProgramName[i] = glCreateProgram();
