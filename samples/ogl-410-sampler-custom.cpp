@@ -54,7 +54,7 @@ namespace
 	{
 		enum type
 		{
-			APPROX,
+			LANCZOS,
 			BICUBIC,
 			BILINEAR,
 			NEAREST,
@@ -66,7 +66,7 @@ namespace
 
 	std::string const SHADER_FRAG[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "410/sampler-bicubic-approx-2eq.frag",
+		glf::DATA_DIRECTORY + "410/sampler-lanzcos.frag",
 		glf::DATA_DIRECTORY + "410/sampler-bicubic.frag",
 		glf::DATA_DIRECTORY + "410/sampler-bilinear.frag",
 		glf::DATA_DIRECTORY + "410/sampler-nearest.frag"
@@ -177,14 +177,10 @@ bool begin()
 	int const Border(1);
 	glm::ivec2 const ViewportSize = Window.Size / 2 - Border * 2;
 
-	Viewport[program::APPROX] = glm::vec4(Border, Border, ViewportSize);
+	Viewport[program::LANCZOS] = glm::vec4(Border, Border, ViewportSize);
 	Viewport[program::BICUBIC] = glm::vec4(Border + Window.Size.x / 2, Border, ViewportSize);
 	Viewport[program::BILINEAR] = glm::vec4(Border + Window.Size / 2, ViewportSize);
 	Viewport[program::NEAREST] = glm::vec4(Border, Border + Window.Size.y / 2, ViewportSize);
-	//Viewport[program::APPROX] = glm::vec4(Border, Border, Window.Size / 2 - Border * 2);
-	//Viewport[program::BICUBIC] = glm::vec4(Border + Window.Size.x, Border, Window.Size / 2 - Border * 2);
-	//Viewport[program::BILINEAR] = glm::vec4(Border + Window.Size / 2, Window.Size / 2 - Border * 2);
-	//Viewport[program::NEAREST] = glm::vec4(Border, Border + Window.Size.y, Window.Size / 2 - Border * 2);
 
 	if(Validated)
 		Validated = initProgram();
