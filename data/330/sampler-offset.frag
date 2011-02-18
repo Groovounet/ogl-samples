@@ -71,6 +71,6 @@ void main()
 {
 	ivec2 TextureSize = textureSize(Diffuse, 0);
 
-	FragColor = textureCatmullrom(Diffuse, Vert.Texcoord, vec2(Offset) / TextureSize);
+	FragColor = textureCatmullrom(Diffuse, Vert.Texcoord, vec2(Offset) / vec2(TextureSize));
 }
 
