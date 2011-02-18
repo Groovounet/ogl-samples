@@ -1,4 +1,4 @@
-#version 410 core
+#version 330 core
 
 precision highp int;
 
@@ -20,10 +20,10 @@ layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 vec4 catmullRom(in vec4 A, in vec4 B, in vec4 C, in vec4 D, in float s)
 {
 	mat4 CatmullRom = mat4(
-		vec4(-1, 2,-1, 0), 
-		vec4( 3,-5, 0, 2),
-		vec4(-3, 4, 1, 0),
-		vec4( 1,-1, 0, 0));
+		vec4(-1.0, 2.0,-1.0, 0.0), 
+		vec4( 3.0,-5.0, 0.0, 2.0),
+		vec4(-3.0, 4.0, 1.0, 0.0),
+		vec4( 1.0,-1.0, 0.0, 0.0));
 
 	vec4 Expo = vec4(s * s * s, s * s, s, 1);
 

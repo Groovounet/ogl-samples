@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Fetch
-// 27/05/2010
+// OpenGL Sampler offset
+// 18/02/2011
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -11,13 +11,13 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Custom samplers";
+	std::string const SAMPLE_NAME = "OpenGL Sampler offset";
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	int const SAMPLE_MAJOR_VERSION = 3;
+	int const SAMPLE_MINOR_VERSION = 3;
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
