@@ -112,6 +112,8 @@ set(GL_SHADER_GTC rtt-array.vert rtt-array.frag multiple-output.vert multiple-ou
 glCreateSampleGTC(fbo-rtt-texture-array)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-multisample)
+set(GL_SHADER_GTC image-2d.vert image-2d.frag multisample-resolve.vert multisample-resolve.frag)
+glCreateSampleGTC(fbo-multisample-custom-resolve)
 glCreateSampleGTC(fbo-srgb)
 glCreateSampleGTC(texture-2d)
 glCreateSampleGTC(texture-compressed-ext)
