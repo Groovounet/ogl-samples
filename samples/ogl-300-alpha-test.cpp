@@ -150,6 +150,7 @@ bool initVertexArray()
 bool initTest()
 {
 	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_LESS, 0.5f);
 
 	return glf::checkError("initVertexArray");
 }
