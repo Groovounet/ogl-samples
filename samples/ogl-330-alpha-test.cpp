@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Alpha discard
-// 18/02/2011 - 18/02/2011
+// OpenGL Alpha test
+// 18/02/2011 - 19/02/2011
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -15,11 +15,10 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Alpha discard";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/alpha-discard.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/alpha-discard.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
-	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
+	std::string const SAMPLE_NAME = "OpenGL Alpha test";
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
