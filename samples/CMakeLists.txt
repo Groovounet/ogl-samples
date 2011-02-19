@@ -78,7 +78,8 @@ glCreateSampleGTC(test-scissor)
 set(GL_VERSION_GTC 300)
 
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-
+glCreateSampleGTC(alpha-test)
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-multisample)
 
 # OpenGL 3.3 samples
@@ -88,8 +89,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(alpha-coverage)
 set(GL_SHADER_GTC discard.vert discard.frag)
 glCreateSampleGTC(alpha-discard)
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(alpha-test)
 set(GL_SHADER_GTC blend-index.vert blend-index.frag)
 glCreateSampleGTC(blend-index)
 set(GL_SHADER_GTC mrt.vert mrt.frag image-2d.vert image-2d.frag)

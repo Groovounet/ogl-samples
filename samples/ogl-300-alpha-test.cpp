@@ -15,7 +15,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Images 2D";
+	std::string const SAMPLE_NAME = "OpenGL Alpha test";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "300/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "300/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
@@ -147,16 +147,19 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool begin()
+bool initTest()
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = (MajorVersion * 10 + MinorVersion) >= (SAMPLE_MAJOR_VERSION * 10 + SAMPLE_MINOR_VERSION);
-
 	glEnable(GL_ALPHA_TEST);
 
+	return glf::checkError("initVertexArray");
+}
+
+bool begin()
+{
+	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+
+	if(Validated)
+		Validated = initTest();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
