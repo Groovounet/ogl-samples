@@ -81,6 +81,8 @@ bool initProgram()
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 
+		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
+		glBindAttribLocation(ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -119,11 +121,11 @@ bool initTexture2D()
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGB, 
+			GL_RGBA, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0,  
-			GL_BGR, 
+			GL_BGRA, 
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
@@ -149,8 +151,8 @@ bool initVertexArray()
 
 bool initTest()
 {
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_LESS, 0.5f);
+	//glEnable(GL_ALPHA_TEST);
+	//glAlphaFunc(GL_LESS, 0.5f);
 
 	return glf::checkError("initVertexArray");
 }
@@ -194,16 +196,16 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(ProgramName);
-
 	glUniform1i(UniformDiffuse, 0);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+
 	glBindVertexArray(VertexArrayName);
 
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);

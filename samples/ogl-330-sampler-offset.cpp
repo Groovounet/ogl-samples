@@ -57,7 +57,7 @@ namespace
 			LINEAR,
 			MAX
 		};
-	}//namespace buffer
+	}//namespace program
 
 	std::string const SHADER_VERT(glf::DATA_DIRECTORY + "330/sampler.vert");
 
