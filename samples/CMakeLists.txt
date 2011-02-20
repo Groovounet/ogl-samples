@@ -164,6 +164,8 @@ set(GL_SHADER_GTC sampler.vert error-sampler-gather.frag)
 glCreateSampleGTC(error-sampler-gather)
 set(GL_SHADER_GTC sampler.vert error-sampler-offset.frag)
 glCreateSampleGTC(error-sampler-offset)
+set(GL_SHADER_GTC image-2d.vert error-conv.frag)
+glCreateSampleGTC(error-vao)
 
 # OpenGL 4.0 samples
 set(GL_VERSION_GTC 400)
