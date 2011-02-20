@@ -158,6 +158,13 @@ glCreateSampleGTC(test-scissor)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert)
 glCreateSampleGTC(transform-feedback)
 
+set(GL_SHADER_GTC image-2d.vert error-conv.frag)
+glCreateSampleGTC(error-conv)
+set(GL_SHADER_GTC sampler.vert error-sampler-gather.frag)
+glCreateSampleGTC(error-sampler-gather)
+set(GL_SHADER_GTC sampler.vert error-sampler-offset.frag)
+glCreateSampleGTC(error-sampler-offset)
+
 # OpenGL 4.0 samples
 set(GL_VERSION_GTC 400)
 
@@ -166,10 +173,8 @@ glCreateSampleGTC(blend-rtt)
 set(GL_SHADER_GTC uniform-buffer.vert uniform-buffer.frag)
 glCreateSampleGTC(buffer-uniform)
 glCreateSampleGTC(buffer-uniform-shared-gtc)
-
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(draw-indirect)
-
 set(GL_SHADER_GTC rtt-array.vert rtt-array.frag layer.vert layer.geom layer.frag)
 glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC multisample.vert multisample.frag)
@@ -178,7 +183,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-rtt)
 set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-rtt-texture-array)
-
 set(GL_SHADER_GTC double.vert double.frag)
 glCreateSampleGTC(program-64)
 set(GL_SHADER_GTC subroutine.vert subroutine.frag)
@@ -187,14 +191,12 @@ set(GL_SHADER_GTC tess-block.vert tess-block.cont tess-block.eval tess-block.geo
 glCreateSampleGTC(program-varying-blocks)
 set(GL_SHADER_GTC tess-struct.vert tess-struct.cont tess-struct.eval tess-struct.geom tess-struct.frag)
 glCreateSampleGTC(program-varying-structs)
-
 set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
 glCreateSampleGTC(primitive-instanced)
 set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag)
 glCreateSampleGTC(primitive-tessellation)
 set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag smooth-shading-geom.vert smooth-shading-geom.geom smooth-shading-geom.frag)
 glCreateSampleGTC(primitive-smooth-shading)
-
 set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch)
 set(GL_SHADER_GTC gather.vert gather.frag)
@@ -203,14 +205,15 @@ set(GL_SHADER_GTC sampler-array.vert sampler-array.frag)
 glCreateSampleGTC(sampler-array)
 set(GL_SHADER_GTC sampler-array-gtc.vert sampler-array-gtc.frag)
 glCreateSampleGTC(sampler-array-gtc)
-
 set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
 glCreateSampleGTC(texture-buffer-rgb)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(texture-compressed-arb)
-
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed.vert transformed.frag)
 glCreateSampleGTC(transform-feedback-object)
+
+set(GL_SHADER_GTC fetch.vert error-fetch.frag)
+glCreateSampleGTC(error-sampler-fetch)
 
 # OpenGL 4.1 samples
 set(GL_VERSION_GTC 410)
@@ -226,7 +229,7 @@ glCreateSampleGTC(fbo-multisample-dsa-gtc)
 set(GL_SHADER_GTC multiple-output.vert multiple-output.frag image-2d.vert image-2d.frag)
 glCreateSampleGTC(fbo-rtt-dsa-ext)
 set(GL_SHADER_GTC image-texture.vert image-texture.frag)
-glCreateSampleGTC(image-texture-ext)
+#glCreateSampleGTC(image-texture-ext)
 set(GL_SHADER_GTC primitive-instancing.vert primitive-instancing.geom primitive-instancing.frag)
 glCreateSampleGTC(primitive-instanced)
 set(GL_SHADER_GTC tess.vert tess.cont tess.eval tess.geom tess.frag)

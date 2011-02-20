@@ -16,7 +16,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Image texture";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.frag");
-	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;
@@ -139,19 +139,21 @@ bool initTexture2D()
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE_DXT5);
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
-		glCompressedTextureImage2DEXT(
-			Image2DName,
-			GL_TEXTURE_2D,
-			GLint(Level),
-			GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+		glTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGBA, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
-			0, 
-			GLsizei(Image[Level].capacity()), 
+			0,  
+			GL_BGR, 
+			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
 	ImageSize = glm::uvec2(Image[0].dimensions());
@@ -174,12 +176,8 @@ bool initVertexArray()
 
 bool begin()
 {
-	// Check the OpenGL version
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 	Validated = Validated && glf::checkExtension("GL_EXT_shader_image_load_store");
 
@@ -230,7 +228,8 @@ void display()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
-	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA8UI);
+	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA32F);
+
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
