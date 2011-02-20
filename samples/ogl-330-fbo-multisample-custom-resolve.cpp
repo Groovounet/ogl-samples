@@ -14,9 +14,6 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";	
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/image-2d.frag");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/multisample-resolve.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -59,10 +56,19 @@ namespace
 		enum type
 		{
 			THROUGH,
-			RESOLVE,
+			RESOLVE_BOX,
+			RESOLVE_NEAR,
 			MAX
 		};
 	}//namespace program
+
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
+	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
+	{
+		glf::DATA_DIRECTORY + "330/image-2d.frag",
+		glf::DATA_DIRECTORY + "330/multisample-box.frag",
+		glf::DATA_DIRECTORY + "330/multisample-near.frag",
+	};
 
 	GLuint VertexArrayName = 0;
 	GLuint ProgramName[program::MAX];
@@ -107,40 +113,22 @@ bool initProgram()
 	bool Validated = true;
 	
 	// Create program
-	if(Validated)
+	for(int i = 0; i < program::MAX; ++i)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE1);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE1);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE[i]);
 
-		ProgramName[program::THROUGH] = glCreateProgram();
-		glAttachShader(ProgramName[program::THROUGH], VertexShaderName);
-		glAttachShader(ProgramName[program::THROUGH], FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		ProgramName[i] = glCreateProgram();
+		glAttachShader(ProgramName[i], VertShaderName);
+		glAttachShader(ProgramName[i], FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
-		glLinkProgram(ProgramName[program::THROUGH]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::THROUGH]);
+		glLinkProgram(ProgramName[i]);
+		Validated = Validated && glf::checkProgram(ProgramName[i]);
 
-		UniformMVP[program::THROUGH] = glGetUniformLocation(ProgramName[program::THROUGH], "MVP");
-		UniformDiffuse[program::THROUGH] = glGetUniformLocation(ProgramName[program::THROUGH], "Diffuse");
-	}
-
-	if(Validated)
-	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE2);
-
-		ProgramName[program::RESOLVE] = glCreateProgram();
-		glAttachShader(ProgramName[program::RESOLVE], VertexShaderName);
-		glAttachShader(ProgramName[program::RESOLVE], FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
-
-		glLinkProgram(ProgramName[program::RESOLVE]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::RESOLVE]);
-
-		UniformMVP[program::RESOLVE] = glGetUniformLocation(ProgramName[program::RESOLVE], "MVP");
-		UniformDiffuse[program::RESOLVE] = glGetUniformLocation(ProgramName[program::RESOLVE], "Diffuse");
+		UniformMVP[i] = glGetUniformLocation(ProgramName[i], "MVP");
+		UniformDiffuse[i] = glGetUniformLocation(ProgramName[i], "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -254,8 +242,8 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName[program::THROUGH]);
-	glDeleteProgram(ProgramName[program::RESOLVE]);
+	for(int i = 0; i < program::MAX; ++i)
+		glDeleteProgram(ProgramName[i]);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteTextures(1, &ColorTextureName);
@@ -296,32 +284,6 @@ void renderFBO(GLuint Framebuffer)
 	glf::checkError("renderFBO");
 }
 
-void renderFB(GLuint Texture2DName)
-{
-	glm::mat4 Perspective = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Perspective * View * Model;
-
-	glUseProgram(ProgramName[program::THROUGH]);
-	glUniform1i(UniformDiffuse[program::THROUGH], 0);
-	glUniformMatrix4fv(UniformMVP[program::THROUGH], 1, GL_FALSE, &MVP[0][0]);
-
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
-	glBindSampler(0, SamplerName);
-
-	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-		
-	glf::checkError("renderFB");
-}
-
 void resolveMultisampling()
 {
 	//glm::mat4 Projection(glm::ortho(-8.0f, 8.0f, -6.0f, 6.0f));
@@ -335,16 +297,37 @@ void resolveMultisampling()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glUseProgram(ProgramName[program::RESOLVE]);
-	glUniform1i(UniformDiffuse[program::RESOLVE], 0);
-	glUniformMatrix4fv(UniformMVP[program::THROUGH], 1, GL_FALSE, &MVP[0][0]);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
 	glBindSampler(0, SamplerName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+
+	glEnable(GL_SCISSOR_TEST);
+
+	// Box
+	{
+		glScissor(1, 1, Window.Size.x  / 2 - 2, Window.Size.y - 2);
+
+		glUseProgram(ProgramName[program::RESOLVE_BOX]);
+		glUniform1i(UniformDiffuse[program::RESOLVE_BOX], 0);
+		glUniformMatrix4fv(UniformMVP[program::RESOLVE_BOX], 1, GL_FALSE, &MVP[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	}
+
+	// Near
+	{
+		glScissor(Window.Size.x / 2 + 1, 1, Window.Size.x / 2 - 2, Window.Size.y - 2);
+
+		glUseProgram(ProgramName[program::RESOLVE_NEAR]);
+		glUniform1i(UniformDiffuse[program::RESOLVE_NEAR], 0);
+		glUniformMatrix4fv(UniformMVP[program::RESOLVE_NEAR], 1, GL_FALSE, &MVP[0][0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	}
+
+	glDisable(GL_SCISSOR_TEST);
 
 	glf::checkError("renderFB");
 }
@@ -364,8 +347,6 @@ void display()
 	// Pass 2
 	// Resolved and render the colorbuffer from the multisampled framebuffer
 	resolveMultisampling();
-
-	//renderFB(ColorTextureName);
 
 	glf::checkError("display");
 	glf::swapBuffers();

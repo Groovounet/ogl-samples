@@ -13,9 +13,12 @@
 
 namespace
 {
+	typedef void (GLAPIENTRY * PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC) (GLuint texture, GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+	PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC glTextureImage2DMultisampleGTC = 0;
+
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/multisample.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/multisample.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH = 640;
@@ -165,7 +168,7 @@ bool initFramebuffer()
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
 	// The second parameter is the number of samples.
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_FALSE);
+	glTextureImage2DMultisampleGTC(MultisampleTextureName, GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_FALSE);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
@@ -210,14 +213,12 @@ bool initVertexArray()
 
 bool begin()
 {
-	GLint MajorVersion = 0;
-	GLint MinorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &MajorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &MinorVersion);
-	bool Validated = glf::version(MajorVersion, MinorVersion) >= glf::version(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisample");
 
-	//glEnable(GL_SAMPLE_MASK);
-	//glSampleMaski(0, 0xFF);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && glTextureImage2DMultisampleGTC != 0;
 
 	if(Validated)
 		Validated = initProgram();
@@ -258,14 +259,14 @@ void renderFBO(GLuint Framebuffer)
 	glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Texture2DName);
 	glBindVertexArray(VertexArrayName);
 
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
@@ -281,10 +282,10 @@ void renderFB(GLuint Texture2DName)
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Texture2DName);
 	glBindVertexArray(VertexArrayName);
 
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
@@ -305,9 +306,6 @@ void display()
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_SAMPLE_SHADING);
 	glMinSampleShading(2.0f);
-
-	//glEnable(GL_SAMPLE_MASK);
-	//glSampleMaski(0, 0xFF);
 
 	renderFBO(FramebufferRenderName);
 	glDisable(GL_MULTISAMPLE);
