@@ -14,7 +14,7 @@ void main()
 {
 	// integer UV coordinates, needed for fetching multisampled texture
 	ivec2 Texcoord = ivec2(textureSize(Diffuse) * Vert.Texcoord);
-/*
+
 	vec4 Temp = vec4(0.0);
 	
 	// For each of the 4 samples
@@ -22,6 +22,4 @@ void main()
 		Temp += texelFetch(Diffuse, Texcoord, i);
 
 	Color = Temp * 0.25;
-*/
-	Color = texelFetch(Diffuse, Texcoord, 0);
 }
