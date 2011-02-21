@@ -38,14 +38,14 @@ vec4 catmullRom(in vec4 A, in vec4 B, in vec4 C, in vec4 D, in float s)
 vec4 textureCatmullrom(in sampler2D Sampler, in vec2 Texcoord, in vec2 Offset)
 {
 	vec4 Texel00 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2(-1,-1));
-	vec4 Texel10 = textureOffset(Sampler, Texcoord + Offset, ivec2( 0,-1));
-	vec4 Texel20 = textureOffset(Sampler, Texcoord + Offset, ivec2( 1,-1));
-	vec4 Texel30 = textureOffset(Sampler, Texcoord + Offset, ivec2( 2,-1));
+	vec4 Texel10 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 0,-1));
+	vec4 Texel20 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 1,-1));
+	vec4 Texel30 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 2,-1));
 
-	vec4 Texel01 = textureOffset(Sampler, Texcoord + Offset, ivec2(-1, 0));
-	vec4 Texel11 = textureOffset(Sampler, Texcoord + Offset, ivec2( 0, 0));
-	vec4 Texel21 = textureOffset(Sampler, Texcoord + Offset, ivec2( 1, 0));
-	vec4 Texel31 = textureOffset(Sampler, Texcoord + Offset, ivec2( 2, 0));
+	vec4 Texel01 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2(-1, 0));
+	vec4 Texel11 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 0, 0));
+	vec4 Texel21 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 1, 0));
+	vec4 Texel31 = textureOffset(Sampler, Texcoord + Offset, 0, ivec2( 2, 0));
 
 	vec4 Texel02 = textureOffset(Sampler, Texcoord + Offset, ivec2(-1, 1));
 	vec4 Texel12 = textureOffset(Sampler, Texcoord + Offset, ivec2( 0, 1));
