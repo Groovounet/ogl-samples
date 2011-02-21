@@ -21,7 +21,6 @@
 
 // GLF libraries
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_projection.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/half_float.hpp>
 #include <glm/gtc/type_precision.hpp>
