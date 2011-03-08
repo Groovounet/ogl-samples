@@ -168,7 +168,7 @@ bool initFramebuffer()
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
 	// The second parameter is the number of samples.
-	glTextureImage2DMultisampleGTC(MultisampleTextureName, GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_FALSE);
+	glTextureImage2DMultisampleGTC(MultisampleTextureName, GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
@@ -214,6 +214,14 @@ bool initVertexArray()
 bool begin()
 {
 	glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisample");
+	if(!glTextureImage2DMultisampleGTC)
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleNV");
+	else if(!glTextureImage2DMultisampleGTC)
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleAMD");
+	else if(!glTextureImage2DMultisampleGTC)
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleEXT");
+	else if(!glTextureImage2DMultisampleGTC)
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleARB");
 
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
