@@ -103,6 +103,8 @@ bool initArrayBuffer()
 
 bool initTextureArray2D()
 {
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	glGenTextures(1, &Texture2DArrayName);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -153,6 +155,8 @@ bool initTextureArray2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	return glf::checkError("initTextureArray2D");
 }

@@ -105,6 +105,8 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	glGenTextures(1, &Texture2DName);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -140,6 +142,8 @@ bool initTexture2D()
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y), GL_BGR, GL_UNSIGNED_BYTE, NULL);
 	glDeleteBuffers(1, &PixelBuffer);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	return glf::checkError("initTexture2D");
 }

@@ -115,6 +115,8 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
 	GLint TextureSize = 0;
 	glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &TextureSize);
 
@@ -146,6 +148,8 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	return glf::checkError("initTexture2D");
 }
