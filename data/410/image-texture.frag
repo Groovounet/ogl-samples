@@ -1,5 +1,5 @@
 #version 410 core
-#extension GL_NV_gpu_shader5 : enable
+//#extension GL_NV_gpu_shader5 : enable
 #extension GL_EXT_shader_image_load_store : enable
 
 // Declare all the semantics

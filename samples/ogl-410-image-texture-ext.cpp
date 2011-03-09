@@ -85,17 +85,12 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
-	glBindProgramPipeline(0);
-
 	if(Validated)
 	{
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -106,18 +101,12 @@ bool initProgram()
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
-		Validated = Validated && glf::checkError("initProgram - stage");
-	}
-
-	if(Validated)
-	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformImageData = glGetUniformLocation(ProgramName, "ImageData");
 		UniformImageSize = glGetUniformLocation(ProgramName, "ImageSize");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
 bool initArrayBuffer()
@@ -139,8 +128,8 @@ bool initTexture2D()
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -222,13 +211,13 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glBindProgramPipeline(PipelineName);
+	glUseProgram(ProgramName);
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Image2DName);
-	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA32F);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA8);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
