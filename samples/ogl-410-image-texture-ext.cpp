@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Image texture
-// 09/07/2010 - 09/07/2010
+// 09/07/2010 - 10/03/2011
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
@@ -137,7 +137,7 @@ bool initTexture2D()
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGBA, 
+			GL_RGBA32F, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0,  
@@ -217,7 +217,7 @@ void display()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0,  GL_READ_ONLY, GL_RGBA8);
+	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);

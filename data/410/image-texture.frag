@@ -1,5 +1,5 @@
 #version 410 core
-//#extension GL_NV_gpu_shader5 : enable
+#extension GL_NV_gpu_shader5 : enable
 #extension GL_EXT_shader_image_load_store : enable
 
 // Declare all the semantics
@@ -8,7 +8,7 @@
 #define ATTR_TEXCOORD	4
 #define FRAG_COLOR		0
 
-layout(size1x32) coherent uniform image2D ImageData;
+layout(size4x32) coherent uniform image2D ImageData;
 uniform uvec2 ImageSize;
 
 in vert
