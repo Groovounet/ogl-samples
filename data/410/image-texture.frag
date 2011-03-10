@@ -20,6 +20,6 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	vec4 Texel = imageLoad(ImageData, ivec2(Vert.Texcoord * ImageSize));
+	vec4 Texel = imageLoad(ImageData, ivec2(Vert.Texcoord * 128));
 	Color = Texel + vec4(Vert.Texcoord, 1.0, 1.0) * 1.0;
 }

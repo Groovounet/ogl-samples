@@ -252,7 +252,7 @@ glCreateSampleGTC(program-varying)
 glCreateSampleGTC(program-varying-gtc)
 set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch-dsa-ext)
-set(GL_SHADER_GTC texture-barrier-nv.vert texture-barrier-nv.frag)
+set(GL_SHADER_GTC texture-barrier-nv.vert texture-barrier-nv.frag image-2d.vert image-2d.frag)
 glCreateSampleGTC(texture-barrier-nv)
 
 endif(APPLE)

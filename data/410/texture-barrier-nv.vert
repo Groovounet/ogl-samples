@@ -10,12 +10,9 @@ precision highp int;
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 AttrPosition;
-layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
-out vec2 Texcoord;
+layout(location = ATTR_POSITION) in vec2 Position;
 
 void main()
 {	
-	Texcoord = AttrTexcoord;
-	gl_Position = MVP * vec4(AttrPosition, 0.0, 1.0);
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }

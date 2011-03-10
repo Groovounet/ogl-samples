@@ -115,7 +115,7 @@ bool initArrayBuffer()
 	glNamedBufferDataEXT(BufferName[buffer::VERTEX], VertexSize, VertexData, GL_STATIC_DRAW);
 	glNamedBufferDataEXT(BufferName[buffer::ELEMENT], ElementSize, ElementData, GL_STATIC_DRAW);
 
-	return glf::checkError("initArrayBuffer");;
+	return glf::checkError("initArrayBuffer");
 }
 
 bool initTexture2D()
@@ -132,18 +132,18 @@ bool initTexture2D()
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+	//for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(
 			GL_TEXTURE_2D, 
-			GLint(Level), 
+			GLint(0), 
 			GL_RGBA32F, 
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
+			GLsizei(Image[0].dimensions().x), 
+			GLsizei(Image[0].dimensions().y), 
 			0,  
 			GL_BGR, 
 			GL_UNSIGNED_BYTE, 
-			Image[Level].data());
+			Image[0].data());
 	}
 	ImageSize = glm::uvec2(Image[0].dimensions());
 
@@ -215,8 +215,7 @@ void display()
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Image2DName);
 	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 
 	glBindVertexArray(VertexArrayName);
