@@ -7,14 +7,14 @@
 layout(size1x32) coherent uniform image2D ImageData;
 uniform uvec2 ImageSize;
 
-in vert
+in vertex
 {
 	vec2 Texcoord;
-} Vert;
+} Vertex;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = imageLoad(ImageData, ivec2(Vert.Texcoord * ImageSize)).bgra;
+	Color = imageLoad(ImageData, ivec2(Vertex.Texcoord * ImageSize)).bgra;
 }

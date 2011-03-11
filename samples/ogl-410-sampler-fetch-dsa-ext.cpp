@@ -128,6 +128,8 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	glGenTextures(1, &Image2DName);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
@@ -150,6 +152,8 @@ bool initTexture2D()
 			GLsizei(Image[Level].capacity()), 
 			Image[Level].data());
 	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	return glf::checkError("initTexture2D");
 }
