@@ -122,7 +122,6 @@ bool initArrayBuffer()
 bool initTexture2D()
 {
 	glGenTextures(TEXTURE_MAX, Texture2DName);
-
 	for(int i = TEXTURE_R; i <= TEXTURE_B; ++i)
 	{
 		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -165,10 +164,8 @@ bool initFramebuffer()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
-
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[BUFFER_VERTEX], glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[BUFFER_VERTEX], glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), sizeof(glm::vec2));
-
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::TEXCOORD);
 

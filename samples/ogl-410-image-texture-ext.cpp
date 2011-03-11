@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture image";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -190,31 +190,19 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glf::checkError("display 5");
-
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-	glf::checkError("display 6");
 
 	glUseProgram(ProgramName);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName, UniformImageData, 0);
 	glProgramUniform2uiv(ProgramName, UniformImageSize, 1, &ImageSize[0]);
 
-	glf::checkError("display 7");
-
 	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
-	
-	glf::checkError("display 8");
-
 	glBindVertexArray(VertexArrayName);
-
-	glf::checkError("display 9");
 
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

@@ -7,10 +7,12 @@
 layout(size1x32) coherent uniform image2D ImageData;
 uniform uvec2 ImageSize;
 
-in vertex
+struct vertex
 {
 	vec2 Texcoord;
-} Vertex;
+};
+
+in vertex Vertex;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 

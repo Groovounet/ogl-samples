@@ -8,10 +8,12 @@ uniform mat4 MVP;
 layout(location = ATTR_POSITION) in vec2 Position;
 layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
-out vertex
+struct vertex
 {
 	vec2 Texcoord;
-} Vertex;
+};
+
+out vertex Vertex;
 
 void main()
 {	
