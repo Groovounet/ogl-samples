@@ -50,22 +50,22 @@ namespace
 		BUFFER_MAX
 	};
 
-	GLuint VertexArrayName = 0;
+	GLuint VertexArrayName(0);
 	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 
 	GLuint BufferName[BUFFER_MAX];
-	GLuint Image2DName = 0;
-	GLuint SamplerName = 0;
+	GLuint TextureName(0);
+	GLuint SamplerName(0);
 	
-	GLuint ColorRenderbufferName = 0;
-	GLuint ColorTextureName = 0;
+	GLuint ColorRenderbufferName(0);
+	GLuint ColorTextureName(0);
 	
-	GLuint FramebufferRenderName = 0;
-	GLuint FramebufferResolveName = 0;
+	GLuint FramebufferRenderName(0);
+	GLuint FramebufferResolveName(0);
 
-	GLuint UniformMVP = 0;
-	GLuint UniformDiffuse = 0;	
+	GLuint UniformMVP(0);
+	GLuint UniformDiffuse(0);	
 
 }//namespace
 
@@ -137,19 +137,19 @@ bool initSampler()
 
 bool initTexture2D()
 {
-	glGenTextures(1, &Image2DName);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glGenTextures(1, &TextureName);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
 
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTextureImage2DEXT(
-			Image2DName,
+			TextureName,
 			GL_TEXTURE_2D,
 			GLint(Level),
 			GL_RGB,
@@ -162,7 +162,7 @@ bool initTexture2D()
 	}
 
 	if(Image.levels() == 1)
-		glGenerateTextureMipmapEXT(Image2DName, GL_TEXTURE_2D);
+		glGenerateTextureMipmapEXT(TextureName, GL_TEXTURE_2D);
 
 	return glf::checkError("initTexture2D");
 }
@@ -225,7 +225,7 @@ bool end()
 {
 	glDeleteBuffers(BUFFER_MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Image2DName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteTextures(1, &ColorTextureName);
 	glDeleteRenderbuffers(1, &ColorRenderbufferName);
 	glDeleteFramebuffers(1, &FramebufferRenderName);
@@ -253,7 +253,7 @@ void renderFBO(GLuint Framebuffer)
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Image2DName);
+	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName);
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
