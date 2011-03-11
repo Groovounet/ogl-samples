@@ -146,7 +146,6 @@ bool initVertexArray()
 		glVertexAttribFormatNV(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex));
 		glVertexAttribFormatNV(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex));
 
-		glEnableClientState(GL_ELEMENT_ARRAY_ADDRESS_NV);
 		glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
