@@ -134,36 +134,7 @@ bool initTexture2D()
 
 	return glf::checkError("initTexture2D");
 }
-/*
-bool initTexture2D()
-{
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glGenTextures(1, &TextureName);
-	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
-	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
-		glTextureImage2DEXT(
-			TextureName,
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGBA8, 
-			GLsizei(Texture[Level].dimensions().x), 
-			GLsizei(Texture[Level].dimensions().y), 
-			0,  
-			GL_RGBA, 
-			GL_UNSIGNED_BYTE, 
-			Texture[Level].data());
-
-	ImageSize = glm::uvec2(Texture[0].dimensions());
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-	return glf::checkError("initTexture2D");
-}
-*/
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
@@ -219,16 +190,27 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glf::checkError("display 5");
+
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
+	glf::checkError("display 6");
 
 	glUseProgram(ProgramName);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName, UniformImageData, 0);
 	glProgramUniform2uiv(ProgramName, UniformImageSize, 1, &ImageSize[0]);
 
+	glf::checkError("display 7");
+
 	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
+	
+	glf::checkError("display 8");
+
 	glBindVertexArray(VertexArrayName);
+
+	glf::checkError("display 9");
 
 	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
 
