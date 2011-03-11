@@ -14,13 +14,13 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Image texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-texture.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	struct vertex
 	{
@@ -73,7 +73,7 @@ namespace
 	GLuint ProgramName(0);
 
 	GLuint BufferName[buffer::MAX] = {0, 0};
-	GLuint Image2DName(0);
+	GLuint TextureName(0);
 	GLuint SamplerName(0);
 
 	GLuint UniformMVP(0);
@@ -87,14 +87,14 @@ bool initProgram()
 
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -120,32 +120,23 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
-	glGenTextures(1, &Image2DName);
+	glGenTextures(1, &TextureName);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteriEXT(TextureName, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteriEXT(Image2DName, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
-	//for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-	{
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(0), 
-			GL_RGBA32F, 
-			GLsizei(Image[0].dimensions().x), 
-			GLsizei(Image[0].dimensions().y), 
-			0,  
-			GL_BGR, 
-			GL_UNSIGNED_BYTE, 
-			Image[0].data());
-	}
-	ImageSize = glm::uvec2(Image[0].dimensions());
+	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+	glTextureImage2DEXT(
+		TextureName,
+		GL_TEXTURE_2D, 
+		GLint(0), 
+		GL_RGBA8, 
+		GLsizei(Texture[0].dimensions().x), 
+		GLsizei(Texture[0].dimensions().y), 
+		0,  
+		GL_RGB, 
+		GL_UNSIGNED_BYTE, 
+		Texture[0].data());
+	ImageSize = glm::uvec2(Texture[0].dimensions());
 
 	return glf::checkError("initTexture2D");
 }
@@ -153,10 +144,8 @@ bool initTexture2D()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
-
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec2));
-
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::TEXCOORD);
 
@@ -186,7 +175,7 @@ bool end()
 {
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Image2DName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteProgramPipelines(1, &PipelineName);
@@ -213,10 +202,7 @@ void display()
 
 	glUseProgram(ProgramName);
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
-
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Image2DName);
-	glBindImageTextureEXT(0, Image2DName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
