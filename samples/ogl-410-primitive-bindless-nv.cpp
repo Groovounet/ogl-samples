@@ -199,9 +199,8 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(ProgramName);
-
-	glUniform1i(UniformDiffuse, 0);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);

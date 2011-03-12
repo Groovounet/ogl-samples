@@ -4,7 +4,7 @@
 
 #define FRAG_COLOR		0
 
-layout(size1x32) coherent uniform image2D ImageData;
+layout(size1x32) coherent uniform uimage2D ImageData;
 uniform uvec2 ImageSize;
 
 struct vertex
@@ -18,5 +18,6 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = imageLoad(ImageData, ivec2(Vertex.Texcoord * ImageSize)).bgra;
+	unsigned int Fetch = imageLoad(ImageData, ivec2(Vertex.Texcoord * ImageSize)).x;
+	Color = unpackUnorm4x8(Fetch);
 }
