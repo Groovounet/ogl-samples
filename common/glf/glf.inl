@@ -289,6 +289,11 @@ namespace glf
 
 		// Load GL_EXT_shader_image_load_store extension
 		glBindImageTextureEXT = (PFNGLBINDIMAGETEXTUREEXTPROC)glfGetProcAddress("glBindImageTextureEXT");
+
+		glGetBufferParameterui64vNV = (PFNGLGETBUFFERPARAMETERUI64VNVPROC)glfGetProcAddress("glGetBufferParameterui64vNV");
+		glMakeBufferResidentNV = (PFNGLMAKEBUFFERRESIDENTNVPROC)glfGetProcAddress("glMakeBufferResidentNV");
+		glVertexAttribFormatNV = (PFNGLVERTEXATTRIBFORMATNVPROC)glfGetProcAddress("glVertexAttribFormatNV");
+		glBufferAddressRangeNV = (PFNGLBUFFERADDRESSRANGENVPROC)glfGetProcAddress("glBufferAddressRangeNV");
 #endif//WIN32
 	}
 

@@ -124,7 +124,7 @@ bool initTexture2D()
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
 			0,  
-			GL_RGBA, 
+			GL_BGRA, 
 			GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}

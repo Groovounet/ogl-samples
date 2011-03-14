@@ -146,7 +146,6 @@ bool initVertexArray()
 		glVertexAttribFormatNV(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex));
 		glVertexAttribFormatNV(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex));
 
-		glEnableClientState(GL_ELEMENT_ARRAY_ADDRESS_NV);
 		glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV);
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
@@ -157,7 +156,11 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && glf::checkExtension("GL_NV_shader_buffer_load");
+	Validated = Validated && glf::checkExtension("GL_NV_vertex_buffer_unified_memory");
 
 	if(Validated)
 		Validated = initProgram();
@@ -195,9 +198,8 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-
-	glUniform1i(UniformDiffuse, 0);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
