@@ -23,12 +23,6 @@ layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vertex Vertex;
 out gl_PerVertex Fixed;
-/*
-out gl_PerVertex
-{
-    vec4 gl_Position;
-};
-*/
 
 void main()
 {	

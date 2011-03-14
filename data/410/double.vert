@@ -1,6 +1,5 @@
 #version 410 core
 
-// Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
 #define ATTR_TEXCOORD	4
