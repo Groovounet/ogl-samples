@@ -1,12 +1,11 @@
 #version 410 core
 
-precision highp int;
-
-// Declare all the semantics
 #define ATTR_POSITION	0
 #define ATTR_COLOR		3
 #define ATTR_TEXCOORD	4
 #define FRAG_COLOR		0
+
+precision highp int;
 
 uniform sampler2D Diffuse;
 
@@ -19,12 +18,4 @@ void main()
 	vec2 Texcoord = vec2(gl_FragCoord.x / TextureSize.x, gl_FragCoord.y / TextureSize.y);
 
 	FragColor = texture(Diffuse, Texcoord) - 1.0 / 255;
-/*
-	vec4 TexelO = textureOffset(Diffuse, Texcoord, ivec2( 0, 0)) * 4;
-	vec4 TexelA = textureOffset(Diffuse, Texcoord, ivec2( 1, 0)) * 1;
-	vec4 TexelB = textureOffset(Diffuse, Texcoord, ivec2(-1, 0)) * 1;
-	vec4 TexelC = textureOffset(Diffuse, Texcoord, ivec2( 0, 1)) * 1;
-	vec4 TexelD = textureOffset(Diffuse, Texcoord, ivec2( 0,-1)) * 1;
-	FragColor = (TexelO + TexelA + TexelB + TexelC + TexelD) / 8;
-*/
 }
