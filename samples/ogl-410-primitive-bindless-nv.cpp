@@ -191,9 +191,8 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
 

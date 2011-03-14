@@ -8,24 +8,26 @@
 
 uniform sampler2D Diffuse;
 
-in vert
+struct vertex
 {
 	vec2 Texcoord;
-} Vert;
+};
+
+in vertex Vertex;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	vec2 Level = textureQueryLOD(Diffuse, Vert.Texcoord);
+	vec2 Level = textureQueryLOD(Diffuse, Vertex.Texcoord);
 	int LevelMin = int(ceil(Level.x));
 	int LevelMax = int(floor(Level.x));
 	vec2 SizeMin = textureSize(Diffuse, LevelMin) - 1;
 	vec2 SizeMax = textureSize(Diffuse, LevelMax) - 1;	
-	vec2 TexcoordMin = Vert.Texcoord * SizeMin;
-	vec2 TexcoordMax = Vert.Texcoord * SizeMax;	
-	ivec2 CoordMin = ivec2(Vert.Texcoord * SizeMin);
-	ivec2 CoordMax = ivec2(Vert.Texcoord * SizeMax);
+	vec2 TexcoordMin = Vertex.Texcoord * SizeMin;
+	vec2 TexcoordMax = Vertex.Texcoord * SizeMax;	
+	ivec2 CoordMin = ivec2(Vertex.Texcoord * SizeMin);
+	ivec2 CoordMax = ivec2(Vertex.Texcoord * SizeMax);
 	
 	vec4 TexelMin00 = texelFetch(Diffuse, CoordMin + ivec2(0, 0), LevelMin);
 	vec4 TexelMin10 = texelFetch(Diffuse, CoordMin + ivec2(1, 0), LevelMin);

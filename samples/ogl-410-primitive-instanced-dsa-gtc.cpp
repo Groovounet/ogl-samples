@@ -78,7 +78,6 @@ bool initProgram()
 	glGenProgramPipelines(1, &PipelineName);
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
-	glf::checkError("initProgram 3");
 
 	// Create program
 	if(Validated)
@@ -86,11 +85,9 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-		glf::checkError("initProgram 4");
 
 		ProgramName[program::VERT] = glCreateProgram();
 		ProgramName[program::FRAG] = glCreateProgram();
-		glf::checkError("initProgram 5");
 
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], GeomShaderName);
@@ -102,7 +99,6 @@ bool initProgram()
 		glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glLinkProgram(ProgramName[program::VERT]);
 		glLinkProgram(ProgramName[program::FRAG]);
-		glf::checkError("initProgram 6");
 
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
 		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
@@ -112,9 +108,7 @@ bool initProgram()
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
-		glf::checkError("initProgram 8 a");
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
-		glf::checkError("initProgram 8");
 	}
 
 	// Get variables locations
@@ -122,7 +116,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAG], "Diffuse");
-		glf::checkError("initProgram 9");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -196,26 +189,20 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glf::checkError("display 4");
-
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 	// Clear color buffer with white
 	float Depth(1.0f);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
-	glf::checkError("display 5");
 
 	// Bind program
 	glBindProgramPipeline(PipelineName);
-	glf::checkError("display 7");
 
 	// Set the value of uniforms
 	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glf::checkError("display 8");
 	glProgramUniform4fv(ProgramName[program::FRAG], UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-	glf::checkError("display 9");
 
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);

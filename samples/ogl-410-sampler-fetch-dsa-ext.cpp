@@ -68,7 +68,6 @@ namespace
 	}//namespace buffer
 
 	GLuint VertexArrayName(0);
-	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 
 	GLuint BufferName[buffer::MAX] = {0, 0};
@@ -83,28 +82,22 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
-	glBindProgramPipeline(0);
-
 	if(Validated)
 	{
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		Validated = Validated && glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
@@ -114,7 +107,7 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
 bool initArrayBuffer()
@@ -193,10 +186,9 @@ bool end()
 {
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Image2DName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -217,7 +209,7 @@ void display()
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glBindProgramPipeline(PipelineName);
+	glUseProgram(ProgramName);
 	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);

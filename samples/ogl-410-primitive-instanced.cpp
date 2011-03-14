@@ -199,7 +199,7 @@ void display()
 	glf::checkError("display 4");
 
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 	// Clear color buffer with white
 	float Depth(1.0f);

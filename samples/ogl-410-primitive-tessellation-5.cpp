@@ -170,7 +170,7 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);

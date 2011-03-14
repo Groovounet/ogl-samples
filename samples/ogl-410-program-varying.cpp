@@ -24,7 +24,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
 	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
@@ -34,7 +34,7 @@ namespace
 		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f))
 	};
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLuint);
 	GLuint const ElementData[ElementCount] =
 	{
@@ -62,13 +62,13 @@ namespace
 		};
 	}//namespace program
 
-	GLuint PipelineName = 0;
+	GLuint PipelineName(0);
 	GLuint ProgramName[program::MAX];
 	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-	GLuint Texture2DName = 0;
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
+	GLuint Texture2DName(0);
 
 }//namespace
 
@@ -115,7 +115,6 @@ bool initProgram()
 bool initTexture2D()
 {
 	glGenTextures(1, &Texture2DName);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
@@ -233,8 +232,6 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
-
-	glBindProgramPipeline(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();
