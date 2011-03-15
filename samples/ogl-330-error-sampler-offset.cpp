@@ -212,7 +212,7 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
+	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -221,15 +221,16 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
-	glProgramUniform2iv(ProgramName[program::OFFSET], UniformOffset, 1, &glm::ivec2(63, 107)[0]);
+	glUseProgram(ProgramName[program::OFFSET]);
+	glUniform2iv(ProgramName[program::OFFSET], UniformOffset, 1, &glm::ivec2(63, 107)[0]);
 
 	for(std::size_t i = 0; i < program::MAX; ++i)
 	{
 		glUseProgram(ProgramName[i]);
-		glProgramUniformMatrix4fv(ProgramName[i], UniformMVP[i], 1, GL_FALSE, &MVP[0][0]);
-		glProgramUniform1i(ProgramName[i], UniformDiffuse[i], 0);
+		glUniformMatrix4fv(UniformMVP[i], 1, GL_FALSE, &MVP[0][0]);
+		glUniform1i(UniformDiffuse[i], 0);
 
-		glViewportIndexedfv(0, &Viewport[i][0]);
+		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 	}

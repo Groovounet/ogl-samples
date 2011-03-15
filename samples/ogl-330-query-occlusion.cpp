@@ -77,19 +77,6 @@ bool initProgram()
 		UniformColor = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform4fv(UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
@@ -166,20 +153,18 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
-
-	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUniform4fv(UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Beginning of the samples count query
 	glBeginQuery(GL_SAMPLES_PASSED, QueryName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	// End of the samples count query
 	glEndQuery(GL_SAMPLES_PASSED);
@@ -189,9 +174,6 @@ void display()
 	GLuint SamplesCount = 0;
 	glGetQueryObjectuiv(QueryName, GL_QUERY_RESULT, &SamplesCount);
 	fprintf(stdout, "Samples count: %d\r", SamplesCount);
-
-	// Unbind program
-	glUseProgram(0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

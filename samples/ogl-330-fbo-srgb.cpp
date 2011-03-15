@@ -263,8 +263,7 @@ void display()
 		glDisable(GL_FRAMEBUFFER_SRGB);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 		renderScene(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), MVP, Texture2DName);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

@@ -208,8 +208,7 @@ void display()
 	glm::mat4 MV = View * Model;
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind the program for use
 	glUseProgram(ProgramName);
@@ -218,14 +217,13 @@ void display()
 	glUniform1i(UniformEnvironment, 0);
 	glUniform3fv(UniformCamera, 1, &glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y)[0]);
 
-	glBindVertexArray(VertexArrayName);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureName);
 	glBindSampler(0, SamplerName);
 
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
-
+	glBindVertexArray(VertexArrayName);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	
 	glf::checkError("display");
 	glf::swapBuffers();
 }

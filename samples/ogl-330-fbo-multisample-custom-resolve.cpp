@@ -91,8 +91,6 @@ namespace
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
-
-	// Parameters part of the sampler object:
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -175,7 +173,6 @@ bool initFramebuffer()
 {
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
-
 	// The second parameter is the number of samples.
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
@@ -189,7 +186,6 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
@@ -271,15 +267,14 @@ void renderFBO(GLuint Framebuffer)
 	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("renderFBO");
 }

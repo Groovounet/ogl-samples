@@ -11,9 +11,6 @@
 
 #include <glf/glf.hpp>
 
-typedef void (GLAPIENTRY * PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC) (GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLsizei *size, GLenum *type, GLchar *name);
-PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC glGetTransformFeedbackVaryingGTC = 0;
-
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback";
@@ -176,7 +173,6 @@ bool begin()
 	glGenQueries(1, &Query);
 
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	glGetTransformFeedbackVaryingGTC = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC_GTC)glfGetProcAddress("glGetTransformFeedbackVarying");
 
 	if(Validated)
 		Validated = initProgram();

@@ -134,7 +134,6 @@ void display()
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
@@ -142,21 +141,15 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-
-	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	// Bind program
 	glUseProgram(ProgramName);
-
-	// Set the value of MVP uniform.
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+
 	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 
 	glf::checkError("display");

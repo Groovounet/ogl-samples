@@ -139,7 +139,6 @@ bool initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
@@ -185,8 +184,7 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
 
@@ -197,7 +195,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 	glBindVertexArray(VertexArrayName);
 
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("display");
 	glf::swapBuffers();

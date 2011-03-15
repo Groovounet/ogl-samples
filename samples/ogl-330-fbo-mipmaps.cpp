@@ -220,7 +220,7 @@ void renderScene
 	GLint const Border = 16;
 
 	glEnablei(GL_SCISSOR_TEST, 0);
-	glScissorIndexed(0, Border, Border, Window.Size.x - Border * 2, Window.Size.y - Border * 2);
+	glScissor(Border, Border, Window.Size.x - Border * 2, Window.Size.y - Border * 2);
 	glClearBufferfv(GL_COLOR, 0, &ClearColor[0]);
 	glDisablei(GL_SCISSOR_TEST, 0);
 
@@ -234,7 +234,7 @@ void renderScene
 	glBindSampler(0, SamplerName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("renderScene");
 }

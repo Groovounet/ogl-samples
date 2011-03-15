@@ -272,7 +272,7 @@ void renderScene
 	glBindSampler(0, SamplerName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("renderScene");
 }
@@ -288,7 +288,7 @@ void display()
 	glProgramUniformMatrix4fv(ProgramName[PROGRAM_BLUR], UniformMVP[PROGRAM_BLUR], 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniformMatrix4fv(ProgramName[PROGRAM_DRAW], UniformMVP[PROGRAM_DRAW], 1, GL_FALSE, &MVP[0][0]);
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glUseProgram(ProgramName[PROGRAM_BLUR]);

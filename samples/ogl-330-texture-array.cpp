@@ -235,12 +235,10 @@ void display()
 	glm::mat4 MVP = Projection * View * Model;
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind the program for use
 	glUseProgram(ProgramName);
-
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformDiffuse, 0);
 

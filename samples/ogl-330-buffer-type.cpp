@@ -218,24 +218,15 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
-	// Bind program
 	glUseProgram(ProgramName);
-
 	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	for(std::size_t Index = 0; Index < BUFFER_MAX; ++Index)
 	{
-		// Set the display viewport
-		glViewport(
-			Viewport[Index].x, 
-			Viewport[Index].y, 
-			Viewport[Index].z, 
-			Viewport[Index].w);
+		glViewport(Viewport[Index].x, Viewport[Index].y, Viewport[Index].z, Viewport[Index].w);
 
 		glBindVertexArray(VertexArrayName[Index]);
 		glDrawArrays(GL_TRIANGLES, 0, VertexCount);

@@ -193,12 +193,8 @@ void display()
 	glBufferSubData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform, sizeof(glm::vec4), &Diffuse[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-
-	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);

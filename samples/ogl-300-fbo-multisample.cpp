@@ -105,7 +105,7 @@ bool initProgram()
 		glUseProgram(ProgramName);
 
 		// Set uniform value
-		glUniform1i(UniformDiffuse, 0);
+		
 
 		// Unbind the program
 		glUseProgram(0);
@@ -283,10 +283,10 @@ void display()
 {
 	// Clear the framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
+	glUniform1i(UniformDiffuse, 0);
 
 	// Pass 1
 	// Render the scene in a multisampled framebuffer

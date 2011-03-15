@@ -148,16 +148,14 @@ void display()
 
 	glEnable(GL_SCISSOR_TEST);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glScissor(0, 0, Window.Size.x, Window.Size.y);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	renderScene(MVP);
 
-	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 	glScissor(64, 48, 160, 120);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	glViewport(64, 48, 160, 120);
 	renderScene(MVP);

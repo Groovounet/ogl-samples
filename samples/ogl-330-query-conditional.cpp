@@ -153,8 +153,7 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// Bind program
 	glUseProgram(ProgramName);
@@ -173,7 +172,7 @@ void display()
 	// Beginning of the samples count query
 	glBeginQuery(GL_ANY_SAMPLES_PASSED, QueryName);
 		// To test the condional rendering, comment this line, the next draw call won't happen.
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	// End of the samples count query
 	glEndQuery(GL_ANY_SAMPLES_PASSED);
 
@@ -186,7 +185,7 @@ void display()
 	// Draw only if one sample went through the tests, 
 	// we don't need to get the query result which prevent the rendering pipeline to stall.
 	glBeginConditionalRender(QueryName, GL_QUERY_WAIT);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	glEndConditionalRender();
 	
 	glf::checkError("display");

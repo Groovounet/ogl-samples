@@ -218,14 +218,9 @@ void display()
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
-	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Bind program
 	glUseProgram(ProgramName);
 	glUniformBlockBinding(ProgramName, UniformTransform[0], glf::semantic::uniform::TRANSFORM0);
 	glUniformBlockBinding(ProgramName, UniformTransform[1], glf::semantic::uniform::TRANSFORM1);
@@ -234,7 +229,6 @@ void display()
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
 	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 2);
 
 	glf::checkError("display");

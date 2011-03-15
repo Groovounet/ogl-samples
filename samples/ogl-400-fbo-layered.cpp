@@ -206,7 +206,6 @@ bool initVertexArray()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
-
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -297,7 +296,7 @@ void display()
 
 		for(int i = 0; i < 4; ++i)
 		{
-			glUniform1i(UniformLayer, i);
+			glUniform1i(ProgramName[IMAGE_2D], UniformLayer, i);
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 		}

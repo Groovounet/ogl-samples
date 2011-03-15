@@ -190,18 +190,19 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
-	glUseProgram(ProgramName);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName, UniformImageData, 0);
 	glProgramUniform2uiv(ProgramName, UniformImageSize, 1, &ImageSize[0]);
 
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
+	glUseProgram(ProgramName);
+
 	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
 	glBindVertexArray(VertexArrayName);
 
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::swapBuffers();
 }

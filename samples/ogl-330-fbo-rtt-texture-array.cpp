@@ -222,8 +222,6 @@ bool initVertexArray()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
-
-	// Parameters part of the sampler object:
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -235,7 +233,6 @@ bool initSampler()
 	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	
 	glBindSampler(0, SamplerName);
 
 	return glf::checkError("initSampler");
@@ -291,14 +288,13 @@ void display()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		glUseProgram(ProgramNameMultiple);
 		glUniformMatrix4fv(UniformMVPMultiple, 1, GL_FALSE, &MVP[0][0]);
 
 		glBindVertexArray(VertexArrayMultipleName);
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	// Pass 2
@@ -310,8 +306,7 @@ void display()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, Window.Size.x, Window.Size.y);
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		glUseProgram(ProgramNameSingle);
 		glUniformMatrix4fv(UniformMVPSingle, 1, GL_FALSE, &MVP[0][0]);
@@ -328,7 +323,7 @@ void display()
 		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 		glUniform1i(UniformLayer, GLint(i));
 
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	glf::checkError("display");

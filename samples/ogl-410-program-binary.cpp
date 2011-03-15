@@ -227,10 +227,7 @@ void display()
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
 
-	// Set the display viewport
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
-
-	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	glUseProgram(ProgramName);

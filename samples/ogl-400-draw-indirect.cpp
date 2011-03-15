@@ -171,7 +171,6 @@ bool end()
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
@@ -179,22 +178,16 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
-
-	// Clear color buffer with black
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	// Bind program
 	glUseProgram(ProgramName);
-
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform4fv(UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName); //!\ Need to be called after glBindVertexArray...
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
-
 	glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0);
 
 	glf::checkError("display");

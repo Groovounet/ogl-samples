@@ -102,19 +102,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		glUniform1i(UniformDiffuse, 0);
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return glf::checkError("initProgram");
 }
 
@@ -237,12 +224,10 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind the program for use
 	glUseProgram(ProgramName);
-
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformDiffuse, 0);
 
@@ -253,15 +238,9 @@ void display()
 
 	for(std::size_t Index = 0; Index < viewport::MAX; ++Index)
 	{
-		glViewport(
-			Viewport[Index].x, 
-			Viewport[Index].y, 
-			Viewport[Index].z, 
-			Viewport[Index].w);
-
+		glViewport(Viewport[Index].x, Viewport[Index].y, Viewport[Index].z, Viewport[Index].w);
 		glBindSampler(0, SamplerName[Index]);
-
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	glf::checkError("display");

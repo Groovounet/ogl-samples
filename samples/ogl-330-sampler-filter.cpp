@@ -230,12 +230,10 @@ void display()
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glScissor(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind the program for use
 	glUseProgram(ProgramName);
-
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindSampler(0, SamplerName[0]);
@@ -257,14 +255,8 @@ void display()
 	for(std::size_t Index = 0; Index < viewport::MAX; ++Index)
 	{
 		glUniform1i(UniformDiffuse, Index);
-
-		glScissor(
-			Viewport[Index].x, 
-			Viewport[Index].y, 
-			Viewport[Index].z, 
-			Viewport[Index].w);
-
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glScissor(Viewport[Index].x, Viewport[Index].y, Viewport[Index].z, Viewport[Index].w);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	glf::checkError("display");
