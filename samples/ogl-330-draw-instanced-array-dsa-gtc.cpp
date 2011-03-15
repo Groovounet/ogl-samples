@@ -51,6 +51,9 @@ namespace
 	GLuint PositionBufferName = 0;
 	GLuint ColorBufferName = 0;
 	GLint UniformMVP = 0;
+
+	typedef void (GLAPIENTRY * PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC) (GLuint VertexArray, GLuint index, GLuint divisor);
+	PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC glVertexArrayVertexAttribDivisorGTC = 0;
 }//namespace
 
 bool initTest()
@@ -108,26 +111,34 @@ bool initArrayBuffer()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
-    glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, PositionBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, ColorBufferName);
-		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, PositionBufferName, glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexArrayVertexAttribDivisorGTC(VertexArrayName, glf::semantic::attr::POSITION, 0);
+	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, ColorBufferName, glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexArrayVertexAttribDivisorGTC(VertexArrayName, glf::semantic::attr::COLOR, 1);
 
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
-	glBindVertexArray(0);
+	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
+	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::COLOR);
 
 	return glf::checkError("initVertexArray");
 }
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisor");
+	if(!glVertexArrayVertexAttribDivisorGTC)
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorARB");
+	else if(!glVertexArrayVertexAttribDivisorGTC)
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorEXT");
+	else if(!glVertexArrayVertexAttribDivisorGTC)
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorNV");
+	else if(!glVertexArrayVertexAttribDivisorGTC)
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorAMD");
+
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && (glVertexArrayVertexAttribDivisorGTC != 0);
 
 	if(Validated)
 		Validated = initTest();
