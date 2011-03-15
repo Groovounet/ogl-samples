@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Primitive instancing
-// 17/08/2010
+// 17/08/2010 - 15/03/2011
 //**********************************
 // Christophe Riccio
 // g.truc.creation@gmail.com
