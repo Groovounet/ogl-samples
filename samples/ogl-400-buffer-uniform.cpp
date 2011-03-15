@@ -232,7 +232,6 @@ void display()
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 2, 0);
 
 	glf::checkError("display");
