@@ -78,7 +78,6 @@ bool initProgram()
 	glGenProgramPipelines(1, &PipelineName);
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
-	glf::checkError("initProgram 3");
 
 	// Create program
 	if(Validated)
@@ -86,11 +85,9 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-		glf::checkError("initProgram 4");
 
 		ProgramName[program::VERT] = glCreateProgram();
 		ProgramName[program::FRAG] = glCreateProgram();
-		glf::checkError("initProgram 5");
 
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], GeomShaderName);
@@ -98,23 +95,20 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
+
 		glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glLinkProgram(ProgramName[program::VERT]);
 		glLinkProgram(ProgramName[program::FRAG]);
-		glf::checkError("initProgram 6");
 
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
 		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
-		Validated = Validated && glf::checkError("initProgram 7");
 	}
 
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
-		glf::checkError("initProgram 8 a");
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
-		glf::checkError("initProgram 8");
 	}
 
 	// Get variables locations
@@ -122,7 +116,6 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAG], "Diffuse");
-		glf::checkError("initProgram 9");
 	}
 
 	return Validated && glf::checkError("initProgram");
