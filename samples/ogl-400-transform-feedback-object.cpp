@@ -206,8 +206,12 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(TransformProgramName, TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform4fv(TransformProgramName, TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
+	glProgramUniform4fv(FeedbackProgramName, FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 	// Clear color buffer
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
@@ -217,8 +221,6 @@ void display()
 	glEnable(GL_RASTERIZER_DISCARD);
 
 	glUseProgram(TransformProgramName);
-	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	glBindVertexArray(TransformVertexArrayName);
 
@@ -232,7 +234,6 @@ void display()
 
 	// Second draw, reuse the captured attributes
 	glUseProgram(FeedbackProgramName);
-	glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);

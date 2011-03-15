@@ -270,7 +270,6 @@ bool initVertexArray()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
-
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -332,34 +331,25 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
 
-	// Bind the program for use
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
 	glUseProgram(ProgramName);
-
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuse, 0);
 
 	glBindVertexArray(VertexArrayName);
 
 	glBindSampler(0, SamplerName);
-	glActiveTexture(GL_TEXTURE0);
 	for(std::size_t Index = 0; Index < TEXTURE_MAX; ++Index)
 	{
-		glViewport(
-			Viewport[Index].x, 
-			Viewport[Index].y, 
-			Viewport[Index].z, 
-			Viewport[Index].w);
+		glViewportIndexedfv(0, &glm::vec4(Viewport[Index])[0]);
 
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[Index]);
 
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glf::checkError("display");
 	glf::swapBuffers();

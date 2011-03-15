@@ -170,12 +170,9 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -219,6 +216,10 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDisplacement, 0);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 1);
+
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
@@ -230,10 +231,6 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDisplacement, 0);
-	glUniform1i(UniformDiffuse, 1);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DISPLACEMENT]);
 
@@ -241,6 +238,8 @@ void display()
 	glBindTexture(GL_TEXTURE_BUFFER, TextureName[TEXTURE_DIFFUSE]);
 
     glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
+
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 5, 0);
 	
 	glf::checkError("display");

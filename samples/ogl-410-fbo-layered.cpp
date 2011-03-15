@@ -262,13 +262,16 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName[LAYERING], UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[VIEWPORT], UniformMVP[VIEWPORT], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[VIEWPORT], UniformDiffuse, 0);
+
 	// Pass 1
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewportIndexedfv(0, &glm::vec4(0, 0, FRAMEBUFFER_SIZE)[0]);
 
 		glUseProgram(ProgramName[LAYERING]);
-		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
@@ -287,8 +290,6 @@ void display()
 		glViewportIndexedfv(3, &glm::vec4(Border, (Window.Size.y >> 1) + Border, Window.Size / 2 - 2 * Border)[0]);
 
 		glUseProgram(ProgramName[VIEWPORT]);
-		glUniformMatrix4fv(UniformMVP[VIEWPORT], 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuse, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
