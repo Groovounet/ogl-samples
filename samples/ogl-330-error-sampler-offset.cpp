@@ -73,7 +73,7 @@ namespace
 	GLint UniformMVP[program::MAX];
 	GLint UniformDiffuse[program::MAX];
 	GLint UniformOffset;
-	glm::vec4 Viewport[program::MAX];
+	glm::ivec4 Viewport[program::MAX];
 
 	GLuint BufferName[buffer::MAX];
 	GLuint Image2DName(0);
@@ -222,7 +222,7 @@ void display()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
 	glUseProgram(ProgramName[program::OFFSET]);
-	glUniform2iv(ProgramName[program::OFFSET], UniformOffset, 1, &glm::ivec2(63, 107)[0]);
+	glUniform2iv(UniformOffset, 1, &glm::ivec2(63, 107)[0]);
 
 	for(std::size_t i = 0; i < program::MAX; ++i)
 	{

@@ -296,7 +296,7 @@ void display()
 
 		for(int i = 0; i < 4; ++i)
 		{
-			glUniform1i(ProgramName[IMAGE_2D], UniformLayer, i);
+			glUniform1i(UniformLayer, i);
 			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 		}

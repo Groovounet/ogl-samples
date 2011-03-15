@@ -248,7 +248,7 @@ void display()
 		glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);
 
 		glBindVertexArray(FeedbackVertexArrayName);
-		glDrawArrays(GL_TRIANGLES, 0, PrimitivesWritten * 3);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, PrimitivesWritten * 3, 1);
 	}
 
 	glf::swapBuffers();
