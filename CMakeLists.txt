@@ -57,7 +57,7 @@ endif(NOT OPENGL_FOUND)
 
 addExternalPackageGTC("GLEW" "glew-1.5.8")
 addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
-addExternalPackageGTC("GLM" "glm-0.9.1.0")
+addExternalPackageGTC("GLM" "glm-0.9.1.1")
 addExternalPackageGTC("GLI" "gli-0.3.0.2")
 
 ################################
