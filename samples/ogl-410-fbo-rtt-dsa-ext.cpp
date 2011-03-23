@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

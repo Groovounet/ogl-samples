@@ -16,8 +16,8 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Texture barrier";
 	std::string const VERT_SHADER_SOURCE_BLUR(glf::DATA_DIRECTORY + "410/texture-barrier-nv.vert");
 	std::string const FRAG_SHADER_SOURCE_BLUR(glf::DATA_DIRECTORY + "410/texture-barrier-nv.frag");
-	std::string const VERT_SHADER_SOURCE_DRAW(glf::DATA_DIRECTORY + "410/image-2d.vert");
-	std::string const FRAG_SHADER_SOURCE_DRAW(glf::DATA_DIRECTORY + "410/image-2d.frag");
+	std::string const VERT_SHADER_SOURCE_DRAW(glf::DATA_DIRECTORY + "410/texture-2d.vert");
+	std::string const FRAG_SHADER_SOURCE_DRAW(glf::DATA_DIRECTORY + "410/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken640-rgb8.dds");
 	glm::ivec2 FRAMEBUFFER_SIZE(0);
 	int const SAMPLE_SIZE_WIDTH = 640;
