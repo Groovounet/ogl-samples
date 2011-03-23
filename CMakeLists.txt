@@ -3,27 +3,6 @@ cmake_policy(VERSION 2.6)
 
 project(ogl-samples-pack)
 
-################################
-# Setup binary directory
-
-if(MSVC AND NOT CMAKE_CL_64)
-	if(MSVC_VERSION EQUAL 1500)
-		set(BINARY_DIRECTORY "win32-vc2008")
-	endif(MSVC_VERSION EQUAL 1500)	
-	if(MSVC_VERSION EQUAL 1600)
-		set(BINARY_DIRECTORY "win32-vc2010")
-	endif(MSVC_VERSION EQUAL 1600)
-endif(MSVC AND NOT CMAKE_CL_64)
-
-if(MSVC AND CMAKE_CL_64)
-	if(MSVC_VERSION EQUAL 1500)
-		set(BINARY_DIRECTORY "win64-vc2008")
-	endif(MSVC_VERSION EQUAL 1500)	
-	if(MSVC_VERSION EQUAL 1600)
-		set(BINARY_DIRECTORY "win64-vc2010")
-	endif(MSVC_VERSION EQUAL 1600)
-endif(MSVC AND CMAKE_CL_64)
-
 #CMAKE_BUILD_TOOL
 
 ################################
@@ -54,6 +33,11 @@ endif(NOT OPENGL_FOUND)
 
 ################################
 # Add External package
+
+#addExternalPackageGTC("GLEW" "glew-1.5.7")
+#addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
+#addExternalPackageGTC("GLM" "glm-0.9.0.6")
+#addExternalPackageGTC("GLI" "gli-0.3.0.1")
 
 addExternalPackageGTC("GLEW" "glew-1.5.8")
 addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
