@@ -97,7 +97,9 @@ bool initProgram()
 bool initArrayBuffer()
 {
 	glGenBuffers(1, &BufferName);
-	glNamedBufferDataEXT(BufferName, VertexSize, VertexData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
 }
