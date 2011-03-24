@@ -229,7 +229,10 @@ bool begin()
 	Viewport[2] = glm::ivec4((Window.Size.x >> 1) + Border, (Window.Size.y >> 1) + Border, FRAMEBUFFER_SIZE - 2 * Border);
 	Viewport[3] = glm::ivec4(Border, (Window.Size.y >> 1) + Border, FRAMEBUFFER_SIZE - 2 * Border);
 
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	if(Validated)
 		Validated = initProgram();
@@ -267,18 +270,20 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName[LAYERING], UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[IMAGE_2D], UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[IMAGE_2D], UniformDiffuse, 0);
+
 	// Pass 1
 	{
 		glBindSampler(0, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		glViewportIndexedf(0, 0, 0, float(FRAMEBUFFER_SIZE.x), float(FRAMEBUFFER_SIZE.y));
 
 		glUseProgram(ProgramName[LAYERING]);
-		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
@@ -287,8 +292,6 @@ void display()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		glUseProgram(ProgramName[IMAGE_2D]);
-		glUniformMatrix4fv(UniformMVP[IMAGE_2D], 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuse, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, TextureColorbufferName);
@@ -299,9 +302,8 @@ void display()
 
 		for(int i = 0; i < 4; ++i)
 		{
-			glUniform1i(UniformLayer, i);
-			glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-
+			glProgramUniform1i(ProgramName[IMAGE_2D], UniformLayer, i);
+			glViewportIndexedfv(0, &glm::vec4(Viewport[i])[0]);
 			glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 		}
 	}

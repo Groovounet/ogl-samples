@@ -171,7 +171,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	int const Border(1);
 	glm::ivec2 const ViewportSize = Window.Size / 2 - Border * 2;
@@ -212,7 +215,7 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -221,16 +224,15 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
-	glUseProgram(ProgramName[program::OFFSET]);
-	glUniform2iv(UniformOffset, 1, &glm::ivec2(63, 107)[0]);
+	glProgramUniform2iv(ProgramName[program::OFFSET], UniformOffset, 1, &glm::ivec2(63, 107)[0]);
 
 	for(std::size_t i = 0; i < program::MAX; ++i)
 	{
 		glUseProgram(ProgramName[i]);
-		glUniformMatrix4fv(UniformMVP[i], 1, GL_FALSE, &MVP[0][0]);
-		glUniform1i(UniformDiffuse[i], 0);
+		glProgramUniformMatrix4fv(ProgramName[i], UniformMVP[i], 1, GL_FALSE, &MVP[0][0]);
+		glProgramUniform1i(ProgramName[i], UniformDiffuse[i], 0);
 
-		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
+		glViewportIndexedfv(0, &glm::vec4(Viewport[i])[0]);
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 	}

@@ -137,6 +137,8 @@ bool begin()
 
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 	Validated = Validated && (glVertexArrayVertexAttribDivisorGTC != 0);
 
@@ -172,14 +174,15 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	float Depth(1.0f);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, InstanceCount);

@@ -217,7 +217,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	if(Validated)
 		Validated = initProgram();
@@ -260,11 +263,12 @@ void renderFBO(GLuint Framebuffer)
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
 
-	glUseProgram(ProgramName[program::THROUGH]);
-	glUniform1i(UniformDiffuse[program::THROUGH], 0);
-	glUniformMatrix4fv(UniformMVP[program::THROUGH], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[program::THROUGH], UniformDiffuse[program::THROUGH], 0);
+	glProgramUniformMatrix4fv(ProgramName[program::THROUGH], UniformMVP[program::THROUGH], 1, GL_FALSE, &MVP[0][0]);
 
-	glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	glUseProgram(ProgramName[program::THROUGH]);
+
+	glViewportIndexedf(0, 0, 0, float(FRAMEBUFFER_SIZE.x), float(FRAMEBUFFER_SIZE.y));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
@@ -289,7 +293,12 @@ void resolveMultisampling()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glProgramUniform1i(ProgramName[program::RESOLVE_BOX], UniformDiffuse[program::RESOLVE_BOX], 0);
+	glProgramUniformMatrix4fv(ProgramName[program::RESOLVE_BOX], UniformMVP[program::RESOLVE_BOX], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[program::RESOLVE_NEAR], UniformDiffuse[program::RESOLVE_NEAR], 0);
+	glProgramUniformMatrix4fv(ProgramName[program::RESOLVE_NEAR], UniformMVP[program::RESOLVE_NEAR], 1, GL_FALSE, &MVP[0][0]);
+
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -302,24 +311,16 @@ void resolveMultisampling()
 
 	// Box
 	{
-		glScissor(1, 1, Window.Size.x  / 2 - 2, Window.Size.y - 2);
-
+		glScissorIndexed(0, 1, 1, Window.Size.x  / 2 - 2, Window.Size.y - 2);
 		glUseProgram(ProgramName[program::RESOLVE_BOX]);
-		glUniform1i(UniformDiffuse[program::RESOLVE_BOX], 0);
-		glUniformMatrix4fv(UniformMVP[program::RESOLVE_BOX], 1, GL_FALSE, &MVP[0][0]);
-
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	// Near
 	{
-		glScissor(Window.Size.x / 2 + 1, 1, Window.Size.x / 2 - 2, Window.Size.y - 2);
-
+		glScissorIndexed(0, Window.Size.x / 2 + 1, 1, Window.Size.x / 2 - 2, Window.Size.y - 2);
 		glUseProgram(ProgramName[program::RESOLVE_NEAR]);
-		glUniform1i(UniformDiffuse[program::RESOLVE_NEAR], 0);
-		glUniformMatrix4fv(UniformMVP[program::RESOLVE_NEAR], 1, GL_FALSE, &MVP[0][0]);
-
-		glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
 	glDisable(GL_SCISSOR_TEST);

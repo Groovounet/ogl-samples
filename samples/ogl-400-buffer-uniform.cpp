@@ -220,7 +220,7 @@ void display()
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// Bind program

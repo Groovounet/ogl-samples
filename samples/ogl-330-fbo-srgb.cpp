@@ -110,8 +110,6 @@ bool initArrayBuffer()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerName);
-
-	// Parameters part of the sampler object:
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -124,8 +122,6 @@ bool initSampler()
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	
-	glBindSampler(0, SamplerName);
-
 	return glf::checkError("initSampler");
 }
 
@@ -194,7 +190,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	if(Validated)
 		Validated = initProgram();
@@ -227,23 +226,23 @@ bool end()
 
 void renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Texture2DName)
 {
-	// Bind the program for use
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+
 	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuse, 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glBindSampler(0, SamplerName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("renderScene");
 }
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
@@ -251,15 +250,14 @@ void display()
 
 	glEnable(GL_SCISSOR_TEST);
 	glDisable(GL_FRAMEBUFFER_SRGB);
-	glScissor(0, 0, Window.Size.x, Window.Size.y);
-	glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glScissorIndexed(0, 0, 0, Window.Size.x, Window.Size.y);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	{
 		glm::mat4 Projection = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / float(FRAMEBUFFER_SIZE.y), 0.1f, 100.0f);
 		glm::mat4 MVP = Projection * View * Model;
 
-		glViewport(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+		glViewportIndexedf(0, 0, 0, float(FRAMEBUFFER_SIZE.x), float(FRAMEBUFFER_SIZE.y));
 		glDisable(GL_FRAMEBUFFER_SRGB);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
@@ -272,16 +270,16 @@ void display()
 		glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / float(Window.Size.y), 0.1f, 100.0f);
 		glm::mat4 MVP = Projection * View * Model;
 
-		glViewport(0, 0, Window.Size.x, Window.Size.y);
+		glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 
 		// Correct display
-		glScissor(0, Window.Size.y / 2 - 1, Window.Size.x, Window.Size.y / 2);
+		glScissorIndexed(0, 0, Window.Size.y / 2 - 1, Window.Size.x, Window.Size.y / 2);
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
 		glDisable(GL_FRAMEBUFFER_SRGB);
 
 		// Incorrected display
-		glScissor(0, 0, Window.Size.x, Window.Size.y / 2);
+		glScissorIndexed(0, 0, 0, Window.Size.x, Window.Size.y / 2);
 		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
 	}
 

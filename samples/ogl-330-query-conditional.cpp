@@ -149,8 +149,15 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	// Set the value of MVP uniform.
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	// Set uniform value
+	glProgramUniform4fv(ProgramName, UniformColor, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
+	// Set uniform value
+	glProgramUniform4fv(ProgramName, UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
@@ -158,16 +165,10 @@ void display()
 	// Bind program
 	glUseProgram(ProgramName);
 
-	// Set the value of MVP uniform.
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-
 	glBindVertexArray(VertexArrayName);
 	
 	// The first orange quad is not written in the framebuffer.
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-	// Set uniform value
-	glUniform4fv(UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glColorMaski(0, GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	// Beginning of the samples count query
 	glBeginQuery(GL_ANY_SAMPLES_PASSED, QueryName);
@@ -177,11 +178,8 @@ void display()
 	glEndQuery(GL_ANY_SAMPLES_PASSED);
 
 	// The second blue quad is written in the framebuffer only if a sample pass the occlusion query.
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glColorMaski(0, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	
-	// Set uniform value
-	glUniform4fv(UniformColor, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
-
 	// Draw only if one sample went through the tests, 
 	// we don't need to get the query result which prevent the rendering pipeline to stall.
 	glBeginConditionalRender(QueryName, GL_QUERY_WAIT);

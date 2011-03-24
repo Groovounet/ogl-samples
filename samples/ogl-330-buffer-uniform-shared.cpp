@@ -134,20 +134,20 @@ bool initUniformBuffer()
 	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
 	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_READ);
 
-	glf::checkError("initUniformBuffer 7");
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, UniformBlockSizeTransform);
-	glf::checkError("initUniformBuffer 8");
 	// Attach the buffer to UBO binding point glf::semantic::uniform::MATERIAL
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, UniformBufferName, UniformBlockSizeTransform, UniformBlockSizeMaterial);
-	glf::checkError("initUniformBuffer 9");
 
 	return glf::checkError("initUniformBuffer");
 }
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	glGetIntegerv(
 		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
@@ -193,7 +193,7 @@ void display()
 	glBufferSubData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform, sizeof(glm::vec4), &Diffuse[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// Bind program
@@ -204,7 +204,6 @@ void display()
 	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("display");

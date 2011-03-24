@@ -228,7 +228,7 @@ void display()
 		glUniformMatrix4fv(UniformMVP[i], 1, GL_FALSE, &MVP[0][0]);
 		glUniform1i(UniformDiffuse[i], 0);
 
-		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
+		glViewportIndexedfv(0, &glm::vec4(Viewport[i])[0]);
 
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 	}

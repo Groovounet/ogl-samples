@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Texture image";
+	std::string const SAMPLE_NAME("OpenGL Texture image");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
@@ -202,8 +202,8 @@ void display()
 	glUseProgram(ProgramName);
 
 	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
-	glBindVertexArray(VertexArrayName);
 
+	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::swapBuffers();

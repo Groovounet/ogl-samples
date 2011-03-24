@@ -188,9 +188,12 @@ void display()
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
+	
+	glProgramUniformMatrix4fv(ProgramName[0], UniformMVP[0], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[1], UniformMVP[1], 1, GL_FALSE, &MVP[0][0]);
 
 	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	// Clear color buffer with black
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
@@ -200,15 +203,13 @@ void display()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
 	// Left side
-	glViewport(0, 0, Window.Size.x / 2, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x / 2), float(Window.Size.y));
 	glUseProgram(ProgramName[0]);
-	glUniformMatrix4fv(UniformMVP[0], 1, GL_FALSE, &MVP[0][0]);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	
 	// Right side
-	glViewport(Window.Size.x / 2, 0, Window.Size.x / 2, Window.Size.y);
+	glViewportIndexedf(0, float(Window.Size.x / 2), 0, float(Window.Size.x / 2), float(Window.Size.y));
 	glUseProgram(ProgramName[1]);
-	glUniformMatrix4fv(UniformMVP[1], 1, GL_FALSE, &MVP[0][0]);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	
 	glf::checkError("display");
