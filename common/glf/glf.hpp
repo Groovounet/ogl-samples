@@ -1,6 +1,8 @@
 #ifndef GLF_WINDOW_INCLUDED
 #define GLF_WINDOW_INCLUDED
 
+//#pragma warning(disable : once)
+
 // OpenGL
 #ifdef WIN32
 #	include <GL/glew.h>
