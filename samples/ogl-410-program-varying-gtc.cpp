@@ -66,17 +66,12 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
-	glBindProgramPipeline(0);
-
 	if(Validated)
 	{
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShaderName);
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
@@ -84,9 +79,6 @@ bool initProgram()
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
-
-	if(Validated)
-		glUseProgramStages(PipelineName, GL_ALL_SHADER_BITS, ProgramName);
 
 	// Get variables locations
 	if(Validated)
@@ -187,7 +179,6 @@ bool end()
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteProgram(ProgramName);
-	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -209,7 +200,7 @@ void display()
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glBindProgramPipeline(PipelineName);
+	glUseProgram(ProgramName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
