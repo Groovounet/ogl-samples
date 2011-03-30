@@ -76,9 +76,9 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
-	glBindProgramPipeline(0);
+	//glGenProgramPipelines(1, &PipelineName);
+	//glBindProgramPipeline(PipelineName);
+	//glBindProgramPipeline(0);
 
 	if(Validated)
 	{
@@ -86,7 +86,7 @@ bool initProgram()
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
+		//glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, FragmentShader);
 		glDeleteShader(VertexShader);
@@ -95,11 +95,11 @@ bool initProgram()
 		Validated = glf::checkProgram(ProgramName);
 	}
 
-	if(Validated)
-	{
-		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
-		Validated = Validated && glf::checkError("initProgram - stage");
-	}
+	//if(Validated)
+	//{
+	//	glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
+	//	Validated = Validated && glf::checkError("initProgram - stage");
+	//}
 
 	if(Validated)
 	{
@@ -231,7 +231,8 @@ void display()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glBindProgramPipeline(PipelineName);
+	//glBindProgramPipeline(PipelineName);
+	glUseProgram(ProgramName);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
