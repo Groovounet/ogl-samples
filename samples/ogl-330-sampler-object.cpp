@@ -69,7 +69,8 @@ namespace
 
 	GLuint BufferName = 0;
 	GLuint Image2DName = 0;
-	GLuint SamplerName = 0;
+	GLuint SamplerAName = 0;
+	GLuint SamplerBName = 0;
 
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
@@ -118,18 +119,31 @@ bool initArrayBuffer()
 
 bool initSampler()
 {
-	glGenSamplers(1, &SamplerName);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glGenSamplers(1, &SamplerAName);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerAName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerAName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerAName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerAName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	glGenSamplers(1, &SamplerBName);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glSamplerParameterfv(SamplerBName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
+	glSamplerParameterf(SamplerBName, GL_TEXTURE_MIN_LOD, -1000.f);
+	glSamplerParameterf(SamplerBName, GL_TEXTURE_MAX_LOD, 1000.f);
+	glSamplerParameterf(SamplerBName, GL_TEXTURE_LOD_BIAS, 0.0f);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
 	return glf::checkError("initSampler");
 }
@@ -142,8 +156,6 @@ bool initTexture2D()
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 
 	// Parameters that remains texture parameters:
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // AMD Bug 10.10c
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
@@ -210,7 +222,8 @@ bool end()
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &Image2DName);
-	glDeleteSamplers(1, &SamplerName);
+	glDeleteSamplers(1, &SamplerAName);
+	glDeleteSamplers(1, &SamplerBName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
 	return glf::checkError("end");
@@ -232,11 +245,12 @@ void display()
 	// Bind the program for use
 	glUseProgram(ProgramName);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuse, 0);
+	glUniform1i(UniformDiffuse, 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
-	glBindSampler(0, SamplerName);
+	glBindSampler(0, SamplerAName);
+	glBindSampler(1, SamplerBName);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);

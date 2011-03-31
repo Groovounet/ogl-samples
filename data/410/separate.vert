@@ -11,22 +11,21 @@ struct vertex
 	vec3 Color;
 };
 
-struct gl_PerVertex
-{
-	vec4 gl_Position;
-};
-
 uniform mat4 MVP;
 
 layout(location = ATTR_POSITION) in vec2 Position;
 layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 
 out vertex Vertex;
-out gl_PerVertex Fixed;
+
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
 
 void main()
 {	
-	Fixed.gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 	Vertex.Texcoord = Texcoord;
 	Vertex.Color = vec3(1.0, 0.9, 0.8);
 }
