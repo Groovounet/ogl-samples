@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Programmable trilinear filtering";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/fetch.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/fetch.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/fetch.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/fetch.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
@@ -68,6 +68,7 @@ namespace
 	}//namespace buffer
 
 	GLuint VertexArrayName(0);
+	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 
 	GLuint BufferName[buffer::MAX] = {0, 0};
@@ -82,22 +83,28 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName);
 		Validated = Validated && glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
@@ -189,6 +196,7 @@ bool end()
 	glDeleteTextures(1, &TextureName);
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -209,7 +217,7 @@ void display()
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName);
 
 	glBindVertexArray(VertexArrayName);

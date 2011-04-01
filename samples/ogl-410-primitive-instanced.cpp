@@ -123,7 +123,6 @@ bool initProgram()
 
 bool initVertexArray()
 {
-	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
@@ -173,6 +172,7 @@ bool end()
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteProgram(ProgramName[program::VERT]);
 	glDeleteProgram(ProgramName[program::FRAG]);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }

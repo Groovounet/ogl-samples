@@ -21,10 +21,10 @@ namespace
 	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "410/viewport.geom");
 	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "410/viewport.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -275,7 +275,6 @@ void display()
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
@@ -297,7 +296,6 @@ void display()
 
 		glBindVertexArray(VertexArrayName[VIEWPORT]);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 

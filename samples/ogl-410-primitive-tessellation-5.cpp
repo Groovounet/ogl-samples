@@ -149,6 +149,7 @@ bool begin()
 
 bool end()
 {
+	glDeleteProgramPipelines(1, &PipelineName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
 	for(std::size_t i = 0; i < program::MAX; ++i)

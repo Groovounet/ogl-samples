@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -76,19 +76,27 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+
 	if(Validated)
 	{
-		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE);
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShader);
-		glAttachShader(ProgramName, FragmentShader);
-		glDeleteShader(VertexShader);
-		glDeleteShader(FragmentShader);
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName, VertShader);
+		glAttachShader(ProgramName, FragShader);
+		glDeleteShader(VertShader);
+		glDeleteShader(FragShader);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 
 	if(Validated)
 	{
@@ -220,7 +228,7 @@ void display()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);

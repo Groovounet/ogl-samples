@@ -54,6 +54,7 @@ namespace
 	}//namespace buffer
 
 	GLuint ProgramName(0);
+	GLuint PipelineName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
 	GLint UniformMVP(0);
@@ -80,7 +81,13 @@ bool initProgram()
 	bool Validated = true;
 	GLint Success = 0;
 
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+
 	ProgramName = glCreateProgram();
+	glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
+	glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
 	{
 		GLenum Format = 0;
@@ -89,7 +96,6 @@ bool initProgram()
 		if(glf::loadBinary(PROGRAM_BINARY, Format, Data, Size))
 		{
 			glProgramBinary(ProgramName, Format, &Data[0], Size);
-			glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 			glGetProgramiv(ProgramName, GL_LINK_STATUS, &Success);
 		}
 	}
@@ -104,10 +110,14 @@ bool initProgram()
 		glAttachShader(ProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
-
-		glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		Validated = Validated && glf::checkProgram(ProgramName);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	// Get variables locations
