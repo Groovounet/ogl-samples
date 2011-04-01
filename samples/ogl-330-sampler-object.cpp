@@ -250,6 +250,9 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Image2DName);
 	glBindSampler(0, SamplerAName);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, Image2DName);
 	glBindSampler(1, SamplerBName);
 
 	glBindVertexArray(VertexArrayName);
