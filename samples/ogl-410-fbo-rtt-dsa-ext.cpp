@@ -76,17 +76,12 @@ bool initProgram()
 {
 	bool Validated = true;
 
-	//glGenProgramPipelines(1, &PipelineName);
-	//glBindProgramPipeline(PipelineName);
-	//glBindProgramPipeline(0);
-
 	if(Validated)
 	{
 		GLuint VertexShader = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragmentShader = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		//glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertexShader);
 		glAttachShader(ProgramName, FragmentShader);
 		glDeleteShader(VertexShader);
@@ -94,12 +89,6 @@ bool initProgram()
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
-
-	//if(Validated)
-	//{
-	//	glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT | GL_VERTEX_SHADER_BIT, ProgramName);
-	//	Validated = Validated && glf::checkError("initProgram - stage");
-	//}
 
 	if(Validated)
 	{
@@ -224,14 +213,13 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fvEXT(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1iEXT(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT)[0]);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	//glBindProgramPipeline(PipelineName);
 	glUseProgram(ProgramName);
 
 	glBindVertexArray(VertexArrayName);

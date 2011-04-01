@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Tessellation
+// OpenGL Tessellation Pipeline
 // 14/05/2010 - 21/09/2010
 //**********************************
 // Christophe Riccio
@@ -13,16 +13,16 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Tessellation";	
-	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
-	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
-	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
-	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
-	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	std::string const SAMPLE_NAME = "OpenGL Tessellation Pipeline";	
+	std::string const SAMPLE_VERT_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
+	std::string const SAMPLE_CONT_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
+	std::string const SAMPLE_EVAL_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
+	std::string const SAMPLE_GEOM_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
+	std::string const SAMPLE_FRAG_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -68,11 +68,11 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint ShaderName[] = {
-			glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER),
-			glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER),
-			glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER),
-			glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER),
-			glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER)};
+			glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER),
+			glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONT_SHADER),
+			glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVAL_SHADER),
+			glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER),
+			glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER)};
 
 		for(std::size_t i = 0; i < program::MAX; ++i)
 		{

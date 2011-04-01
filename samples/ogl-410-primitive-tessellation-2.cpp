@@ -14,19 +14,19 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Tessellation Pipeline";	
-	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
-	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
-	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
-	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
-	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	std::string const SAMPLE_VERT_SHADER(glf::DATA_DIRECTORY + "410/tess.vert");
+	std::string const SAMPLE_CONT_SHADER(glf::DATA_DIRECTORY + "410/tess.cont");
+	std::string const SAMPLE_EVAL_SHADER(glf::DATA_DIRECTORY + "410/tess.eval");
+	std::string const SAMPLE_GEOM_SHADER(glf::DATA_DIRECTORY + "410/tess.geom");
+	std::string const SAMPLE_FRAG_SHADER(glf::DATA_DIRECTORY + "410/tess.frag");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fc4f);
 	glf::vertex_v2fc4f const VertexData[VertexCount] =
 	{
@@ -61,14 +61,12 @@ bool initProgram()
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
 
-	// Create program
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
-		GLuint ContShaderName = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
-		GLuint EvalShaderName = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
-		//GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER);
+		GLuint ContShaderName = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONT_SHADER);
+		GLuint EvalShaderName = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVAL_SHADER);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER);
 
 		ProgramName[program::VERT] = glCreateProgram();
 		ProgramName[program::FRAG] = glCreateProgram();
@@ -78,7 +76,6 @@ bool initProgram()
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], ContShaderName);
 		glAttachShader(ProgramName[program::VERT], EvalShaderName);
-		//glAttachShader(ProgramName[program::VERT], GeomShaderName);
 		glLinkProgram(ProgramName[program::VERT]);
 
 		glAttachShader(ProgramName[program::FRAG], FragShaderName);
@@ -87,7 +84,6 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(ContShaderName);
 		glDeleteShader(EvalShaderName);
-		//glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
 
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
@@ -96,12 +92,10 @@ bool initProgram()
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT/* | GL_GEOMETRY_SHADER_BIT*/, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT, ProgramName[program::VERT]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
-		glf::checkError("initProgram 7");
 	}
 
-	// Get variables locations
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
@@ -112,7 +106,6 @@ bool initProgram()
 
 bool initVertexArray()
 {
-	// Build a vertex array object
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
