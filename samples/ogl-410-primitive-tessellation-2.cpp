@@ -67,7 +67,7 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERTEX_SHADER);
 		GLuint ContShaderName = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONTROL_SHADER);
 		GLuint EvalShaderName = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVALUATION_SHADER);
-		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
+		//GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOMETRY_SHADER);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAGMENT_SHADER);
 
 		ProgramName[program::VERT] = glCreateProgram();
@@ -78,7 +78,7 @@ bool initProgram()
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], ContShaderName);
 		glAttachShader(ProgramName[program::VERT], EvalShaderName);
-		glAttachShader(ProgramName[program::VERT], GeomShaderName);
+		//glAttachShader(ProgramName[program::VERT], GeomShaderName);
 		glLinkProgram(ProgramName[program::VERT]);
 
 		glAttachShader(ProgramName[program::FRAG], FragShaderName);
@@ -87,17 +87,16 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(ContShaderName);
 		glDeleteShader(EvalShaderName);
-		glDeleteShader(GeomShaderName);
+		//glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
 
-		for(std::size_t i = 0; i < program::MAX; ++i)
-			Validated = Validated && glf::checkProgram(ProgramName[i]);
-		glf::checkError("initProgram 6");
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT/* | GL_GEOMETRY_SHADER_BIT*/, ProgramName[program::VERT]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
 		glf::checkError("initProgram 7");
 	}

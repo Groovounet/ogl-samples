@@ -7,8 +7,8 @@
 layout(triangles, invocations = 1) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-in vec4 EvalColor[];
-out vec4 GeomColor;
+layout(location = COLOR) in vec4 Color[];
+layout(location = COLOR) out vec4 GeomColor;
 
 in gl_PerVertex
 {
@@ -29,7 +29,7 @@ void main()
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		GeomColor = EvalColor[i];
+		GeomColor = Color[i];
 		EmitVertex();
 	}
 	EndPrimitive();
