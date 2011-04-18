@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multiple render to texture";
-	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
-	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -57,11 +57,21 @@ namespace
 		TEXTURE_MAX
 	};
 
+	namespace program
+	{
+		enum type
+		{
+			VERTEX,
+			FRAGMENT,
+			MAX
+		};
+	}//namespace program
+
 	GLuint FramebufferName(0);
 	GLuint VertexArrayName(0);
 
 	GLuint PipelineName(0);
-	GLuint ProgramName(0);
+	GLuint ProgramName[program::MAX];
 	GLuint UniformMVP(0);
 	GLuint UniformDiffuse(0);
 
@@ -83,25 +93,43 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertShader = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE);
-		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE);
 
-		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName, VertShader);
-		glAttachShader(ProgramName, FragShader);
+		ProgramName[program::VERTEX] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::VERTEX], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::VERTEX], VertShader);
 		glDeleteShader(VertShader);
-		glDeleteShader(FragShader);
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		glLinkProgram(ProgramName[program::VERTEX]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERTEX]);
 	}
 
 	if(Validated)
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
+		Validated = Validated && glf::checkError("initProgram - stage");
+	}
 
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+		GLuint FragShader = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE);
+
+		ProgramName[program::FRAGMENT] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::FRAGMENT], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::FRAGMENT], FragShader);
+		glDeleteShader(FragShader);
+		glLinkProgram(ProgramName[program::FRAGMENT]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAGMENT]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
+		Validated = Validated && glf::checkError("initProgram - stage");
+	}
+
+	if(Validated)
+	{
+		UniformMVP = glGetUniformLocation(ProgramName[program::VERTEX], "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAGMENT], "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -127,6 +155,8 @@ bool initTexture2D()
 		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameteriEXT(Texture2DName[i], GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTextureImage2DEXT(
 			Texture2DName[i], 
@@ -196,7 +226,8 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(BUFFER_MAX, BufferName);
-	glDeleteProgram(ProgramName);
+	glDeleteProgram(ProgramName[program::VERTEX]);
+	glDeleteProgram(ProgramName[program::FRAGMENT]);
 	glDeleteProgramPipelines(1, &PipelineName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteFramebuffers(1, &FramebufferName);
@@ -221,8 +252,8 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName[program::VERTEX], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[program::FRAGMENT], UniformDiffuse, 0);
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT)[0]);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
