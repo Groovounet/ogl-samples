@@ -40,7 +40,7 @@ namespace
 	};
 
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
 	vertex const VertexData[VertexCount] =
 	{
@@ -52,10 +52,21 @@ namespace
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
+	namespace program
+	{
+		enum type
+		{
+			VERT,
+			FRAG,
+			MAX
+		};
+	}//namespace program
+
 	glm::uvec2 ImageSize(0);
 
 	GLuint VertexArrayName(0);
-	GLuint ProgramName(0);
+	GLuint PipelineName(0);
+	GLuint ProgramName[program::MAX] = {0, 0};
 
 	GLuint BufferName(0);
 	GLuint TextureName(0);
@@ -69,26 +80,43 @@ bool initProgram()
 {
 	bool Validated = true;
 
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
-
-		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertShaderName);
-		glAttachShader(ProgramName, FragShaderName);
-		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
-
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		std::string VertexSourceContent = glf::loadFile(VERT_SHADER_SOURCE);
+		char const * VertexSourcePointer = VertexSourceContent.c_str();
+		ProgramName[program::VERT] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &VertexSourcePointer);
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
 	}
 
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformImageData = glGetUniformLocation(ProgramName, "ImageData");
-		UniformImageSize = glGetUniformLocation(ProgramName, "ImageSize");
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERT]);
+		Validated = Validated && glf::checkError("initProgram - stage");
+	}
+
+	if(Validated)
+	{
+		std::string FragmentSourceContent = glf::loadFile(FRAG_SHADER_SOURCE);
+		char const * FragmentSourcePointer = FragmentSourceContent.c_str();
+		ProgramName[program::FRAG] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &FragmentSourcePointer);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
+		Validated = Validated && glf::checkError("initProgram - stage");
+	}
+
+	// Get variables locations
+	if(Validated)
+	{
+		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
+		UniformImageData = glGetUniformLocation(ProgramName[program::FRAG], "ImageData");
+		UniformImageSize = glGetUniformLocation(ProgramName[program::FRAG], "ImageSize");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -175,9 +203,11 @@ bool begin()
 bool end()
 {
 	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteProgram(ProgramName[program::VERT]);
+	glDeleteProgram(ProgramName[program::FRAG]);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -192,20 +222,21 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1i(ProgramName, UniformImageData, 0);
-	glProgramUniform2uiv(ProgramName, UniformImageSize, 1, &ImageSize[0]);
+	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[program::FRAG], UniformImageData, 0);
+	glProgramUniform2uiv(ProgramName[program::FRAG], UniformImageSize, 1, &ImageSize[0]);
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	glBindImageTextureEXT(0, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
 	glBindVertexArray(VertexArrayName);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
+	glf::checkError("display");
 	glf::swapBuffers();
 }
 

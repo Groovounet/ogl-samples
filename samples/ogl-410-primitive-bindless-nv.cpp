@@ -20,10 +20,10 @@ namespace
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -43,7 +43,7 @@ namespace
 	};
 
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
 	vertex const VertexData[VertexCount] =
 	{
@@ -69,13 +69,13 @@ namespace
 	GLuint PipelineName(0);
 	GLuint ProgramName[program::MAX];
 
-	GLuint BufferName = 0;
-	GLuint Texture2DName = 0;
+	GLuint BufferName(0);
+	GLuint Texture2DName(0);
 
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 
-	GLuint64EXT Address = 0;
+	GLuint64EXT Address(0);
 
 }//namespace
 

@@ -60,16 +60,16 @@ namespace
 		PROGRAM_MAX
 	};
 
-	GLuint FramebufferName = 0;
-	GLuint VertexArrayName[PROGRAM_MAX];
+	GLuint FramebufferName(0);
+	GLuint VertexArrayName[PROGRAM_MAX] = {0, 0};
 
-	GLuint ProgramName[PROGRAM_MAX];
-	GLint UniformMVP[PROGRAM_MAX];
-	GLint UniformDiffuse = 0;
-	GLuint SamplerName = 0;
+	GLuint ProgramName[PROGRAM_MAX] = {0, 0};
+	GLint UniformMVP[PROGRAM_MAX] = {0, 0};
+	GLint UniformDiffuse(0);
+	GLuint SamplerName(0);
 
-	GLuint BufferName[BUFFER_MAX];
-	GLuint TextureColorbufferName = 0;
+	GLuint BufferName[BUFFER_MAX] = {0, 0};
+	GLuint TextureColorbufferName(0);
 
 }//namespace
 
