@@ -13,9 +13,7 @@
 
 namespace
 {
-	void SetMultisamplefvAMD(GLenum pname, GLuint index, const GLfloat *val);
-
-	typedef void (GLAPIENTRY * PFNGLMULTISAMPLEFVPROC) (GLenum pname, GLuint index, const GLfloat *val);
+	typedef void (GLAPIENTRY * PFNGLMULTISAMPLEFVPROC) (GLenum pname, GLuint index, GLclampf *val);
 	PFNGLMULTISAMPLEFVPROC glSetMultisamplefvAMD = 0;
 
 	std::string const SAMPLE_NAME = "OpenGL Sample Position";
