@@ -64,24 +64,33 @@ namespace
 
 	enum program 
 	{
-		PROGRAM_BLUR,
-		PROGRAM_DRAW,
+		PROGRAM_VERT_BLUR,
+		PROGRAM_FRAG_BLUR,
+		PROGRAM_VERT_DRAW,
+		PROGRAM_FRAG_DRAW,
 		PROGRAM_MAX
+	};
+	
+	enum pipeline 
+	{
+		PIPELINE_BLUR,
+		PIPELINE_DRAW,
+		PIPELINE_MAX
 	};
 
 	GLuint ProgramName[PROGRAM_MAX];
-	GLuint PipelineName[PROGRAM_MAX];
-	GLint UniformMVP[PROGRAM_MAX];
-	GLint UniformDiffuse[PROGRAM_MAX];
+	GLuint PipelineName[PIPELINE_MAX];
+	GLint UniformMVP[PIPELINE_MAX];
+	GLint UniformDiffuse[PIPELINE_MAX];
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
 	
-	glGenProgramPipelines(PROGRAM_MAX, PipelineName);
-	glBindProgramPipeline(PipelineName[PROGRAM_BLUR]);
-	glBindProgramPipeline(PipelineName[PROGRAM_DRAW]);
+	glGenProgramPipelines(PIPELINE_MAX, PipelineName);
+	glBindProgramPipeline(PipelineName[PIPELINE_BLUR]);
+	glBindProgramPipeline(PipelineName[PIPELINE_DRAW]);
 	glBindProgramPipeline(0);
 
 	if(Validated)
@@ -89,27 +98,32 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_BLUR);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_BLUR);
 
-		ProgramName[PROGRAM_BLUR] = glCreateProgram();
-		glProgramParameteri(ProgramName[PROGRAM_BLUR], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[PROGRAM_BLUR], VertShaderName);
-		glAttachShader(ProgramName[PROGRAM_BLUR], FragShaderName);
+		ProgramName[PROGRAM_VERT_BLUR] = glCreateProgram();
+		glProgramParameteri(ProgramName[PROGRAM_VERT_BLUR], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[PROGRAM_VERT_BLUR], VertShaderName);
 		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[PROGRAM_VERT_BLUR]);
+		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_VERT_BLUR]);
 
-		glLinkProgram(ProgramName[PROGRAM_BLUR]);
-		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_BLUR]);
+		ProgramName[PROGRAM_FRAG_BLUR] = glCreateProgram();
+		glProgramParameteri(ProgramName[PROGRAM_FRAG_BLUR], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[PROGRAM_FRAG_BLUR], FragShaderName);
+		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[PROGRAM_FRAG_BLUR]);
+		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_FRAG_BLUR]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName[PROGRAM_BLUR], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[PROGRAM_BLUR]);
+		glUseProgramStages(PipelineName[PIPELINE_BLUR], GL_VERTEX_SHADER_BIT, ProgramName[PROGRAM_VERT_BLUR]);
+		glUseProgramStages(PipelineName[PIPELINE_BLUR], GL_FRAGMENT_SHADER_BIT, ProgramName[PROGRAM_FRAG_BLUR]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	if(Validated)
 	{
-		UniformMVP[PROGRAM_BLUR] = glGetUniformLocation(ProgramName[PROGRAM_BLUR], "MVP");
-		UniformDiffuse[PROGRAM_BLUR] = glGetUniformLocation(ProgramName[PROGRAM_BLUR], "Diffuse");
+		UniformMVP[PIPELINE_BLUR] = glGetUniformLocation(ProgramName[PROGRAM_VERT_BLUR], "MVP");
+		UniformDiffuse[PIPELINE_BLUR] = glGetUniformLocation(ProgramName[PROGRAM_FRAG_BLUR], "Diffuse");
 	}
 
 	if(Validated)
@@ -117,27 +131,32 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_DRAW);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_DRAW);
 
-		ProgramName[PROGRAM_DRAW] = glCreateProgram();
-		glProgramParameteri(ProgramName[PROGRAM_DRAW], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[PROGRAM_DRAW], VertShaderName);
-		glAttachShader(ProgramName[PROGRAM_DRAW], FragShaderName);
+		ProgramName[PROGRAM_VERT_DRAW] = glCreateProgram();
+		glProgramParameteri(ProgramName[PROGRAM_VERT_DRAW], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[PROGRAM_VERT_DRAW], VertShaderName);
 		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[PROGRAM_VERT_DRAW]);
+		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_VERT_DRAW]);
 
-		glLinkProgram(ProgramName[PROGRAM_DRAW]);
-		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_DRAW]);
+		ProgramName[PROGRAM_FRAG_DRAW] = glCreateProgram();
+		glProgramParameteri(ProgramName[PROGRAM_FRAG_DRAW], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[PROGRAM_FRAG_DRAW], FragShaderName);
+		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[PROGRAM_FRAG_DRAW]);
+		Validated = Validated && glf::checkProgram(ProgramName[PROGRAM_FRAG_DRAW]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName[PROGRAM_DRAW], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[PROGRAM_DRAW]);
+		glUseProgramStages(PipelineName[PIPELINE_DRAW], GL_VERTEX_SHADER_BIT, ProgramName[PROGRAM_VERT_DRAW]);
+		glUseProgramStages(PipelineName[PIPELINE_DRAW], GL_FRAGMENT_SHADER_BIT, ProgramName[PROGRAM_FRAG_DRAW]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	if(Validated)
 	{
-		UniformMVP[PROGRAM_DRAW] = glGetUniformLocation(ProgramName[PROGRAM_DRAW], "MVP");
-		UniformDiffuse[PROGRAM_DRAW] = glGetUniformLocation(ProgramName[PROGRAM_DRAW], "Diffuse");
+		UniformMVP[PIPELINE_DRAW] = glGetUniformLocation(ProgramName[PROGRAM_VERT_DRAW], "MVP");
+		UniformDiffuse[PIPELINE_DRAW] = glGetUniformLocation(ProgramName[PROGRAM_FRAG_DRAW], "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -272,8 +291,10 @@ bool end()
 	glDeleteTextures(1, &ColorbufferName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteBuffers(1, &BufferName);
-	glDeleteProgram(ProgramName[PROGRAM_BLUR]);
-	glDeleteProgram(ProgramName[PROGRAM_DRAW]);
+	glDeleteProgram(ProgramName[PROGRAM_VERT_BLUR]);
+	glDeleteProgram(ProgramName[PROGRAM_FRAG_BLUR]);
+	glDeleteProgram(ProgramName[PROGRAM_VERT_DRAW]);
+	glDeleteProgram(ProgramName[PROGRAM_FRAG_DRAW]);
 	glDeleteTextures(1, &Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteSamplers(1, &SamplerName);
@@ -303,21 +324,21 @@ void display()
 	FrameIndex = (FrameIndex + 1) % 256;
 
 	glm::mat4 MVP = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-	glProgramUniform1i(ProgramName[PROGRAM_BLUR], UniformDiffuse[PROGRAM_BLUR], 0);
-	glProgramUniform1i(ProgramName[PROGRAM_DRAW], UniformDiffuse[PROGRAM_DRAW], 0);
-	glProgramUniformMatrix4fv(ProgramName[PROGRAM_BLUR], UniformMVP[PROGRAM_BLUR], 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniformMatrix4fv(ProgramName[PROGRAM_DRAW], UniformMVP[PROGRAM_DRAW], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[PROGRAM_FRAG_BLUR], UniformDiffuse[PIPELINE_BLUR], 0);
+	glProgramUniform1i(ProgramName[PROGRAM_FRAG_DRAW], UniformDiffuse[PIPELINE_DRAW], 0);
+	glProgramUniformMatrix4fv(ProgramName[PROGRAM_VERT_BLUR], UniformMVP[PIPELINE_BLUR], 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[PROGRAM_VERT_DRAW], UniformMVP[PIPELINE_DRAW], 1, GL_FALSE, &MVP[0][0]);
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glBindProgramPipeline(PipelineName[PROGRAM_BLUR]);
+	glBindProgramPipeline(PipelineName[PIPELINE_BLUR]);
 	renderScene(FrameIndex ? ColorbufferName : Texture2DName);
 
 	//glTextureBarrierNV();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindProgramPipeline(PipelineName[PROGRAM_DRAW]);
+	glBindProgramPipeline(PipelineName[PIPELINE_DRAW]);
 	renderScene(ColorbufferName);
 
 	glf::checkError("display");
