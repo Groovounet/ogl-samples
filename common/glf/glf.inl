@@ -260,7 +260,9 @@ namespace glf
 
 		// Load GL_EXT_direct_state_access extension
 		glNamedBufferDataEXT = (PFNGLNAMEDBUFFERDATAEXTPROC)glfGetProcAddress("glNamedBufferDataEXT");
+		glTextureImage2DEXT = (PFNGLTEXTUREIMAGE2DEXTPROC)glfGetProcAddress("glTextureImage2DEXT");
 		glTextureParameteriEXT = (PFNGLTEXTUREPARAMETERIEXTPROC)glfGetProcAddress("glTextureParameteriEXT");
+		glGenerateTextureMipmapEXT = (PFNGLGENERATETEXTUREMIPMAPEXTPROC)glfGetProcAddress("glGenerateTextureMipmapEXT");
 		glCompressedTextureImage2DEXT = (PFNGLCOMPRESSEDTEXTUREIMAGE2DEXTPROC)glfGetProcAddress("glCompressedTextureImage2DEXT");
 		glVertexArrayVertexAttribOffsetEXT = (PFNGLVERTEXARRAYVERTEXATTRIBOFFSETEXTPROC)glfGetProcAddress("glVertexArrayVertexAttribOffsetEXT");
 		glEnableVertexArrayAttribEXT = (PFNGLENABLEVERTEXARRAYATTRIBEXTPROC)glfGetProcAddress("glEnableVertexArrayAttribEXT");
@@ -286,6 +288,11 @@ namespace glf
 		glProgramUniformMatrix4x3dvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC)glfGetProcAddress("glProgramUniformMatrix4x3dvEXT");
 		glVertexArrayVertexAttribLOffsetEXT = (PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC)glfGetProcAddress("glVertexArrayVertexAttribLOffsetEXT");
 		glEnableVertexArrayAttribEXT = (PFNGLENABLEVERTEXARRAYATTRIBEXTPROC)glfGetProcAddress("glEnableVertexArrayAttribEXT");
+		glNamedRenderbufferStorageMultisampleEXT = (PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)glfGetProcAddress("glNamedRenderbufferStorageMultisampleEXT"); 
+		glNamedFramebufferRenderbufferEXT = (PFNGLNAMEDFRAMEBUFFERRENDERBUFFEREXTPROC)glfGetProcAddress("glNamedFramebufferRenderbufferEXT"); 
+		glNamedFramebufferTextureEXT = (PFNGLNAMEDFRAMEBUFFERTEXTUREEXTPROC)glfGetProcAddress("glNamedFramebufferTextureEXT"); 
+		glCheckNamedFramebufferStatusEXT = (PFNGLCHECKNAMEDFRAMEBUFFERSTATUSEXTPROC)glfGetProcAddress("glCheckNamedFramebufferStatusEXT"); 
+		glFramebufferDrawBuffersEXT = (PFNGLFRAMEBUFFERDRAWBUFFERSEXTPROC)glfGetProcAddress("glFramebufferDrawBuffersEXT");
 
 		// Load GL_EXT_shader_image_load_store extension
 		glBindImageTextureEXT = (PFNGLBINDIMAGETEXTUREEXTPROC)glfGetProcAddress("glBindImageTextureEXT");

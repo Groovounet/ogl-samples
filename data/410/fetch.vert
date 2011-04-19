@@ -26,6 +26,11 @@ struct vertex
 
 out vertex Vertex;
 
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+
 void main()
 {	
 	Vertex.Texcoord = Texcoord;

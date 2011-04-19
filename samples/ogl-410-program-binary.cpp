@@ -16,16 +16,17 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Program binary";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/binary.frag");
-	std::string const PROGRAM_BINARY(glf::DATA_DIRECTORY + "410/binary.bin");
+	std::string const VERT_PROGRAM_BINARY(glf::DATA_DIRECTORY + "410/binary.vert.bin");
+	std::string const FRAG_PROGRAM_BINARY(glf::DATA_DIRECTORY + "410/binary.frag.bin");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 1;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
 	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
@@ -35,7 +36,7 @@ namespace
 		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f))
 	};
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLuint);
 	GLuint const ElementData[ElementCount] =
 	{
@@ -53,7 +54,18 @@ namespace
 		};
 	}//namespace buffer
 
-	GLuint ProgramName(0);
+	namespace program
+	{
+		enum type
+		{
+			VERT,
+			FRAG,
+			MAX
+		};
+	}//namespace program
+
+	GLuint PipelineName(0);
+	GLuint ProgramName[program::MAX] = {0, 0};
 	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
 	GLint UniformMVP(0);
@@ -62,15 +74,15 @@ namespace
 
 }//namespace
 
-bool saveProgram()
+bool saveProgram(GLuint ProgramName, std::string const & String)
 {
-	GLint Size = 0;
-	GLenum Format = 0;
+	GLint Size(0);
+	GLenum Format(0);
 
 	glGetProgramiv(ProgramName, GL_PROGRAM_BINARY_LENGTH, &Size);
 	std::vector<glm::byte> Data(Size);
 	glGetProgramBinary(ProgramName, Size, NULL, &Format, &Data[0]);
-	glf::saveBinary(PROGRAM_BINARY, Format, Data, Size);
+	glf::saveBinary(String, Format, Data, Size);
 
 	return glf::checkError("saveProgram");
 }
@@ -80,41 +92,74 @@ bool initProgram()
 	bool Validated = true;
 	GLint Success = 0;
 
-	ProgramName = glCreateProgram();
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+	glBindProgramPipeline(0);
+
+	ProgramName[program::VERT] = glCreateProgram();
+	glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
+	glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
 	{
 		GLenum Format = 0;
 		GLint Size = 0;
 		std::vector<glm::byte> Data;
-		if(glf::loadBinary(PROGRAM_BINARY, Format, Data, Size))
+		if(glf::loadBinary(VERT_PROGRAM_BINARY, Format, Data, Size))
 		{
-			glProgramBinary(ProgramName, Format, &Data[0], Size);
-			glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
-			glGetProgramiv(ProgramName, GL_LINK_STATUS, &Success);
+			glProgramBinary(ProgramName[program::VERT], Format, &Data[0], Size);
+			glGetProgramiv(ProgramName[program::VERT], GL_LINK_STATUS, &Success);
 		}
 	}
 
 	// Create program
-	if(!Success)
+	if(Validated && !Success)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName[program::VERT], VertShaderName);
+		glDeleteShader(VertShaderName);
+		glLinkProgram(ProgramName[program::VERT]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
+	}
 
-		glProgramParameteri(ProgramName, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+	ProgramName[program::FRAG] = glCreateProgram();
+	glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
+	glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+
+	{
+		GLenum Format = 0;
+		GLint Size = 0;
+		std::vector<glm::byte> Data;
+		if(glf::loadBinary(FRAG_PROGRAM_BINARY, Format, Data, Size))
+		{
+			glProgramBinary(ProgramName[program::FRAG], Format, &Data[0], Size);
+			glGetProgramiv(ProgramName[program::FRAG], GL_LINK_STATUS, &Success);
+		}
+	}
+
+	// Create program
+	if(Validated && !Success)
+	{
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+
+		glAttachShader(ProgramName[program::FRAG], FragShaderName);
+		glDeleteShader(FragShaderName);
+		glLinkProgram(ProgramName[program::FRAG]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
+		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAG], "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -202,13 +247,16 @@ bool begin()
 
 bool end()
 {
-	saveProgram();
+	saveProgram(ProgramName[program::VERT], VERT_PROGRAM_BINARY);
+	saveProgram(ProgramName[program::FRAG], FRAG_PROGRAM_BINARY);
 
 	// Delete objects
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteTextures(1, &Texture2DName);
-	glDeleteProgram(ProgramName);
+	glDeleteProgram(ProgramName[program::VERT]);
+	glDeleteProgram(ProgramName[program::FRAG]);
+	glDeleteProgramPipelines(1, &PipelineName);
 
 	return glf::checkError("end");
 }
@@ -224,13 +272,13 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniform1i(ProgramName[program::FRAG], UniformDiffuse, 0);
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);

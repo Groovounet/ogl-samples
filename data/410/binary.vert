@@ -17,6 +17,11 @@ layout(location = ATTR_POSITION) in vec2 Position;
 layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
 out vertex Vertex;
 
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+
 void main()
 {	
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
