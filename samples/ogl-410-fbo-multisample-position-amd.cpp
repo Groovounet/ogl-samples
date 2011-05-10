@@ -13,9 +13,6 @@
 
 namespace
 {
-	typedef void (GLAPIENTRY * PFNGLMULTISAMPLEFVPROC) (GLenum pname, GLuint index, GLclampf *val);
-	PFNGLMULTISAMPLEFVPROC glSetMultisamplefvAMD = 0;
-
 	std::string const SAMPLE_NAME = "OpenGL Sample Position";
 	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/multisample-amd.vert");
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/multisample-amd.frag");
@@ -255,8 +252,6 @@ bool initVertexArray()
 
 bool begin()
 {
-	glSetMultisamplefvAMD = (PFNGLMULTISAMPLEFVPROC)glfGetProcAddress("glSetMultisamplefvAMD");
-
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_AMD_sample_positions");

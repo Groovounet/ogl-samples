@@ -55,7 +55,7 @@ namespace gli
 				glm::u32 Data10 = reinterpret_cast<texture2D::value_type*>(DataSrc)[Index10];
 
 				texture2D::value_type Result = (Data00 + Data01 + Data11 + Data10) >> 2;
-				texture2D::value_type * Data = reinterpret_cast<texture2D::value_type*>(DataDst.data());
+				texture2D::value_type * Data = &DataDst[0];
 
 				*(Data + ((i + j * LevelDimensions.x) * Components + c)) = Result;
 			}
