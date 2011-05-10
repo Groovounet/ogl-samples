@@ -14,16 +14,16 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Buffer Update";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(3);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionData[VertexCount] =
 	{
@@ -35,11 +35,21 @@ namespace
 		glm::vec2(-1.0f,-1.0f)
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
-	GLuint BufferName = 0;
-	GLint UniformMVP = 0;
-	GLint UniformColor = 0;	
+	namespace buffer
+	{
+		enum type
+		{
+			ARRAY,
+			COPY,
+			MAX
+		};
+	}//namespace program
+
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0};
+	GLint UniformMVP(0);
+	GLint UniformColor(0);	
 
 }//namespace
 
@@ -50,8 +60,8 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShaderName);
@@ -123,10 +133,10 @@ bool initArrayBuffer()
 bool initArrayBuffer()
 {
 	// Generate a buffer object
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(buffer::MAX, BufferName);
 
 	// Bind the buffer for use
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::ARRAY]);
 
 	// Reserve buffer memory but don't copy the values
     glBufferData(
@@ -152,6 +162,22 @@ bool initArrayBuffer()
 	// Unbind the buffer
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	// Copy buffer
+	glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COPY]);
+    glBufferData(GL_ARRAY_BUFFER, PositionSize, 0, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_COPY_READ_BUFFER, BufferName[buffer::ARRAY]);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, BufferName[buffer::COPY]);
+
+	glCopyBufferSubData(
+		GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
+        0, 0,
+        PositionSize);
+
+	glBindBuffer(GL_COPY_READ_BUFFER, 0);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+
 	return glf::checkError("initArrayBuffer");
 }
 
@@ -159,7 +185,7 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COPY]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -186,7 +212,7 @@ bool begin()
 bool end()
 {
 	// Delete objects
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
