@@ -560,7 +560,7 @@ namespace glf
 			else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)
 				strcpy(debSev, "low");
 
-			 fprintf(stderr,"%s: %s(%s) %d: %s\n", debSource, debSev, debType, id, message);
+			 fprintf(stderr,"%s: %s(%s) %d: %s\n", debSource, debType, debSev, id, message);
 			 //fclose(f);
 		}
 	}
