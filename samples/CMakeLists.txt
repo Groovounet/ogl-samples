@@ -252,6 +252,8 @@ set(GL_SHADER_GTC fetch.vert fetch.frag)
 glCreateSampleGTC(sampler-fetch-dsa-ext)
 set(GL_SHADER_GTC texture-barrier-nv.vert texture-barrier-nv.frag texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-barrier-nv)
+set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
+glCreateSampleGTC(texture-copy-nv)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image-ext)
 

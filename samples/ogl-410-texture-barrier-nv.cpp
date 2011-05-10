@@ -3,7 +3,7 @@
 // 11/03/2011 - 11/03/2011
 //**********************************
 // Christophe Riccio
-// christophe.riccio@g-truc.net
+// ogl-samples@g-truc.net
 //**********************************
 // G-Truc Creation
 // www.g-truc.net

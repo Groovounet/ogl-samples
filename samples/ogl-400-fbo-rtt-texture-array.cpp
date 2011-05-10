@@ -3,7 +3,7 @@
 // 17/06/2010 - 17/06/2010
 //**********************************
 // Christophe Riccio
-// g.truc.creation@gmail.com
+// ogl-samples@g-truc.net
 //**********************************
 // G-Truc Creation
 // www.g-truc.net
