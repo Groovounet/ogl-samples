@@ -26,7 +26,7 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 void main()
 {
 	vec4 Temp = texture(Diffuse, Vert.Texcoord);
-	//if(Temp.a < 0.5)
-	//	discard;
+	if(Temp.a < 0.2)
+		discard;
 	Color = Temp;
 }

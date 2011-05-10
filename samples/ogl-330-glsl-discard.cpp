@@ -1,9 +1,9 @@
 //**********************************
-// OpenGL Alpha test
+// OpenGL GLSL discard
 // 18/02/2011 - 19/02/2011
 //**********************************
 // Christophe Riccio
-// g.truc.creation@gmail.com
+// ogl-samples@g-truc.net
 //**********************************
 // G-Truc Creation
 // www.g-truc.net
@@ -15,14 +15,14 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Alpha test";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.frag");
+	std::string const SAMPLE_NAME = "OpenGL GLSL discard";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/discard.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(3);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -42,7 +42,7 @@ namespace
 	};
 
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
 	vertex const VertexData[VertexCount] =
 	{
@@ -54,15 +54,14 @@ namespace
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
 
-	GLuint BufferName = 0;
-	GLuint Texture2DName = 0;
+	GLuint BufferName(0);
+	GLuint Texture2DName(0);
 
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 }//namespace
 
 bool initProgram()
@@ -71,14 +70,14 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
@@ -110,6 +109,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Set image
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
