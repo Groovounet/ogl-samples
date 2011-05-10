@@ -98,19 +98,6 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	// Set some variables 
-	if(Validated)
-	{
-		// Bind the program for use
-		glUseProgram(ProgramName);
-
-		// Set uniform value
-		
-
-		// Unbind the program
-		glUseProgram(0);
-	}
-
 	return glf::checkError("initProgram");
 }
 

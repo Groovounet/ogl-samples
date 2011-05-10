@@ -113,6 +113,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// Set image
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
@@ -151,8 +153,8 @@ bool initVertexArray()
 
 bool initTest()
 {
-	//glEnable(GL_ALPHA_TEST);
-	//glAlphaFunc(GL_LESS, 0.5f);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.2f);
 
 	return glf::checkError("initVertexArray");
 }
