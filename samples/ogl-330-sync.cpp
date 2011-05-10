@@ -153,7 +153,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
+	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
 	if(Validated)
 		Validated = initTexture2D();
@@ -188,14 +191,15 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	SyncName = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
 	glUseProgram(ProgramName);
-	glUniform1i(UniformDiffuse, 0);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
