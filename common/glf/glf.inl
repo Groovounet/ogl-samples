@@ -526,41 +526,41 @@ namespace glf
 		//f = fopen("debug_output.txt","a");
 		//if(f)
 		{
-			 char debSource[16], debType[20], debSev[5];
-			 if(source == 0x8246)
-					strcpy(debSource, "OpenGL");
-			 else if(source == 0x8247)
-					strcpy(debSource, "Windows");
-			 else if(source == 0x8248)
-					strcpy(debSource, "Shader Compiler");
-			 else if(source == 0x8249)
-					strcpy(debSource, "Third Party");
-			 else if(source == 0x824A)
-					strcpy(debSource, "Application");
-			 else if(source == 0x824B)
-					strcpy(debSource, "Other");
+			char debSource[16], debType[20], debSev[5];
+			if(source == GL_DEBUG_SOURCE_API_ARB)
+				strcpy(debSource, "OpenGL");
+			else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)
+				strcpy(debSource, "Windows");
+			else if(source == GL_DEBUG_SOURCE_SHADER_COMPILER_ARB)
+				strcpy(debSource, "Shader Compiler");
+			else if(source == GL_DEBUG_SOURCE_THIRD_PARTY_ARB)
+				strcpy(debSource, "Third Party");
+			else if(source == GL_DEBUG_SOURCE_APPLICATION_ARB)
+				strcpy(debSource, "Application");
+			else if(source == GL_DEBUG_SOURCE_OTHER_ARB)
+				strcpy(debSource, "Other");
+ 
+			if(type == GL_DEBUG_TYPE_ERROR_ARB)
+				strcpy(debType, "error");
+			else if(type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB)
+				strcpy(debType, "deprecated behavior");
+			else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB)
+				strcpy(debType, "undefined behavior");
+			else if(type == GL_DEBUG_TYPE_PORTABILITY_ARB)
+				strcpy(debType, "portability");
+			else if(type == GL_DEBUG_TYPE_PERFORMANCE_ARB)
+				strcpy(debType, "performance");
+			else if(type == GL_DEBUG_TYPE_OTHER_ARB)
+				strcpy(debType, "message");
+ 
+			if(severity == GL_DEBUG_SEVERITY_HIGH_ARB)
+				strcpy(debSev, "high");
+			else if(severity == GL_DEBUG_SEVERITY_MEDIUM_ARB)
+				strcpy(debSev, "medium");
+			else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)
+				strcpy(debSev, "low");
 
-			 if(type == 0x824C)
-					strcpy(debType, "Error");
-			 else if(type == 0x824D)
-					strcpy(debType, "Deprecated behavior");
-			 else if(type == 0x824E)
-					strcpy(debType, "Undefined behavior");
-			 else if(type == 0x824F)
-					strcpy(debType, "Portability");
-			 else if(type == 0x8250)
-					strcpy(debType, "Performance");
-			 else if(type == 0x8251)
-					strcpy(debType, "Other");
-
-			 if(severity == 0x9146)
-					strcpy(debSev, "High");
-			 else if(severity == 0x9147)
-					strcpy(debSev, "Medium");
-			 else if(severity == 0x9148)
-					strcpy(debSev, "Low");
-
-			 fprintf(stderr,"Source:%s\tType:%s\tID:%d\tSeverity:%s\tMessage:%s\n", debSource,debType,id,debSev,message);
+			 fprintf(stderr,"%s: %s(%s) %d: %s\n", debSource, debSev, debType, id, message);
 			 //fclose(f);
 		}
 	}

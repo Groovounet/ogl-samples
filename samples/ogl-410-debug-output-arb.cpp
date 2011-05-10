@@ -74,6 +74,7 @@ namespace
 
 bool initDebugOutput()
 {
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
@@ -195,7 +196,11 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
 
-	glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	if(Validated)
+	{
+		std::string Message("The platform doesn't the OpenGL support to run this sample");
+		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_PORTABILITY_ARB, 76, GL_DEBUG_SEVERITY_HIGH_ARB, Message.size(), Message.c_str());
+	}
 
 	if(Validated)
 		Validated = initDebugOutput();
@@ -207,6 +212,17 @@ bool begin()
 		Validated = initVertexArray();
 	if(Validated)
 		Validated = initTexture2D();
+	
+	if(Validated)
+	{
+		std::string Message("Initialisation successful");
+		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, 76, GL_DEBUG_SEVERITY_HIGH_ARB, Message.size(), Message.c_str());
+	}
+	else
+	{
+		std::string Message("Initialisation failed");
+		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_ERROR_ARB, 76, GL_DEBUG_SEVERITY_HIGH_ARB, Message.size(), Message.c_str());
+	}
 
 	return Validated && glf::checkError("begin");
 }
