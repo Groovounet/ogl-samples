@@ -77,9 +77,8 @@ glCreateSampleGTC(test-scissor)
 # OpenGL 3.0 samples
 set(GL_VERSION_GTC 300)
 
-#set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-#glCreateSampleGTC(alpha-test)
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(alpha-test)
 glCreateSampleGTC(fbo-multisample)
 
 # OpenGL 3.3 samples

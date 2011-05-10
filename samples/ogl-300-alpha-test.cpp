@@ -3,7 +3,7 @@
 // 18/02/2011 - 18/02/2011
 //**********************************
 // Christophe Riccio
-// g.truc.creation@gmail.com
+// ogl-samples@g-truc.net
 //**********************************
 // G-Truc Creation
 // www.g-truc.net
@@ -55,14 +55,14 @@ namespace
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
 
-	GLuint BufferName = 0;
-	GLuint Texture2DName = 0;
+	GLuint BufferName(0);
+	GLuint Texture2DName(0);
 
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 
 }//namespace
 
@@ -72,14 +72,14 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glBindAttribLocation(ProgramName, glf::semantic::attr::POSITION, "Position");
 		glBindAttribLocation(ProgramName, glf::semantic::attr::TEXCOORD, "Texcoord");
