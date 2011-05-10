@@ -61,6 +61,7 @@ namespace
 	GLint UniformMVP(0);
 	GLint UniformDiffuse(0);
 
+	GLsync SyncName(0);
 }//namespace
 
 bool initProgram()
@@ -168,6 +169,7 @@ bool begin()
 
 bool end()
 {
+	glDeleteSync(SyncName);
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &TextureName);
@@ -189,6 +191,8 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
+	SyncName = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+
 	glUseProgram(ProgramName);
 	glUniform1i(UniformDiffuse, 0);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
@@ -198,6 +202,9 @@ void display()
 	glBindVertexArray(VertexArrayName);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+
+    GLint64 MaxTimeout(1000);
+    GLenum Result = glClientWaitSync(SyncName, GL_SYNC_FLUSH_COMMANDS_BIT, (GLuint64)MaxTimeout);
 
 	glf::checkError("display");
 	glf::swapBuffers();
