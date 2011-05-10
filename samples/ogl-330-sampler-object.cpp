@@ -120,7 +120,7 @@ bool initArrayBuffer()
 bool initSampler()
 {
 	glGenSamplers(1, &SamplerAName);
-	glSamplerParameteri(SamplerAName, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glSamplerParameteri(SamplerAName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerAName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerAName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerAName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -133,7 +133,7 @@ bool initSampler()
 	glSamplerParameteri(SamplerAName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
 	glGenSamplers(1, &SamplerBName);
-	glSamplerParameteri(SamplerBName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
