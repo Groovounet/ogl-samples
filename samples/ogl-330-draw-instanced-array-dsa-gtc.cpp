@@ -16,14 +16,14 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Draw Instanced Array";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-array.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-array.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(3);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionData[VertexCount] =
 	{
@@ -35,7 +35,7 @@ namespace
 		glm::vec2(-1.0f,-1.0f)
 	};
 
-	GLsizei const InstanceCount = 5;
+	GLsizei const InstanceCount(5);
 	GLsizeiptr const ColorSize = VertexCount * sizeof(glm::vec4);
 	glm::vec4 const ColorData[VertexCount] =
 	{
@@ -46,11 +46,11 @@ namespace
 		glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
-	GLuint PositionBufferName = 0;
-	GLuint ColorBufferName = 0;
-	GLint UniformMVP = 0;
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLuint PositionBufferName(0);
+	GLuint ColorBufferName(0);
+	GLint UniformMVP(0);
 
 	typedef void (GLAPIENTRY * PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC) (GLuint VertexArray, GLuint index, GLuint divisor);
 	PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC glVertexArrayVertexAttribDivisorGTC = 0;

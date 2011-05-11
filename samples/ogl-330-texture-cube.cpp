@@ -23,11 +23,10 @@ namespace
 	std::string const TEXTURE_DIFFUSE_NEGX(glf::DATA_DIRECTORY + "negx.dds");
 	std::string const TEXTURE_DIFFUSE_NEGY(glf::DATA_DIRECTORY + "negy.dds");
 	std::string const TEXTURE_DIFFUSE_NEGZ(glf::DATA_DIRECTORY + "negz.dds");
-
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(3);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
