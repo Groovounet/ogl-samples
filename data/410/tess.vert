@@ -20,6 +20,6 @@ out vec4 VertColor;
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position, 0.0, float(gl_InstanceID));
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 	VertColor = Color;
 }
