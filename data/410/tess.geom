@@ -7,15 +7,14 @@
 layout(triangles, invocations = 1) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout(location = COLOR) in vec4 Color[];
-layout(location = COLOR) out vec4 GeomColor;
-
 in gl_PerVertex
 {
 	vec4 gl_Position;
 	float gl_PointSize;
 	float gl_ClipDistance[];
 } gl_in[];
+
+in vec4 EvalColor[];
 
 out gl_PerVertex 
 {
@@ -24,12 +23,14 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
+out vec4 GeomColor;
+
 void main()
 {	
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		GeomColor = Color[i];
+		GeomColor = EvalColor[i];
 		EmitVertex();
 	}
 	EndPrimitive();

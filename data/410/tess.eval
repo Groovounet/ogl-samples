@@ -6,9 +6,6 @@
 
 layout(quads, equal_spacing, ccw) in;
 
-layout(location = COLOR) in vec4 Color[];
-layout(location = COLOR) out vec4 EvalColor;
-
 in gl_PerVertex
 {
 	vec4 gl_Position;
@@ -16,12 +13,16 @@ in gl_PerVertex
 	float gl_ClipDistance[];
 } gl_in[];
 
+in vec4 ContColor[];
+
 out gl_PerVertex
 {
 	vec4 gl_Position;
 	float gl_PointSize;
 	float gl_ClipDistance[];
 };
+
+out vec4 EvalColor;
 
 vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 {
@@ -33,6 +34,6 @@ vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
 void main()
 {	
 	gl_Position = interpolate(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
-	EvalColor = interpolate(Color[0], Color[1], Color[2], Color[3]);
+	EvalColor = interpolate(ContColor[0], ContColor[1], ContColor[2], ContColor[3]);
 }
 

@@ -6,9 +6,6 @@
 
 layout(vertices = 4) out;
 
-layout(location = COLOR) in vec4 Color[];
-layout(location = COLOR) out vec4 ContColor[];
-
 in gl_PerVertex
 {
 	vec4 gl_Position;
@@ -16,12 +13,16 @@ in gl_PerVertex
 	float gl_ClipDistance[];
 } gl_in[];
 
+in vec4 VertColor[];
+
 out gl_PerVertex
 {
 	vec4 gl_Position;
 	float gl_PointSize;
 	float gl_ClipDistance[];
 } gl_out[];
+
+out vec4 ContColor[];
 
 void main()
 {	
@@ -32,6 +33,6 @@ void main()
 	gl_TessLevelOuter[2] = 8.0;
 	gl_TessLevelOuter[3] = 8.0;
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-	ContColor[gl_InvocationID] = Color[gl_InvocationID];
+	ContColor[gl_InvocationID] = VertColor[gl_InvocationID];
 }
 
