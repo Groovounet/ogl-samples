@@ -511,7 +511,7 @@ namespace glf
 		return Name;
 	}
 
-	static void __stdcall debugOutput
+	static void APIENTRY debugOutput
 	(
 		GLenum source,
 		GLenum type,
