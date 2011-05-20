@@ -1,15 +1,5 @@
 #include <GL/freeglut.h>
 
-#ifdef WIN32
-#	undef APIENTRY
-//#	ifndef APIENTRY
-#		define APIENTRY
-//#	endif
-#	ifndef APIENTRYP
-#		define APIENTRYP APIENTRY *
-#	endif
-#endif//WIN32
-
 bool check();
 bool begin();
 bool end();
