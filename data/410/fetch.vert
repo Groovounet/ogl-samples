@@ -24,15 +24,15 @@ struct vertex
 	vec2 Texcoord;
 };
 
-out vertex Vertex;
-
 out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
+layout(location = 1) out vertex Out;
+
 void main()
 {	
-	Vertex.Texcoord = Texcoord;
+	Out.Texcoord = Texcoord;
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }

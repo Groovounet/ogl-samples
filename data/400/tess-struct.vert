@@ -20,7 +20,7 @@ struct vertex
 layout(location = ATTR_POSITION) in vec2 Position;
 layout(location = ATTR_COLOR) in vec4 Color;
 
-out vertex Vert;
+layout(location = 0) out vertex Vert;
 
 void main()
 {	

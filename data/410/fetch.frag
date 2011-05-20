@@ -13,21 +13,21 @@ struct vertex
 	vec2 Texcoord;
 };
 
-in vertex Vertex;
+layout(location = 1) in vertex In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	vec2 Level = textureQueryLod(Diffuse, Vertex.Texcoord);
+	vec2 Level = textureQueryLod(Diffuse, In.Texcoord);
 	int LevelMin = int(ceil(Level.x));
 	int LevelMax = int(floor(Level.x));
 	vec2 SizeMin = textureSize(Diffuse, LevelMin) - 1;
 	vec2 SizeMax = textureSize(Diffuse, LevelMax) - 1;	
-	vec2 TexcoordMin = Vertex.Texcoord * SizeMin;
-	vec2 TexcoordMax = Vertex.Texcoord * SizeMax;	
-	ivec2 CoordMin = ivec2(Vertex.Texcoord * SizeMin);
-	ivec2 CoordMax = ivec2(Vertex.Texcoord * SizeMax);
+	vec2 TexcoordMin = In.Texcoord * SizeMin;
+	vec2 TexcoordMax = In.Texcoord * SizeMax;	
+	ivec2 CoordMin = ivec2(In.Texcoord * SizeMin);
+	ivec2 CoordMax = ivec2(In.Texcoord * SizeMax);
 	
 	vec4 TexelMin00 = texelFetch(Diffuse, CoordMin + ivec2(0, 0), LevelMin);
 	vec4 TexelMin10 = texelFetch(Diffuse, CoordMin + ivec2(1, 0), LevelMin);

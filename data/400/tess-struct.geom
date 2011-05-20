@@ -8,8 +8,8 @@ struct vertex
 	vec4 Color;
 };
 
-in vertex Eval[];
-out vertex Prim;
+layout(location = 0) in vertex Eval[];
+layout(location = 0) out vertex Prim;
 
 void main()
 {	
