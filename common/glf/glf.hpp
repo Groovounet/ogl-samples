@@ -3,12 +3,13 @@
 
 //#pragma warning(disable : once)
 
+#define glfGetProcAddress glutGetProcAddress
+
 // OpenGL
 #ifdef WIN32
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
 //#	include <GL/glext.h>
-#	define glfGetProcAddress wglGetProcAddress
 #	define GLEW_EXT_direct_state_access_memory 0
 #elif defined(linux) || defined(__linux)
 #	include <GL/glew.h>
