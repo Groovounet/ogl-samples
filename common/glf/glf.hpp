@@ -3,8 +3,6 @@
 
 //#pragma warning(disable : once)
 
-#define glfGetProcAddress glutGetProcAddress
-
 // OpenGL
 #ifdef WIN32
 #	include <GL/glew.h>
