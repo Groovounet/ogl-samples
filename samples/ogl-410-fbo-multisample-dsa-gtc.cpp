@@ -233,15 +233,15 @@ bool initVertexArray()
 
 bool begin()
 {
-	glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisample");
+	glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisample");
 	if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleNV");
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleNV");
 	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleAMD");
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleAMD");
 	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleEXT");
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleEXT");
 	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glfGetProcAddress("glTextureImage2DMultisampleARB");
+		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleARB");
 
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
