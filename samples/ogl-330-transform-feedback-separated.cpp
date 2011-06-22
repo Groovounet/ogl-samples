@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Interleaved";
+	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Separated";
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed-separated.vert");
@@ -45,6 +45,7 @@ namespace
 
 	GLuint FeedbackProgramName(0);
 	GLuint FeedbackArrayBufferName(0);
+	GLuint FeedbackArrayBufferCopyName(0);
 	GLuint FeedbackVertexArrayName(0);
 	GLint FeedbackUniformDiffuse(0);
 	GLint FeedbackUniformMVP(0);
@@ -70,28 +71,28 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 
 		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "gl_Position"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
+		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_SEPARATE_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 
-		// BUG AMD 10.12
-		char Name[64];
-		memset(Name, 0, 64);
-		GLsizei Length(0);
-		GLsizei Size(0);
-		GLenum Type(0);
+		//// BUG AMD 10.12
+		//char Name[64];
+		//memset(Name, 0, 64);
+		//GLsizei Length(0);
+		//GLsizei Size(0);
+		//GLenum Type(0);
 
-		glGetTransformFeedbackVarying(
-			TransformProgramName,
-			0,
-			64,
-			&Length,
-			&Size,
-			&Type,
-			Name);
+		//glGetTransformFeedbackVarying(
+		//	TransformProgramName,
+		//	0,
+		//	64,
+		//	&Length,
+		//	&Size,
+		//	&Type,
+		//	Name);
 
-		Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
+		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
 	}
 
 	// Get variables locations
@@ -165,6 +166,11 @@ bool initArrayBuffer()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * VertexCount, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	glGenBuffers(1, &FeedbackArrayBufferCopyName);
+    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferCopyName);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * VertexCount, NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	return glf::checkError("initArrayBuffer");
 }
 
@@ -195,6 +201,7 @@ bool end()
 
 	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
 	glDeleteBuffers(1, &FeedbackArrayBufferName);
+	glDeleteBuffers(1, &FeedbackArrayBufferCopyName);
 	glDeleteProgram(FeedbackProgramName);
 
 	glDeleteQueries(1, &Query);
@@ -229,6 +236,7 @@ void display()
 		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
+		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, FeedbackArrayBufferCopyName); 
 
 		glBindVertexArray(TransformVertexArrayName);
 

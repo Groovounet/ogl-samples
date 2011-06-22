@@ -70,7 +70,7 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 
 		GLchar const * Strings[] = {"gl_Position"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_INTERLEAVED_ATTRIBS); 
+		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
