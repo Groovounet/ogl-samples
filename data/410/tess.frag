@@ -4,10 +4,15 @@
 #define COLOR			3
 #define FRAG_COLOR		0
 
-in vec4 GeomColor;
+struct vertex
+{
+	vec4 Color;
+};
+
+layout(location = 0) in vertex In;
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	FragColor = GeomColor;
+	FragColor = In.Color;
 }

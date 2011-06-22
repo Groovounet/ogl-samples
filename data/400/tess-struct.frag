@@ -15,7 +15,7 @@ struct vertex
 	vec4 Color;
 };
 
-in vertex Prim;
+layout(location = 0) in vertex Prim;
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()

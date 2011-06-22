@@ -66,6 +66,7 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SAMPLE_VERT_SHADER);
 		GLuint ContShaderName = glf::createShader(GL_TESS_CONTROL_SHADER, SAMPLE_CONT_SHADER);
 		GLuint EvalShaderName = glf::createShader(GL_TESS_EVALUATION_SHADER, SAMPLE_EVAL_SHADER);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, SAMPLE_GEOM_SHADER);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SAMPLE_FRAG_SHADER);
 
 		ProgramName[program::VERT] = glCreateProgram();
@@ -76,6 +77,7 @@ bool initProgram()
 		glAttachShader(ProgramName[program::VERT], VertShaderName);
 		glAttachShader(ProgramName[program::VERT], ContShaderName);
 		glAttachShader(ProgramName[program::VERT], EvalShaderName);
+		glAttachShader(ProgramName[program::VERT], GeomShaderName);
 		glLinkProgram(ProgramName[program::VERT]);
 
 		glAttachShader(ProgramName[program::FRAG], FragShaderName);
@@ -84,6 +86,7 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(ContShaderName);
 		glDeleteShader(EvalShaderName);
+		glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
 
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
@@ -92,7 +95,7 @@ bool initProgram()
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_TESS_CONTROL_SHADER_BIT | GL_TESS_EVALUATION_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, ProgramName[program::VERT]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
 	}
 
