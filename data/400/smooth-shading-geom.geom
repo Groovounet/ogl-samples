@@ -9,7 +9,7 @@ layout(triangle_strip, max_vertices = 4) out;
 precision highp float;
 
 in vec4 VertColor[];
-out vec4 GeomColor;
+layout(stream = 0) out vec4 GeomColor;
 
 void main()
 {
