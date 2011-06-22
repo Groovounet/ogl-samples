@@ -125,15 +125,15 @@ bool initVertexArray()
 
 bool begin()
 {
-	glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisor");
+	glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glutGetProcAddress("glVertexArrayVertexAttribDivisor");
 	if(!glVertexArrayVertexAttribDivisorGTC)
-		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorARB");
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glutGetProcAddress("glVertexArrayVertexAttribDivisorARB");
 	else if(!glVertexArrayVertexAttribDivisorGTC)
-		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorEXT");
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glutGetProcAddress("glVertexArrayVertexAttribDivisorEXT");
 	else if(!glVertexArrayVertexAttribDivisorGTC)
-		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorNV");
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glutGetProcAddress("glVertexArrayVertexAttribDivisorNV");
 	else if(!glVertexArrayVertexAttribDivisorGTC)
-		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glfGetProcAddress("glVertexArrayVertexAttribDivisorAMD");
+		glVertexArrayVertexAttribDivisorGTC = (PFNGLVERTEXARRAYVERTEXATTRIBDIVISORPROCGTC)glutGetProcAddress("glVertexArrayVertexAttribDivisorAMD");
 
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
