@@ -162,7 +162,6 @@ set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed-interleaved.vert)
 glCreateSampleGTC(transform-feedback-interleaved)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag transformed-separated.vert)
 glCreateSampleGTC(transform-feedback-separated)
-
 set(GL_SHADER_GTC sampler.vert error-sampler-offset.frag)
 glCreateSampleGTC(error-sampler-offset)
 
