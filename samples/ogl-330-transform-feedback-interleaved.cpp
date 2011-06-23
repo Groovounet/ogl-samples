@@ -14,7 +14,7 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Interleaved";
-	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/transformed-interleaved.vert");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/transform-interleaved.vert");
 	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-interleaved.vert");
 	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-interleaved.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
