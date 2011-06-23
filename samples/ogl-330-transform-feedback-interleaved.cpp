@@ -69,7 +69,7 @@ bool initProgram()
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 
-		GLchar const * Strings[] = {"gl_Position"}; 
+		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 

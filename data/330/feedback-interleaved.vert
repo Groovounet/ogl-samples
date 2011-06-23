@@ -14,9 +14,12 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-layout(location = ATTR_POSITION) in vec4 Position;
+uniform mat4 MVP;
+
+layout(location = ATTR_POSITION) in vec2 Position;
 
 void main()
 {	
-	gl_Position = Position;
+	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }
+
