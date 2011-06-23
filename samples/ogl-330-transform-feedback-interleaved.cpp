@@ -14,10 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Interleaved";
-	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.frag");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed-interleaved.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/transformed-interleaved.vert");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-interleaved.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-interleaved.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -26,15 +25,15 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(6);
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec4);
+	glm::vec4 const PositionData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f),
-		glm::vec2(-1.0f,-1.0f)
+		glm::vec4(-1.0f,-1.0f, 0.0f, 1.0f),
+		glm::vec4( 1.0f,-1.0f, 0.0f, 1.0f),
+		glm::vec4( 1.0f, 1.0f, 0.0f, 1.0f),
+		glm::vec4( 1.0f, 1.0f, 0.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f, 0.0f, 1.0f)
 	};
 
 	GLuint TransformProgramName(0);
@@ -60,38 +59,35 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_TRANSFORM);
 
 		TransformProgramName = glCreateProgram();
 		glAttachShader(TransformProgramName, VertexShaderName);
-		glAttachShader(TransformProgramName, FragmentShaderName);
 		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
 
-		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "gl_Position"}; 
+		GLchar const * Strings[] = {"gl_Position", "Color"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 
-		// BUG AMD 10.12
-		char Name[64];
-		memset(Name, 0, 64);
-		GLsizei Length(0);
-		GLsizei Size(0);
-		GLenum Type(0);
+		//// BUG AMD 10.12
+		//char Name[64];
+		//memset(Name, 0, 64);
+		//GLsizei Length(0);
+		//GLsizei Size(0);
+		//GLenum Type(0);
 
-		glGetTransformFeedbackVarying(
-			TransformProgramName,
-			0,
-			64,
-			&Length,
-			&Size,
-			&Type,
-			Name);
+		//glGetTransformFeedbackVarying(
+		//	TransformProgramName,
+		//	0,
+		//	64,
+		//	&Length,
+		//	&Size,
+		//	&Type,
+		//	Name);
 
-		Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
+		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
 	}
 
 	// Get variables locations
@@ -104,8 +100,8 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
 		glAttachShader(FeedbackProgramName, VertexShaderName);
@@ -133,7 +129,7 @@ bool initVertexArray()
 	glGenVertexArrays(1, &TransformVertexArrayName);
     glBindVertexArray(TransformVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -143,7 +139,8 @@ bool initVertexArray()
 	glGenVertexArrays(1, &FeedbackVertexArrayName);
     glBindVertexArray(FeedbackVertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), 0);
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec4)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
@@ -162,7 +159,7 @@ bool initArrayBuffer()
 
 	glGenBuffers(1, &FeedbackArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * VertexCount, NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f), NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
@@ -226,7 +223,6 @@ void display()
 
 		glUseProgram(TransformProgramName);
 		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(TransformUniformDiffuse, 1, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 
@@ -244,8 +240,6 @@ void display()
 	// Second draw, reuse the captured attributes
 	{
 		glUseProgram(FeedbackProgramName);
-		glUniformMatrix4fv(FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		GLuint PrimitivesWritten = 0;
 		glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);

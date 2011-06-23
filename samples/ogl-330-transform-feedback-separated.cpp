@@ -14,9 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Separated";
-	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/transform-separated.vert");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-separated.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-separated.frag");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/transform-separated.vert");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-separated.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/feedback-separated.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -42,8 +42,8 @@ namespace
 	GLint TransformUniformMVP(0);
 
 	GLuint FeedbackProgramName(0);
-	GLuint FeedbackArrayBufferName(0);
-	GLuint FeedbackArrayBufferCopyName(0);
+	GLuint FeedbackArrayBufferPositionName(0);
+	GLuint FeedbackArrayBufferColorName(0);
 	GLuint FeedbackVertexArrayName(0);
 	GLint FeedbackUniformDiffuse(0);
 
@@ -55,19 +55,23 @@ bool initProgram()
 {
 	bool Validated = true;
 	
-	glf::checkError("initProgram 0");
-
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_TRANSFORM);
 
 		TransformProgramName = glCreateProgram();
 		glAttachShader(TransformProgramName, VertexShaderName);
 		glDeleteShader(VertexShaderName);
 
-		GLchar const * Strings[] = {"gl_Position"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
+// These two approaches behave the same way
+#if 1
+		GLchar const * Strings[] = {"gl_Position", "Color"}; 
+		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_SEPARATE_ATTRIBS); 
+#else
+		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "Color"}; 
+		glTransformFeedbackVaryings(TransformProgramName, 3, Strings, GL_INTERLEAVED_ATTRIBS); 
+#endif
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
@@ -91,8 +95,6 @@ bool initProgram()
 		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
 	}
 
-	glf::checkError("initProgram 6");
-
 	// Get variables locations
 	if(Validated)
 	{
@@ -100,13 +102,11 @@ bool initProgram()
 		Validated = Validated && (TransformUniformMVP >= 0);
 	}
 
-	glf::checkError("initProgram 7");
-
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
 		glAttachShader(FeedbackProgramName, VertexShaderName);
@@ -118,20 +118,13 @@ bool initProgram()
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
-	glf::checkError("initProgram 8");
-
-	// Get variables locations
-	if(Validated)
-	{
-		FeedbackUniformDiffuse = glGetUniformLocation(FeedbackProgramName, "Diffuse");
-		Validated = Validated && (FeedbackUniformDiffuse >= 0);
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
 bool initVertexArray()
 {
+	glf::checkError("initVertexArray 0");
+
 	// Build a vertex array object
 	glGenVertexArrays(1, &TransformVertexArrayName);
     glBindVertexArray(TransformVertexArrayName);
@@ -142,14 +135,19 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
+	glf::checkError("initVertexArray 1");
+
 	// Build a vertex array object
 	glGenVertexArrays(1, &FeedbackVertexArrayName);
     glBindVertexArray(FeedbackVertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferPositionName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferColorName);
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -163,13 +161,13 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &FeedbackArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
+	glGenBuffers(1, &FeedbackArrayBufferPositionName);
+    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferPositionName);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * VertexCount, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &FeedbackArrayBufferCopyName);
-    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferCopyName);
+	glGenBuffers(1, &FeedbackArrayBufferColorName);
+    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferColorName);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * VertexCount, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -200,10 +198,10 @@ bool end()
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(TransformProgramName);
-
+	
 	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
-	glDeleteBuffers(1, &FeedbackArrayBufferName);
-	glDeleteBuffers(1, &FeedbackArrayBufferCopyName);
+	glDeleteBuffers(1, &FeedbackArrayBufferPositionName);
+	glDeleteBuffers(1, &FeedbackArrayBufferColorName);
 	glDeleteProgram(FeedbackProgramName);
 
 	glDeleteQueries(1, &Query);
@@ -236,8 +234,8 @@ void display()
 		glUseProgram(TransformProgramName);
 		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
-		//glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, FeedbackArrayBufferCopyName); 
+		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferPositionName); 
+		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, FeedbackArrayBufferColorName); 
 
 		glBindVertexArray(TransformVertexArrayName);
 
@@ -253,7 +251,6 @@ void display()
 	// Second draw, reuse the captured attributes
 	{
 		glUseProgram(FeedbackProgramName);
-		glUniform4fv(FeedbackUniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 		GLuint PrimitivesWritten = 0;
 		glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);

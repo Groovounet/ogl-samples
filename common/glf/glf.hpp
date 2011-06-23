@@ -158,6 +158,21 @@ namespace glf
 		glm::vec4 Color;
 	};
 
+	struct vertex_v4fc4f
+	{
+		vertex_v4fc4f
+		(
+			glm::vec4 const & Position,
+			glm::vec4 const & Color
+		) :
+			Position(Position),
+			Color(Color)
+		{}
+
+		glm::vec4 Position;
+		glm::vec4 Color;
+	};
+
 	struct vertex_v2fc4ub
 	{
 		vertex_v2fc4ub
