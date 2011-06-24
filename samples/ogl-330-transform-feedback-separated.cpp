@@ -66,10 +66,10 @@ bool initProgram()
 
 // These two approaches behave the same way
 #if 1
-		GLchar const * Strings[] = {"gl_Position", "Color"}; 
+		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_SEPARATE_ATTRIBS); 
 #else
-		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "Color"}; 
+		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "VertColor"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 3, Strings, GL_INTERLEAVED_ATTRIBS); 
 #endif
 		glLinkProgram(TransformProgramName);

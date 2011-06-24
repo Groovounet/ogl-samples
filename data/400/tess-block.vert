@@ -1,14 +1,14 @@
 #version 400 core
 
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
+#define POSITION	0
+#define COLOR		3
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_COLOR) in vec4 Color;
+layout(location = POSITION) in vec2 Position;
+layout(location = COLOR) in vec4 Color;
 
-out custom
+out block
 {
 	vec4 Color;
 } Out;

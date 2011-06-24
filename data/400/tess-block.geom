@@ -3,24 +3,23 @@
 layout(triangles, invocations = 1) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-in custom
+in block
 {
 	vec4 Color;
-} Eval[];
+} In[];
 
-out custom
+out block
 {
 	vec4 Color;
-} Prim;
+} Out;
 
 void main()
 {	
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		Prim.Color = Eval[i].Color;
+		Out.Color = In[i].Color;
 		EmitVertex();
 	}
 	EndPrimitive();
 }
-

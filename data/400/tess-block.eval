@@ -2,12 +2,12 @@
 
 layout(quads, equal_spacing, ccw) in;
 
-in custom
+in block
 {
 	vec4 Color;
 } In[];
 
-out custom
+out block
 {
 	vec4 Color;
 } Out;

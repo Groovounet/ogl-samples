@@ -1,12 +1,11 @@
 #version 330 core
 
-precision highp int;
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define FRAG_COLOR	0
 
-// Declare all the semantics
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
-#define FRAG_COLOR		0
+precision highp int;
 
 const vec4 Color[4] = vec4[]
 (
@@ -16,11 +15,14 @@ const vec4 Color[4] = vec4[]
 	vec4(0.0, 0.0, 1.0, 1.0)
 );
 
-flat in int GeomInstance;
+in block
+{
+	flat int Instance;
+} In;
 
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	FragColor = Color[GeomInstance];
+	Color = Color[In.Instance];
 }

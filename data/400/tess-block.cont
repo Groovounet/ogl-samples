@@ -2,12 +2,12 @@
 
 layout(vertices = 4) out;
 
-in custom
+in block
 {
 	vec4 Color;
 } In[];
 
-out custom
+out block
 {
 	vec4 Color;
 } Out[];

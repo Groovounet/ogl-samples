@@ -11,10 +11,10 @@ precision highp int;
 uniform sampler2D Diffuse;
 uniform ivec2 Offset;
 
-in vert
+in block
 {
 	vec2 Texcoord;
-} Vert;
+} In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
@@ -71,6 +71,6 @@ void main()
 {
 	ivec2 TextureSize = textureSize(Diffuse, 0);
 
-	FragColor = textureCatmullrom(Diffuse, Vert.Texcoord, vec2(Offset) / vec2(TextureSize));
+	FragColor = textureCatmullrom(Diffuse, In.Texcoord, vec2(Offset) / vec2(TextureSize));
 }
 

@@ -63,7 +63,7 @@ bool initProgram()
 		glAttachShader(TransformProgramName, VertexShaderName);
 		glDeleteShader(VertexShaderName);
 
-		GLchar const * Strings[] = {"gl_Position", "Color"}; 
+		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 

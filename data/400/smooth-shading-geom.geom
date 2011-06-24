@@ -8,14 +8,21 @@
 layout(triangle_strip, max_vertices = 4) out;
 precision highp float;
 
-in vec4 VertColor[];
-layout(stream = 0) out vec4 GeomColor;
+in block
+{
+	vec4 Color;
+} In[];
+
+out block
+{
+	layout(stream = 0) vec4 Color;
+} Out;
 
 void main()
 {
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
-		GeomColor = VertColor[i];
+		Out.Color = In[i].Color;
 		gl_Position = gl_in[i].gl_Position;
 		EmitVertex();
 	}

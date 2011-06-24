@@ -4,12 +4,12 @@
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
-in custom
+in block
 {
 	vec4 Color;
-} Prim;
+} In;
 
 void main()
 {
-	Color = Prim.Color;
+	Color = In.Color;
 }

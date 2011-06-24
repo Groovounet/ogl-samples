@@ -197,10 +197,7 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
 
 	if(!Validated)
-	{
-		std::string Message("The platform doesn't the OpenGL support to run this sample");
-		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_PORTABILITY_ARB, 76, GL_DEBUG_SEVERITY_HIGH_ARB, Message.size(), Message.c_str());
-	}
+		return false;
 
 	if(Validated)
 		Validated = initDebugOutput();

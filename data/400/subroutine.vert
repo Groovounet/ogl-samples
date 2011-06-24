@@ -1,22 +1,21 @@
 #version 400 core
 
-// Declare all the semantics
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
+#define POSITION		0
+#define COLOR			3
+#define TEXCOORD		4
 #define FRAG_COLOR		0
 
 uniform mat4 MVP;
 uniform float Displacement;
 
-layout(location = ATTR_POSITION) in vec2 AttrPosition;
-layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
 
-out vec2 Texcoord;
+layout(location = TEXCOORD) out vec2 VertTexcoord;
 
 void main()
 {	
-	Texcoord = AttrTexcoord;
-	gl_Position = MVP * vec4(AttrPosition, Displacement, 1.0);
+	VertTexcoord = Texcoord;
+	gl_Position = MVP * vec4(Position, Displacement, 1.0);
 }
 

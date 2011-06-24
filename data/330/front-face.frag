@@ -14,9 +14,10 @@
 #define FRAG_BLUE		2
 #define FRAG_ALPHA		3
 
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 const vec4 FrontColor = vec4(1.0, 0.5, 0.0, 1.0);
 const vec4 BackColor = vec4(0.0, 0.5, 1.0, 1.0);
+
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {

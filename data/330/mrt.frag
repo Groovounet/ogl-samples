@@ -16,10 +16,10 @@
 
 uniform sampler2D Diffuse;
 
-in vert
+in block
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-} Vert;
+	vec2 Texcoord;
+} In;
 
 layout(location = FRAG_RED) out float Red;
 layout(location = FRAG_GREEN) out float Green;
@@ -27,7 +27,7 @@ layout(location = FRAG_BLUE) out float Blue;
 
 void main()
 {
-	vec4 Color = texture(Diffuse, Vert.Texcoord);
+	vec4 Color = texture(Diffuse, In.Texcoord);
 	Red = Color.r;
 	Green = Color.g;
 	Blue = Color.b;

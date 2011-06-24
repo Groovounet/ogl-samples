@@ -1,11 +1,13 @@
 #version 330 core
 
+#define ATTR_POSITION	0
+
 uniform transform
 {
 	mat4 MVP;
 } Transform;
 
-in vec3 Position;
+layout(location = ATTR_POSITION) in vec3 Position;
 
 void main()
 {	
