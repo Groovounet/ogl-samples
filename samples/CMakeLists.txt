@@ -259,6 +259,8 @@ glCreateSampleGTC(texture-image-ext)
 # OpenGL 4.2 samples
 set(GL_VERSION_GTC 420)
 
+set(GL_SHADER_GTC buffer-uniform.vert buffer-uniform.frag)
+glCreateSampleGTC(buffer-uniform)
 set(GL_SHADER_GTC draw-base-instance.vert draw-base-instance.frag)
 glCreateSampleGTC(draw-base-instance)
 set(GL_SHADER_GTC glsl-block-location.cont glsl-block-location.eval glsl-block-location.frag glsl-block-location.geom glsl-block-location.vert)
