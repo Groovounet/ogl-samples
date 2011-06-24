@@ -3,12 +3,12 @@
 layout(triangles, invocations = 1) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-in eval
+in custom
 {
 	vec4 Color;
 } Eval[];
 
-out prim
+out custom
 {
 	vec4 Color;
 } Prim;
