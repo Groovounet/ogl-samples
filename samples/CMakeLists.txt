@@ -256,4 +256,16 @@ glCreateSampleGTC(texture-copy-nv)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image-ext)
 
+# OpenGL 4.2 samples
+set(GL_VERSION_GTC 420)
+
+set(GL_SHADER_GTC glsl-block-location.cont glsl-block-location.eval glsl-block-location.frag glsl-block-location.geom glsl-block-location.vert)
+glCreateSampleGTC(glsl-block-location)
+set(GL_SHADER_GTC glsl-block-name.cont glsl-block-name.eval glsl-block-name.frag glsl-block-name.geom glsl-block-name.vert)
+glCreateSampleGTC(glsl-block-name)
+set(GL_SHADER_GTC glsl-struct-location.cont glsl-struct-location.eval glsl-struct-location.frag glsl-struct-location.geom glsl-struct-location.vert)
+glCreateSampleGTC(glsl-struct-location)
+set(GL_SHADER_GTC glsl-struct-name.cont glsl-struct-name.eval glsl-struct-name.frag glsl-struct-name.geom glsl-struct-name.vert)
+glCreateSampleGTC(glsl-struct-name)
+
 endif(APPLE)
