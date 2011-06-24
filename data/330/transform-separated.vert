@@ -7,7 +7,7 @@
 uniform mat4 MVP;
 
 layout(location = ATTR_POSITION) in vec4 Position;
-layout(location = VERT_COLOR) out vec4 Color;
+out vec4 Color;
 
 void main()
 {	

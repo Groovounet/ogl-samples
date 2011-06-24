@@ -8,7 +8,7 @@
 layout(location = ATTR_POSITION) in vec4 Position;
 layout(location = ATTR_COLOR) in vec4 Color;
 
-layout(location = VERT_COLOR) out vec4 VertColor;
+out vec4 VertColor;
 
 void main()
 {	

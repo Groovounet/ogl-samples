@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Transform Feedback Interleaved
+// OpenGL Transform Feedback interleaved
 // 06/04/2010 - 22/06/2011
 //**********************************
 // Christophe Riccio
@@ -39,14 +39,12 @@ namespace
 	GLuint TransformProgramName(0);
 	GLuint TransformArrayBufferName(0);
 	GLuint TransformVertexArrayName(0);
-	GLint TransformUniformDiffuse(0);
 	GLint TransformUniformMVP(0);
 
 	GLuint FeedbackProgramName(0);
 	GLuint FeedbackArrayBufferName(0);
 	GLuint FeedbackVertexArrayName(0);
 	GLint FeedbackUniformDiffuse(0);
-	GLint FeedbackUniformMVP(0);
 
 	GLuint Query(0);
 
@@ -94,7 +92,7 @@ bool initProgram()
 	if(Validated)
 	{
 		TransformUniformMVP = glGetUniformLocation(TransformProgramName, "MVP");
-		TransformUniformDiffuse = glGetUniformLocation(TransformProgramName, "Diffuse");
+		Validated = Validated && (TransformUniformMVP >= 0);
 	}
 
 	// Create program
@@ -113,18 +111,13 @@ bool initProgram()
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
-	// Get variables locations
-	if(Validated)
-	{
-		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
-		FeedbackUniformDiffuse = glGetUniformLocation(FeedbackProgramName, "Diffuse");
-	}
-
 	return Validated && glf::checkError("initProgram");
 }
 
 bool initVertexArray()
 {
+	glf::checkError("initVertexArray 0");
+
 	// Build a vertex array object
 	glGenVertexArrays(1, &TransformVertexArrayName);
     glBindVertexArray(TransformVertexArrayName);
@@ -135,6 +128,8 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
+	glf::checkError("initVertexArray 1");
+
 	// Build a vertex array object
 	glGenVertexArrays(1, &FeedbackVertexArrayName);
     glBindVertexArray(FeedbackVertexArrayName);
@@ -143,7 +138,8 @@ bool initVertexArray()
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec4)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);	
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -159,7 +155,7 @@ bool initArrayBuffer()
 
 	glGenBuffers(1, &FeedbackArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * VertexCount, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
@@ -167,12 +163,12 @@ bool initArrayBuffer()
 
 bool begin()
 {
-	glGenQueries(1, &Query);
-
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
+
+	glGenQueries(1, &Query);
 
 	if(Validated)
 		Validated = initProgram();
@@ -189,7 +185,7 @@ bool end()
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(TransformProgramName);
-
+	
 	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
 	glDeleteBuffers(1, &FeedbackArrayBufferName);
 	glDeleteProgram(FeedbackProgramName);
@@ -230,7 +226,7 @@ void display()
 
 		glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, Query); 
 		glBeginTransformFeedback(GL_TRIANGLES);
-			glDrawArrays(GL_TRIANGLES, 0, VertexCount);
+			glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 		glEndTransformFeedback();
 		glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN); 
 
