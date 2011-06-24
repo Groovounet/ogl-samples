@@ -267,5 +267,7 @@ set(GL_SHADER_GTC glsl-struct-location.cont glsl-struct-location.eval glsl-struc
 glCreateSampleGTC(glsl-struct-location)
 set(GL_SHADER_GTC glsl-struct-name.cont glsl-struct-name.eval glsl-struct-name.frag glsl-struct-name.geom glsl-struct-name.vert)
 glCreateSampleGTC(glsl-struct-name)
+set(GL_SHADER_GTC texture-image.vert texture-image.frag)
+glCreateSampleGTC(texture-image)
 
 endif(APPLE)
