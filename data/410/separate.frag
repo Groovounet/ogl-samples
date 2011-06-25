@@ -6,23 +6,13 @@
 #define VERTEX		0
 #define FRAG_COLOR	0
 
-struct vertex
-{
-	vec2 Texcoord;
-	vec3 Color;
-};
-
 uniform sampler2D Diffuse;
 
-//layout(location = VERTEX) in vertex In;
-layout(location = VERTEX) in block
-{
-	vec2 Texcoord;
-	vec3 Color;
-} In;
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = COLOR) in vec3 Color;
+layout(location = TEXCOORD) in vec2 Texcoord;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	Color = texture(Diffuse, In.Texcoord) * vec4(In.Color, 1.0);
+	FragColor = texture(Diffuse, Texcoord) * vec4(Color, 1.0);
 }
