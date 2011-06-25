@@ -1,8 +1,8 @@
 #version 410 core
 
-#define POSITION	0
+#define POSITION	4
 #define COLOR		3
-#define TEXCOORD	4
+#define TEXCOORD	0
 #define VERTEX		0
 #define FRAG_COLOR	0
 
