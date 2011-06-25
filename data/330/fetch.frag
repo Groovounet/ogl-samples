@@ -16,18 +16,18 @@
 
 uniform sampler2D Diffuse;
 
-in vert
+in block
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-} Vert;
+	vec2 Texcoord;
+} In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
 	vec2 Size = textureSize(Diffuse, 0) - 1;
-	vec2 Texcoord = Vert.Texcoord * Size;
-	ivec2 Coord = ivec2(Vert.Texcoord * Size);
+	vec2 Texcoord = In.Texcoord * Size;
+	ivec2 Coord = ivec2(In.Texcoord * Size);
 	
 	vec4 Texel00 = texelFetch(Diffuse, Coord + ivec2(0, 0), 0);
 	vec4 Texel10 = texelFetch(Diffuse, Coord + ivec2(1, 0), 0);

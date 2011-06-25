@@ -1,9 +1,10 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
-#define FRAG_COLOR		0
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define COMMON		0
+#define FRAG_COLOR	0
 
 struct vertex
 {
@@ -13,9 +14,10 @@ struct vertex
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
-out vertex Vertex;
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
+
+layout(location = COMMON) out vertex Out;
 
 out gl_PerVertex
 {
@@ -25,7 +27,7 @@ out gl_PerVertex
 void main()
 {	
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
-	Vertex.Texcoord = Texcoord;
-	Vertex.Color = vec3(1.0, 0.9, 0.8);
+	Out.Texcoord = Texcoord;
+	Out.Color = vec3(1.0, 0.9, 0.8);
 }
 

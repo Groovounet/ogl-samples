@@ -1,8 +1,8 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
+#define POSITION		0
+#define COLOR			3
+#define TEXCOORD		4
 #define FRAG_COLOR		0
 
 uniform dvec4 Diffuse;

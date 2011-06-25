@@ -2,15 +2,15 @@
 
 layout(vertices = 4) out;
 
-in vert
+in block
 {
 	vec4 Color;
-} Vert[];
+} In[];
 
-out cont
+out block
 {
 	vec4 Color;
-} Cont[];
+} Out[];
 
 void main()
 {	
@@ -21,6 +21,6 @@ void main()
 	gl_TessLevelOuter[2] = 8.0;
 	gl_TessLevelOuter[3] = 8.0;
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-	Cont[gl_InvocationID].Color = Vert[gl_InvocationID].Color;
+	Out[gl_InvocationID].Color = In[gl_InvocationID].Color;
 }
 

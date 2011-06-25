@@ -301,6 +301,9 @@ namespace glf
 		// Load GL_AMD_multi_draw_indirect extension
 		glMultiDrawArraysIndirectAMD = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)glutGetProcAddress("glMultiDrawArraysIndirectAMD");
 		glMultiDrawElementsIndirectAMD = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)glutGetProcAddress("glMultiDrawElementsIndirectAMD");
+
+		// Load GL_NV_copy_image extension
+		glCopyImageSubDataNV = (PFNGLCOPYIMAGESUBDATANVPROC)glutGetProcAddress("glCopyImageSubDataNV");
 #endif// All but Apple
 	}
 

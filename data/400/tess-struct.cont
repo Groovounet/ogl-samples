@@ -7,8 +7,8 @@ struct vertex
 	vec4 Color;
 };
 
-layout(location = 0) in vertex Vert[];
-layout(location = 0) out vertex Cont[];
+layout(location = 0) in vertex In[];
+layout(location = 0) out vertex Out[];
 
 void main()
 {	
@@ -19,6 +19,6 @@ void main()
 	gl_TessLevelOuter[2] = 8.0;
 	gl_TessLevelOuter[3] = 8.0;
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-	Cont[gl_InvocationID].Color = Vert[gl_InvocationID].Color;
+	Out[gl_InvocationID].Color = In[gl_InvocationID].Color;
 }
 

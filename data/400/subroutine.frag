@@ -1,19 +1,18 @@
 #version 400 core
 
-// Declare all the semantics
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
+#define POSITION		0
+#define COLOR			3
+#define TEXCOORD		4
 #define FRAG_COLOR		0
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+subroutine vec4 diffuse();
 
+subroutine uniform diffuse Diffuse;
 uniform sampler2D DiffuseDXT1;
 uniform sampler2D DiffuseRGB8;
 
-in vec2 Texcoord;
-
-subroutine vec4 diffuse();
+layout(location = TEXCOORD) in vec2 Texcoord;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 subroutine(diffuse)
 vec4 diffuseLQ()
@@ -27,9 +26,7 @@ vec4 diffuseHQ()
 	return texture(DiffuseRGB8, Texcoord);
 }
 
-subroutine uniform diffuse Diffuse;
-
 void main()
 {
-	Color = Diffuse();
+	FragColor = Diffuse();
 }

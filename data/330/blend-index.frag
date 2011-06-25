@@ -16,16 +16,16 @@
 
 uniform sampler2D Diffuse;
 
-in vert
+in block
 {
-	/*layout(location = VERT_TEXCOORD)*/ vec2 Texcoord;
-} Vert;
+	vec2 Texcoord;
+} In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color0;
 layout(location = FRAG_COLOR, index = 1) out vec4 Color1;
 
 void main()
 {
-	Color0 = texture(Diffuse, Vert.Texcoord).rgba;
-	Color1 = texture(Diffuse, Vert.Texcoord).bgra;
+	Color0 = texture(Diffuse, In.Texcoord).rgba;
+	Color1 = texture(Diffuse, In.Texcoord).bgra;
 }

@@ -1,16 +1,20 @@
 #version 330 core
 
-#define ATTR_POSITION	0
-#define VERT_POSITION	0
-#define VERT_COLOR		3
+#define POSITION	0
+#define COLOR		3
+#define FRAG_COLOR	0
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec4 Position;
-out vec4 Color;
+layout(location = POSITION) in vec4 Position;
+
+out block
+{
+	vec4 Color;
+} Out;
 
 void main()
 {	
 	gl_Position = MVP * Position;
-	Color = vec4(clamp(vec2(Position), 0.0, 1.0), 0.0, 1.0);
+	Out.Color = vec4(clamp(vec2(Position), 0.0, 1.0), 0.0, 1.0);
 }

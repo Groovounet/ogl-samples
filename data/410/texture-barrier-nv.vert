@@ -1,15 +1,16 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
-#define FRAG_COLOR		0
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define COMMON		0
+#define FRAG_COLOR	0
 
 precision highp int;
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
+layout(location = POSITION) in vec2 Position;
 
 out gl_PerVertex
 {

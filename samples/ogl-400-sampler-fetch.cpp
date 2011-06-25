@@ -78,7 +78,7 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		Validated = Validated && glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
@@ -87,7 +87,7 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
 bool initVertexBuffer()

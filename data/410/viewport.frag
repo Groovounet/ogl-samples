@@ -1,20 +1,24 @@
 #version 410 core
 
-precision highp int;
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define COMMON		0
+#define FRAG_COLOR	0
 
-// Declare all the semantics
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
-#define FRAG_COLOR		0
+precision highp int;
 
 uniform sampler2DArray Diffuse;
 
-in vec2 GeomTexcoord;
-flat in int GeomInstance;
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+layout(location = COMMON) in block
+{
+	vec2 Texcoord;
+	flat int Instance;
+} In;
+
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	FragColor = texture(Diffuse, vec3(GeomTexcoord, GeomInstance));
+	Color = texture(Diffuse, vec3(In.Texcoord, In.Instance));
 }

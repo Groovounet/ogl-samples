@@ -1,12 +1,16 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_TEXCOORD	4
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define COMMON		0
+#define VARYING		0
+#define FRAG_COLOR	0
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
 
 out gl_PerVertex
 {
@@ -18,10 +22,10 @@ struct vertex
 	vec2 Texcoord;
 };
 
-out vertex Vertex;
+layout(location = VARYING) out vertex Out;
 
 void main()
 {	
-	Vertex.Texcoord = Texcoord;
+	Out.Texcoord = Texcoord;
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }

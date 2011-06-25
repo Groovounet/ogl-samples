@@ -1,22 +1,18 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
-#define FRAG_COLOR		0
-
-struct vertex
-{
-	vec2 Texcoord;
-	vec3 Color;
-};
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define VERTEX		0
+#define FRAG_COLOR	0
 
 uniform sampler2D Diffuse;
 
-in vertex Vertex;
+layout(location = COLOR) in vec3 Color;
+layout(location = TEXCOORD) in vec2 Texcoord;
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	FragColor = texture(Diffuse, Vertex.Texcoord) * vec4(Vertex.Color, 1.0);
+	FragColor = texture(Diffuse, Texcoord) * vec4(Color, 1.0);
 }

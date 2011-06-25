@@ -7,12 +7,15 @@
 
 precision highp float;
 
-in vec4 GeomColor;
+in block
+{
+	vec4 Color;
+} In;
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	Color = GeomColor;
+	FragColor = In.Color;
 }
 

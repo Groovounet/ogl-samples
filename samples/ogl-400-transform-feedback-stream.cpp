@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Transform Feedback Object
-// 20/05/2010 - 26/06/2010
+// OpenGL Transform Feedback Stream
+// 20/05/2010 - 24/06/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,17 +13,17 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Object";
+	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Stream";
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
 	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/flat-color.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(0);
 
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const VertexData[VertexCount] =
 	{
@@ -37,20 +37,20 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLuint FeedbackName = 0;
+	GLuint FeedbackName(0);
 
-	GLuint TransformProgramName = 0;
-	GLuint TransformArrayBufferName = 0;
-	GLuint TransformVertexArrayName = 0;
-	GLint TransformUniformDiffuse = 0;
-	GLint TransformUniformMVP = 0;
+	GLuint TransformProgramName(0);
+	GLuint TransformArrayBufferName(0);
+	GLuint TransformVertexArrayName(0);
+	GLint TransformUniformDiffuse(0);
+	GLint TransformUniformMVP(0);
 
-	GLuint FeedbackProgramName = 0;
-	GLuint FeedbackArrayBufferName = 0;
-	GLuint FeedbackVertexArrayName = 0;
-	GLint FeedbackUniformDiffuse = 0;
+	GLuint FeedbackProgramName(0);
+	GLuint FeedbackArrayBufferName(0);
+	GLuint FeedbackVertexArrayName(0);
+	GLint FeedbackUniformDiffuse(0);
 
-	GLuint Query = 0;
+	GLuint Query(0);
 
 }//namespace
 
