@@ -11,14 +11,10 @@ precision highp int;
 
 uniform sampler2D Diffuse;
 
-layout(location = VARYING) in block
-{
-	vec2 Texcoord;
-} In;
-
+layout(location = TEXCOORD) in vec2 VertTexcoord;
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = texture(Diffuse, In.Texcoord);
+	Color = texture(Diffuse, VertTexcoord);
 }

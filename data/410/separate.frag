@@ -14,7 +14,12 @@ struct vertex
 
 uniform sampler2D Diffuse;
 
-layout(location = VERTEX) in vertex In;
+//layout(location = VERTEX) in vertex In;
+layout(location = VERTEX) in block
+{
+	vec2 Texcoord;
+	vec3 Color;
+} In;
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()

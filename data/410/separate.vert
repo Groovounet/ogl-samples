@@ -17,7 +17,12 @@ uniform mat4 MVP;
 layout(location = POSITION) in vec2 Position;
 layout(location = TEXCOORD) in vec2 Texcoord;
 
-layout(location = VERTEX) out vertex Out;
+//layout(location = VERTEX) out vertex Out;
+layout(location = VERTEX) out block
+{
+	vec2 Texcoord;
+	vec3 Color;
+} Out;
 
 out gl_PerVertex
 {

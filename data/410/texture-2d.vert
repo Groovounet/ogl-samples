@@ -14,10 +14,7 @@ uniform mat4 MVP;
 layout(location = POSITION) in vec2 Position;
 layout(location = TEXCOORD) in vec2 Texcoord;
 
-layout(location = VARYING) out block
-{
-	vec2 Texcoord;
-} Out;
+layout(location = TEXCOORD) out vec2 VertTexcoord;
 
 out gl_PerVertex
 {
@@ -26,6 +23,6 @@ out gl_PerVertex
 
 void main()
 {	
-	Out.Texcoord = Texcoord;
+	VertTexcoord = Texcoord;
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }
