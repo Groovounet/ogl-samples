@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Transform Feedback
-// 06/04/2010
+// OpenGL Transform Feedback Separated
+// 06/04/2010 - 22/06/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,10 +13,10 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback";
+	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Interleaved";
 	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "330/flat-color.frag");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed.vert");
+	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/transformed-separated.vert");
 	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -25,7 +25,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionData[VertexCount] =
 	{
@@ -37,19 +37,19 @@ namespace
 		glm::vec2(-1.0f,-1.0f)
 	};
 
-	GLuint TransformProgramName = 0;
-	GLuint TransformArrayBufferName = 0;
-	GLuint TransformVertexArrayName = 0;
-	GLint TransformUniformDiffuse = 0;
-	GLint TransformUniformMVP = 0;
+	GLuint TransformProgramName(0);
+	GLuint TransformArrayBufferName(0);
+	GLuint TransformVertexArrayName(0);
+	GLint TransformUniformDiffuse(0);
+	GLint TransformUniformMVP(0);
 
-	GLuint FeedbackProgramName = 0;
-	GLuint FeedbackArrayBufferName = 0;
-	GLuint FeedbackVertexArrayName = 0;
-	GLint FeedbackUniformDiffuse = 0;
-	GLint FeedbackUniformMVP = 0;
+	GLuint FeedbackProgramName(0);
+	GLuint FeedbackArrayBufferName(0);
+	GLuint FeedbackVertexArrayName(0);
+	GLint FeedbackUniformDiffuse(0);
+	GLint FeedbackUniformMVP(0);
 
-	GLuint Query = 0;
+	GLuint Query(0);
 
 }//namespace
 
@@ -69,29 +69,29 @@ bool initProgram()
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
 
-		GLchar const * Strings[] = {"gl_Position"}; 
+		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); 
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 
 		// BUG AMD 10.12
-		//char Name[64];
-		//memset(Name, 0, 64);
-		//GLsizei Length(0);
-		//GLsizei Size(0);
-		//GLenum Type(0);
+		char Name[64];
+		memset(Name, 0, 64);
+		GLsizei Length(0);
+		GLsizei Size(0);
+		GLenum Type(0);
 
-		//glGetTransformFeedbackVaryingGTC(
-		//	TransformProgramName,
-		//	0,
-		//	64,
-		//	&Length,
-		//	&Size,
-		//	&Type,
-		//	Name);
+		glGetTransformFeedbackVarying(
+			TransformProgramName,
+			0,
+			64,
+			&Length,
+			&Size,
+			&Type,
+			Name);
 
-		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
+		Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
 	}
 
 	// Get variables locations

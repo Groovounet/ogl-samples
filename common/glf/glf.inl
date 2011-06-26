@@ -9,6 +9,12 @@ bool begin();
 bool end();
 void display();
 
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWARRAYSINDIRECTPROC) (GLenum mode, const void* indirect, GLsizei primcount, GLsizei stride);
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum type, const GLvoid* indirect, GLsizei primcount, GLsizei stride);
+
+PFNGLMULTIDRAWARRAYSINDIRECTPROC glMultiDrawArraysIndirectAMD = 0;
+PFNGLMULTIDRAWELEMENTSINDIRECTPROC glMultiDrawElementsIndirectAMD = 0;
+
 namespace glf
 {
 	inline void swapBuffers()
@@ -296,6 +302,10 @@ namespace glf
 		glMakeBufferResidentNV = (PFNGLMAKEBUFFERRESIDENTNVPROC)glutGetProcAddress("glMakeBufferResidentNV");
 		glVertexAttribFormatNV = (PFNGLVERTEXATTRIBFORMATNVPROC)glutGetProcAddress("glVertexAttribFormatNV");
 		glBufferAddressRangeNV = (PFNGLBUFFERADDRESSRANGENVPROC)glutGetProcAddress("glBufferAddressRangeNV");
+
+		// Load GL_AMD_multi_draw_indirect extension
+		glMultiDrawArraysIndirectAMD = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)glutGetProcAddress("glMultiDrawArraysIndirectAMD");
+		glMultiDrawElementsIndirectAMD = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)glutGetProcAddress("glMultiDrawElementsIndirectAMD");
 #endif// All but Apple
 	}
 
