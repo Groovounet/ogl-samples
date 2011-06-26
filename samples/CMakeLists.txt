@@ -8,7 +8,7 @@ function(glCreateSampleGTC NAME)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
 	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
-	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
+#	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
 	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES})
 endfunction(glCreateSampleGTC)
 
@@ -21,8 +21,6 @@ endfunction(glCreateSampleGTC)
 #add_subdirectory(ogl-buffer-texture)
 
 if(APPLE)
-
-# OpenGL 2.1 samples
 set(GL_VERSION_GTC 210)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
@@ -32,8 +30,8 @@ glCreateSampleGTC(draw-elements)
 glCreateSampleGTC(draw-range)
 
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(image-2d)
-glCreateSampleGTC(image-2d-compressed)
+glCreateSampleGTC(texture-2d)
+glCreateSampleGTC(texture-compressed-ext)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
 glCreateSampleGTC(query-occlusion)

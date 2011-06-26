@@ -27,6 +27,7 @@ endmacro(addExternalPackageGTC)
 # Add GLEXT 
 
 find_package(OpenGL)
+find_package(GLUT)
 if(NOT OPENGL_FOUND)
 	message("ERROR: OpenGL not found")
 endif(NOT OPENGL_FOUND)
@@ -42,12 +43,19 @@ addExternalPackageGTC("GLI" "gli-0.3.1.0")
 ################################
 # Add libraries to executables
 
+if(APPLE)
+set(BINARY_FILES 
+	${OPENGL_LIBRARY} 
+	${GLM_LIBRARY} 
+	${GLI_LIBRARY})
+else(APPLE)
 set(BINARY_FILES 
 	${OPENGL_LIBRARY} 
 	${FREEGLUT_LIBRARY} 
 	${GLEW_LIBRARY}
 	${GLM_LIBRARY} 
 	${GLI_LIBRARY})
+endif(APPLE)
 
 ################################
 # Add output directory
@@ -65,6 +73,13 @@ endif(MSVC)
 ################################
 # Add custom target to copy all data
 
+if(APPLE)
+	add_custom_target(
+		${TARGET_DATA_COPY}
+ 		COMMAND ls)
+
+else(APPLE)
+
 set(TARGET_DATA_COPY DATA_COPY)
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 	add_custom_target(
@@ -75,6 +90,8 @@ else(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 		${TARGET_DATA_COPY}
  		COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
 endif(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
+
+endif(APPLE)
 
 set(OGL_DATA_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 

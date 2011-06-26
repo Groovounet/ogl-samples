@@ -1,4 +1,8 @@
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
 #include <GL/freeglut.h>
+#endif
 
 bool check();
 bool begin();
@@ -17,7 +21,7 @@ namespace glf
 	{
 		return Major * 100 + Minor * 10;
 	}
-
+#if !defined(__APPLE__)
 	inline bool checkGLVersion(GLint MajorVersionRequire, GLint MinorVersionRequire)
 	{
 		GLint MajorVersionContext = 0;
@@ -37,10 +41,11 @@ namespace glf
 				return true;
 		return false;
 	}
+#endif
 
 	inline void init()
 	{
-#if(defined(WIN32) || defined(__GNUC__) || defined(__MINGW32__)) //__APPLE__
+#if ((defined(WIN32) || defined(__GNUC__) || defined(__MINGW32__)) && !defined(__APPLE__))
 		glewInit();
 		glGetError();
 
@@ -386,7 +391,7 @@ namespace glf
 		}
 		return Error == GL_NO_ERROR;
 	}
-
+#if !defined(__APPLE__)
 	bool checkFramebuffer(GLuint FramebufferName)
 	{
 		GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -420,7 +425,7 @@ namespace glf
 
 		return Status != GL_FRAMEBUFFER_COMPLETE;
 	}
-
+#endif
 	inline bool validateProgram(GLuint ProgramName)
 	{
 		if(!ProgramName)
@@ -500,7 +505,7 @@ namespace glf
 
 		return Name;
 	}
-
+#if !defined(__APPLE__)
 	static void APIENTRY debugOutput
 	(
 		GLenum source,
@@ -585,7 +590,7 @@ namespace glf
 		   delete [] lengths;
 		   delete [] messageLog;
 	}
-
+#endif
 	static void keyboard(unsigned char key, int x, int y)
 	{
 		switch(key) 
@@ -686,15 +691,20 @@ namespace glf
 		glutInitWindowPosition(64, 64);
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);// | GLUT_MULTISAMPLE);
+#if !defined(__APPLE__)
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 320)
 		{
 			glutInitContextProfile(GLUT_CORE_PROFILE); // GLUT_COMPATIBILITY_PROFILE
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 		}
+#endif//__APPLE__
 
 		glutCreateWindow(argv[0]);
+
+#if !defined(__APPLE__)
 		glewInit();
+#endif//__APPLE__
 
 		glGetError();
 		glf::init();
@@ -707,10 +717,10 @@ namespace glf
 			glutMotionFunc(glf::motion);
 			glutKeyboardFunc(glf::keyboard);
 			glutIdleFunc(glf::idle);
+#if !defined(__APPLE__)
 			glutCloseFunc(glf::close);
-
 			glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-
+#endif//__APPLE__
 			glutMainLoop();
 
 			return 0;
