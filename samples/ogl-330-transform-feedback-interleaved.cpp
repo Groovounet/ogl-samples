@@ -208,41 +208,36 @@ void display()
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
-	// Clear color buffer with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	// Clear color buffer
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// First draw, capture the attributes
-	{
-		// Disable rasterisation, vertices processing only!
-		glEnable(GL_RASTERIZER_DISCARD);
+	// Disable rasterisation, vertices processing only!
+	glEnable(GL_RASTERIZER_DISCARD);
 
-		glUseProgram(TransformProgramName);
-		glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glUseProgram(TransformProgramName);
+	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 
-		glBindVertexArray(TransformVertexArrayName);
+	glBindVertexArray(TransformVertexArrayName);
 
-		glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, Query); 
-		glBeginTransformFeedback(GL_TRIANGLES);
-			glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
-		glEndTransformFeedback();
-		glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN); 
+	glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, Query); 
+	glBeginTransformFeedback(GL_TRIANGLES);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glEndTransformFeedback();
+	glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN); 
 
-		glDisable(GL_RASTERIZER_DISCARD);
-	}
+	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
-	{
-		glUseProgram(FeedbackProgramName);
+	glUseProgram(FeedbackProgramName);
 
-		GLuint PrimitivesWritten = 0;
-		glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);
+	GLuint PrimitivesWritten = 0;
+	glGetQueryObjectuiv(Query, GL_QUERY_RESULT, &PrimitivesWritten);
 
-		glBindVertexArray(FeedbackVertexArrayName);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, PrimitivesWritten * 3, 1);
-	}
+	glBindVertexArray(FeedbackVertexArrayName);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, PrimitivesWritten * 3, 1);
 
 	glf::swapBuffers();
 	glf::checkError("display");
