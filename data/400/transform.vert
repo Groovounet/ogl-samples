@@ -6,11 +6,9 @@
 #define INSTANCE	7
 #define FRAG_COLOR	0
 
-uniform vec4 Diffuse;
-
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = POSITION) in vec4 Position;
 
 void main()
-{
-	Color = Diffuse;
+{	
+	gl_Position = Position;
 }
