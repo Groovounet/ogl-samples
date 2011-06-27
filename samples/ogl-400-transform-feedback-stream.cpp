@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Stream";
-	std::string const VERTEX_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/flat-color.frag");
-	std::string const VERTEX_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/transformed.vert");
-	std::string const FRAGMENT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/flat-color.frag");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/transform-stream.vert");
+	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/transform-stream.frag");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback-stream.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback-stream.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -61,14 +61,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_TRANSFORM);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_TRANSFORM);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_TRANSFORM);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE_TRANSFORM);
 
 		TransformProgramName = glCreateProgram();
-		glAttachShader(TransformProgramName, VertexShaderName);
-		glAttachShader(TransformProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(TransformProgramName, VertShaderName);
+		glAttachShader(TransformProgramName, GeomShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(GeomShaderName);
 
 		GLchar const * Strings[] = {"gl_Position"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 1, Strings, GL_SEPARATE_ATTRIBS); // GL_INTERLEAVED_ATTRIBS GL_SEPARATE_ATTRIBS
@@ -87,14 +87,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE_FEEDBACK);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE_FEEDBACK);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
-		glAttachShader(FeedbackProgramName, VertexShaderName);
-		glAttachShader(FeedbackProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(FeedbackProgramName, VertShaderName);
+		glAttachShader(FeedbackProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
