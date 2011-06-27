@@ -8,7 +8,7 @@ function(glCreateSampleGTC NAME)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
 	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
-#	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
+	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
 	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES})
 endfunction(glCreateSampleGTC)
 

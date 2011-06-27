@@ -163,7 +163,7 @@ bool initArrayBuffer()
 
 	glGenBuffers(1, &FeedbackArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * VertexCount, NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * 6, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
@@ -244,7 +244,7 @@ void display()
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDrawTransformFeedback(GL_TRIANGLES, FeedbackName);
+	glDrawTransformFeedback(GL_TRIANGLE_STRIP, FeedbackName);
 
 	glf::swapBuffers();
 }
