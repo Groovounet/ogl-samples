@@ -38,6 +38,13 @@ The sample run only when launched from Visual C++ IDE.
 Linux, MacOSX or MinGW are not supported... 
 
 ================================================================================
+OpenGL Samples Pack 4.1.7.0: 2011-07-XX
+--------------------------------------------------------------------------------
+- Removed all the workaround used since OpenGL 3.3 beta drivers release
+- Completed transformed feedback tests
+- Some samples refactoring
+
+================================================================================
 OpenGL Samples Pack 4.1.6.1: 2011-06-22
 --------------------------------------------------------------------------------
 - Added this readme.txt
