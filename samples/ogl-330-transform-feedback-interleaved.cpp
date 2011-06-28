@@ -69,29 +69,46 @@ bool initProgram()
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
 
-		//// BUG AMD 10.12
-		//char Name[64];
-		//memset(Name, 0, 64);
-		//GLsizei Length(0);
-		//GLsizei Size(0);
-		//GLenum Type(0);
+		// BUG AMD 10.12
+		char Name[64];
+		memset(Name, 0, 64);
+		GLsizei Length(0);
+		GLsizei Size(0);
+		GLenum Type(0);
 
-		//glGetTransformFeedbackVarying(
-		//	TransformProgramName,
-		//	0,
-		//	64,
-		//	&Length,
-		//	&Size,
-		//	&Type,
-		//	Name);
+		glGetTransformFeedbackVarying(
+			TransformProgramName,
+			0,
+			64,
+			&Length,
+			&Size,
+			&Type,
+			Name);
 
-		//Validated = Validated && (Size == 4) && (Type == GL_FLOAT_VEC4);
+		Validated = Validated && (Size == 1) && (Type == GL_FLOAT_VEC4);
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
 		TransformUniformMVP = glGetUniformLocation(TransformProgramName, "MVP");
+
+		char Name[64];
+		memset(Name, 0, 64);
+		GLsizei Length(0);
+		GLsizei Size(0);
+		GLenum Type(0);
+
+		glGetActiveUniform(
+			TransformProgramName,
+ 			TransformUniformMVP,
+ 			64,
+			&Length,
+			&Size,
+			&Type,
+			Name);
+
+		Validated = Validated && (Size == 1) && (Type == GL_FLOAT_MAT4);
 		Validated = Validated && (TransformUniformMVP >= 0);
 	}
 
