@@ -8,8 +8,8 @@
 layout(triangles, invocations = 6) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout(location = COLOR) in vec3 Color[];
-layout(location = COLOR, stream = 0) out vec3 GeomColor; // Error on AMD 644431: error(#355) layout location can only set once.
+layout(location = COLOR) flat in vec4 Color[];
+layout(location = COLOR) flat out vec4 GeomColor; // Error on AMD 644431: error(#355) layout location can only set once.
 
 in gl_PerVertex
 {
@@ -32,7 +32,7 @@ void main()
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = MVP * (gl_in[i].gl_Position + vec4(vec2(0.0), - 0.3 + float(0.1) * float(gl_InvocationID), 0.0));
-		GeomColor = (vec3(gl_InvocationID + 1) / 6.0 + Color[i]) / 2.0; 
+		GeomColor = (vec4(gl_InvocationID + 1) / 6.0 + Color[i]) / 2.0; 
 		EmitVertex();
 	}
 	EndPrimitive();
