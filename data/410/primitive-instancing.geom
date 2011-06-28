@@ -8,8 +8,8 @@
 layout(triangles, invocations = 6) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout(location = COLOR) in vec3 Color[];
-layout(location = COLOR, stream = 0) out vec3 GeomColor; // Error on AMD 644431: error(#355) layout location can only set once.
+layout(location = COLOR) flat in vec3 Color[];
+layout(location = COLOR) flat out vec3 GeomColor; // Error on AMD 644431: error(#355) layout location can only set once.
 
 in gl_PerVertex
 {

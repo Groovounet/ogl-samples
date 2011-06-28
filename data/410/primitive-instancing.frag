@@ -7,7 +7,7 @@
 
 uniform vec4 Diffuse;
 
-layout(location = COLOR) in vec3 Color;
+layout(location = COLOR) flat in vec3 Color;
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
