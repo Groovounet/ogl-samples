@@ -5,8 +5,9 @@
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-layout(location = POSITION) in vec3 Position;
-layout(location = COLOR) out vec3 VertColor;
+layout(location = POSITION) in vec2 Position;
+layout(location = COLOR) in vec4 Color;
+layout(location = COLOR) flat out vec4 VertColor;
 
 out gl_PerVertex
 {
@@ -15,7 +16,7 @@ out gl_PerVertex
 
 void main()
 {	
-	gl_Position = vec4(Position, 1.0);
-	VertColor = vec3(1.0, 0.5, 0.0);
+	gl_Position = vec4(Position, 0.0, 1.0);
+	VertColor = Color;
 }
 
