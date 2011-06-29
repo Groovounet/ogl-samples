@@ -115,7 +115,7 @@ bool initVertexArray()
 
 		glBindBuffer(GL_ARRAY_BUFFER, ColorBufferName);
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
+		glVertexAttribDivisor(glf::semantic::attr::COLOR, 2);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -175,7 +175,7 @@ void display()
 	glUseProgram(ProgramName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, InstanceCount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 10);
 
 	glf::swapBuffers();
 	glf::checkError("display");

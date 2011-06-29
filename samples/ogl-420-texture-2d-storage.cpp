@@ -127,6 +127,16 @@ bool initTexture2D()
 			GL_BGRA, 
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
+
+		glCopyTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGBA8, 
+			0, 
+			0, 
+			GLsizei(Image[Level].dimensions().x),
+			GLsizei(Image[Level].dimensions().y), 
+			0);
 	}
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

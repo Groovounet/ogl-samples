@@ -17,6 +17,6 @@ out block
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position, float(gl_InstanceID) * 0.25 - 0.5, 1.0);
+	gl_Position = MVP * vec4(Position, float(gl_InstanceID) * 0.125 - 0.5, 1.0);
 	Out.Color = Color;
 }

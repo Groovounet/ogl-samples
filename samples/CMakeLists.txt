@@ -257,8 +257,6 @@ glCreateSampleGTC(texture-image-ext)
 # OpenGL 4.2 samples
 set(GL_VERSION_GTC 420)
 
-set(GL_SHADER_GTC buffer-uniform.vert buffer-uniform.frag)
-glCreateSampleGTC(buffer-uniform)
 set(GL_SHADER_GTC draw-base-instance.vert draw-base-instance.frag)
 glCreateSampleGTC(draw-base-instance)
 set(GL_SHADER_GTC glsl-block-location.cont glsl-block-location.eval glsl-block-location.frag glsl-block-location.geom glsl-block-location.vert)
@@ -269,11 +267,11 @@ set(GL_SHADER_GTC glsl-struct-location.cont glsl-struct-location.eval glsl-struc
 glCreateSampleGTC(glsl-struct-location)
 set(GL_SHADER_GTC glsl-struct-name.cont glsl-struct-name.eval glsl-struct-name.frag glsl-struct-name.geom glsl-struct-name.vert)
 glCreateSampleGTC(glsl-struct-name)
+set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geom layer.frag)
+glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image)
-set(GL_SHADER_GTC texture-2d-storage.vert texture-2d-storage.frag)
-glCreateSampleGTC(texture-2d-storage)
-set(GL_SHADER_GTC transform-instanced.vert feedback-instanced.vert feedback-instanced.frag)
+set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)
 glCreateSampleGTC(transform-feedback-instanced)
 
 endif(APPLE)

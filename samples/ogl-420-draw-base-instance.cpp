@@ -154,7 +154,7 @@ void display()
 	glUseProgram(ProgramName);
 
     glBindVertexArray(VertexArrayName);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 5, 2);
 
 	glf::checkError("display");
 	glf::swapBuffers();
