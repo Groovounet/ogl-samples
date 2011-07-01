@@ -13,9 +13,6 @@
 
 namespace
 {
-	typedef void (GLAPIENTRY * PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC) (GLuint texture, GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
-	PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC glTextureImage2DMultisampleGTC = 0;
-
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";
 	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
@@ -202,7 +199,7 @@ bool initTexture2D()
 bool initFramebuffer()
 {
 	glGenTextures(1, &MultisampleTextureName);
-	glTextureImage2DMultisampleGTC(MultisampleTextureName, GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+	glTextureImage2DMultisampleNV(MultisampleTextureName, GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
 	glNamedFramebufferTextureEXT(FramebufferRenderName, GL_COLOR_ATTACHMENT0, MultisampleTextureName, 0);
@@ -233,21 +230,11 @@ bool initVertexArray()
 
 bool begin()
 {
-	glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisample");
-	if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleNV");
-	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleAMD");
-	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleEXT");
-	else if(!glTextureImage2DMultisampleGTC)
-		glTextureImage2DMultisampleGTC = (PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTextureImage2DMultisampleARB");
-
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
-	Validated = Validated && glTextureImage2DMultisampleGTC != 0;
-
+	Validated = Validated && glf::checkExtension("GL_NV_texture_multisample");
+	
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

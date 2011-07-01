@@ -216,9 +216,6 @@ glCreateSampleGTC(transform-feedback-object)
 set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)
 glCreateSampleGTC(transform-feedback-stream)
 
-set(GL_SHADER_GTC fetch.vert error-fetch.frag)
-glCreateSampleGTC(error-sampler-fetch)
-
 # OpenGL 4.1 samples
 set(GL_VERSION_GTC 410)
 
@@ -231,7 +228,7 @@ glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(fbo-multisample-dsa-ext)
 set(GL_SHADER_GTC multisample-gtc.vert multisample-gtc.frag)
-glCreateSampleGTC(fbo-multisample-dsa-gtc)
+glCreateSampleGTC(fbo-multisample-dsa-nv)
 set(GL_SHADER_GTC multisample-amd.vert multisample-amd.frag)
 glCreateSampleGTC(fbo-multisample-position-amd)
 set(GL_SHADER_GTC separate.vert separate.frag)
