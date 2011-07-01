@@ -34,7 +34,7 @@ void main()
 	ivec2 CoordMin = ivec2(Vert.Texcoord * SizeMin);
 	ivec2 CoordMax = ivec2(Vert.Texcoord * SizeMax);
 	
-	vec4 TexelMin00 = texelFetch(Diffuse, CoordMin + ivec2(0, 0), LevelMin);
+	vec4 TexelMin00 = texelFetch(Diffuse, CoordMin + ivec2(0, 0), LevelMin, 0);
 	vec4 TexelMin10 = texelFetch(Diffuse, CoordMin + ivec2(1, 0), LevelMin);
 	vec4 TexelMin11 = texelFetch(Diffuse, CoordMin + ivec2(1, 1), LevelMin);
 	vec4 TexelMin01 = texelFetch(Diffuse, CoordMin + ivec2(0, 1), LevelMin);
