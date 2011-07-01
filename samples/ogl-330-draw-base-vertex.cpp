@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL multiple draw base vertex
-// 04/12/2009
+// OpenGL Draw base vertex
+// 01/07/2011 - 01/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL multiple draw base vertex";
+	std::string const SAMPLE_NAME = "OpenGL Draw base vertex";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -23,7 +23,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);
 	glm::uint32 const ElementData[ElementCount] =
 	{
@@ -31,7 +31,7 @@ namespace
 		0, 2, 3
 	};
 
-	GLsizei const VertexCount = 8;
+	GLsizei const VertexCount(8);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec3);
 	glm::vec3 const PositionData[VertexCount] =
 	{
@@ -45,7 +45,6 @@ namespace
 		glm::vec3(-1.5f, 1.0f,-0.5f)
 	};
 
-	GLsizei Count[2] = {ElementCount, ElementCount};
 	GLvoid * Indexes[2] = {0, 0};
 	GLint BaseVertex[2] = {0, 4};
 
@@ -163,16 +162,9 @@ void display()
 
 	glUseProgram(ProgramName);
 
-// Bug fix for cross platform build...
-#	ifdef WIN32
-#		define CONV(x)		x
-#	else
-#		define CONV(x)		(const void **)x
-#	endif
-
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	glMultiDrawElementsBaseVertex(GL_TRIANGLES, Count, GL_UNSIGNED_INT, CONV(Indexes), 2, BaseVertex);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 1, 4);
 
 	glf::swapBuffers();
 	glf::checkError("display");
