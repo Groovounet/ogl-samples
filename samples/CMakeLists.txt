@@ -272,6 +272,8 @@ set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geo
 glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-2d-storage)
+set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
+glCreateSampleGTC(texture-2d-compressed-ext)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image)
 set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)

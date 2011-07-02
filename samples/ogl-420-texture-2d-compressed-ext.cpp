@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Texture 2D Compressed
-// 27/08/2009
+// 02/07/2011 - 03/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -15,17 +15,17 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
-	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
 	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
 	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
 	std::string const TEXTURE_DIFFUSE_BC5(glf::DATA_DIRECTORY + "kueken256-bc5.dds");
 
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(3);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -45,7 +45,7 @@ namespace
 	};
 
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
 	vertex const VertexData[VertexCount] =
 	{
@@ -120,6 +120,16 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, 4);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT, 4);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, 1);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, 64);
+	glPixelStorei(GL_PACK_COMPRESSED_BLOCK_WIDTH, 4);
+	glPixelStorei(GL_PACK_COMPRESSED_BLOCK_HEIGHT, 4);
+	glPixelStorei(GL_PACK_COMPRESSED_BLOCK_DEPTH, 1);
+	glPixelStorei(GL_PACK_COMPRESSED_BLOCK_SIZE, 8);
+
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(TEXTURE_MAX, Texture2DName);
 
