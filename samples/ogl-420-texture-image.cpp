@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Texture image
-// 09/07/2010 - 10/03/2011
+// 01/07/2011 - 02/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Texture image");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/texture-image.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-image.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-image.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -185,8 +185,7 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
-	Validated = Validated && glf::checkExtension("GL_EXT_shader_image_load_store");
+	Validated = Validated && glf::checkExtension("GL_ARB_shader_image_load_store");
 
 	if(Validated)
 		Validated = initTexture2D();
