@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Transform Feedback Stream
-// 20/05/2010 - 27/06/2011
+// OpenGL Transform Feedback Instanced
+// 01/07/2011 - 02/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Stream";
+	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Instanced";
 	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "420/transform-stream.vert");
 	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "420/transform-stream.geom");
 	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "420/feedback-stream.vert");
@@ -21,7 +21,7 @@ namespace
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(0);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glm::vec4);
@@ -171,7 +171,9 @@ bool initArrayBuffer()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_transform_feedback_instanced");
 
 	glGenQueries(1, &Query);
 
@@ -244,7 +246,7 @@ void display()
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDrawTransformFeedback(GL_TRIANGLE_STRIP, FeedbackName);
+	glDrawTransformFeedbackInstanced(GL_TRIANGLE_STRIP, FeedbackName, 5);
 
 	glf::swapBuffers();
 }

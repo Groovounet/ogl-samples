@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Texture 2D
-// 27/08/2009 - 11/03/2011
+// OpenGL Immutable Texture 2D
+// 27/06/2011 - 01/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,14 +13,14 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Texture 2D";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
-	int const SAMPLE_MAJOR_VERSION(3);
-	int const SAMPLE_MINOR_VERSION(3);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(2);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -104,39 +104,31 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &TextureName);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Image.levels()), GL_RGBA8, GLsizei(Image[0].dimensions().x), GLsizei(Image[0].dimensions().y));
 
-	// Set image
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
-		glTexImage2D(
+		glTexSubImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGBA8, 
+			0, 0, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
-			0,  
-			GL_BGRA, 
-			GL_UNSIGNED_BYTE, 
+			GL_BGRA, GL_UNSIGNED_BYTE, 
 			Image[Level].data());
-
-		glCopyTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGBA8, 
-			0, 
-			0, 
-			GLsizei(Image[Level].dimensions().x),
-			GLsizei(Image[Level].dimensions().y), 
-			0);
 	}
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -162,7 +154,9 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_ARB_texture_storage");
 
 	if(Validated)
 		Validated = initTexture2D();

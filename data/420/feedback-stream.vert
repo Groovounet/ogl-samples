@@ -1,4 +1,4 @@
-#version 400 core
+#version 410 core
 
 #define POSITION	0
 #define COLOR		3
@@ -14,7 +14,7 @@ out block
 
 void main()
 {	
-	gl_Position = Position;
+	gl_Position = Position + vec4(0, 0, float(gl_InstanceID) * 0.25 - 0.5, 0);
 	Out.Color = Color;
 }
 
