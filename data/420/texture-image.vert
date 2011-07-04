@@ -1,12 +1,12 @@
 #version 410 core
 
-#define ATTR_POSITION	0
-#define ATTR_TEXCOORD	4
+#define POSITION	0
+#define TEXCOORD	4
 
 uniform mat4 MVP;
 
-layout(location = ATTR_POSITION) in vec2 Position;
-layout(location = ATTR_TEXCOORD) in vec2 Texcoord;
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
 
 out gl_PerVertex
 {
