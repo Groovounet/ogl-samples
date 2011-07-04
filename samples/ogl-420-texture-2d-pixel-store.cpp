@@ -171,7 +171,7 @@ bool begin()
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_texture_compression_s3tc");
-	//Validated = Validated && glf::checkExtension("GL_ARB_compressed_texture_pixel_storage");
+	Validated = Validated && glf::checkExtension("GL_ARB_compressed_texture_pixel_storage");
 
 	if(Validated)
 		Validated = initProgram();

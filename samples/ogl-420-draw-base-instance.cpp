@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Draw Instanced
-// 26/08/2009
+// OpenGL Draw base instance
+// 04/07/2011 - 04/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,33 +13,48 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Draw Instanced";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 3;
-	int const SAMPLE_MINOR_VERSION = 3;
+	std::string const SAMPLE_NAME = "OpenGL Draw base instance";
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.frag");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizei const ElementCount(6);
+	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);
+	glm::uint32 const ElementData[ElementCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f),
-		glm::vec2(-1.0f,-1.0f)
+		0, 1, 2,
+		0, 2, 3
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
-	GLuint BufferName = 0;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLsizei const VertexCount(12);
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec3);
+	glm::vec3 const PositionData[VertexCount] =
+	{
+		glm::vec3(-1.0f,-1.0f, 0.5f),
+		glm::vec3( 1.0f,-1.0f, 0.5f),
+		glm::vec3( 1.0f, 1.0f, 0.5f),
+		glm::vec3(-1.0f, 1.0f, 0.5f),
+		glm::vec3(-0.5f,-1.0f,-0.5f),
+		glm::vec3( 0.5f,-1.0f,-0.5f),
+		glm::vec3( 1.5f, 1.0f,-0.5f),
+		glm::vec3(-1.5f, 1.0f,-0.5f),
+		glm::vec3(-0.5f,-0.5f,-0.5f),
+		glm::vec3( 0.5f,-0.5f,-0.5f),
+		glm::vec3( 0.5f, 0.5f,-0.5f),
+		glm::vec3(-0.5f, 0.5f,-0.5f)
+	};
+
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLuint ArrayBufferName(0);
+	GLuint ElementBufferName(0);
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 }//namespace
 
 bool initTest()
@@ -82,10 +97,15 @@ bool initProgram()
 
 bool initArrayBuffer()
 {
-	glGenBuffers(1, &BufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+	glGenBuffers(1, &ArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenBuffers(1, &ElementBufferName);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
 }
@@ -94,8 +114,8 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
@@ -107,8 +127,7 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
-	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
+	//Validated = Validated && glf::checkExtension("GL_ARB_base_instance");
 
 	if(Validated)
 		Validated = initTest();
@@ -125,7 +144,8 @@ bool begin()
 bool end()
 {
 	// Delete objects
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(1, &ArrayBufferName);
+	glDeleteBuffers(1, &ElementBufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
@@ -154,7 +174,9 @@ void display()
 	glUseProgram(ProgramName);
 
     glBindVertexArray(VertexArrayName);
-	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 5, 2);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 4);
+	//glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 4, 4);
 
 	glf::checkError("display");
 	glf::swapBuffers();

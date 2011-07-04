@@ -45,15 +45,12 @@ namespace
 		glm::vec3(-1.5f, 1.0f,-0.5f)
 	};
 
-	GLvoid * Indexes[2] = {0, 0};
-	GLint BaseVertex[2] = {0, 4};
-
-	GLuint VertexArrayName;
-	GLuint ProgramName;
-	GLuint ArrayBufferName;
-	GLuint ElementBufferName;
-	GLint UniformMVP;
-	GLint UniformDiffuse;
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLuint ArrayBufferName(0);
+	GLuint ElementBufferName(0);
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 }//namespace
 
 bool initProgram()
