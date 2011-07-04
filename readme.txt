@@ -43,6 +43,7 @@ OpenGL Samples Pack 4.1.7.0: 2011-07-XX
 - Removed all the workaround used since OpenGL 3.3 beta drivers release
 - Completed transformed feedback tests
 - Some samples refactoring
+- Added pixel store for texture 2d sample
 
 ================================================================================
 OpenGL Samples Pack 4.1.6.1: 2011-06-22
