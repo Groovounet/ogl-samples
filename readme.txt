@@ -38,6 +38,15 @@ The sample run only when launched from Visual C++ IDE.
 Linux, MacOSX or MinGW are not supported... 
 
 ================================================================================
+OpenGL Samples Pack 4.2.0.0: 2011-08-XX
+--------------------------------------------------------------------------------
+- Added draw base instance sample
+- Added pixel store for compressed texture 2d sample
+- Added immunable texture sample
+- Added texture image sample
+- Added transform feedback instancing sample
+
+================================================================================
 OpenGL Samples Pack 4.1.7.0: 2011-07-XX
 --------------------------------------------------------------------------------
 - Removed all the workaround used since OpenGL 3.3 beta drivers release
