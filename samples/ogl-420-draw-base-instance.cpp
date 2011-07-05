@@ -116,6 +116,7 @@ bool initVertexArray()
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::POSITION, 1);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
@@ -127,7 +128,7 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	//Validated = Validated && glf::checkExtension("GL_ARB_base_instance");
+	Validated = Validated && glf::checkExtension("GL_ARB_base_instance");
 
 	if(Validated)
 		Validated = initTest();
