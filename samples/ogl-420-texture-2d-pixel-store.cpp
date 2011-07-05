@@ -110,7 +110,7 @@ bool initTexture2D()
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, 4);
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT, 4);
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, 1);
-	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, 64);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, 8);
 
 	glGenTextures(1, &Texture2DName);
 
@@ -137,8 +137,8 @@ bool initTexture2D()
 			GL_TEXTURE_2D,
 			GLint(Level),
 			GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-			GLsizei(Texture[Level].dimensions().x) / 1, 
-			GLsizei(Texture[Level].dimensions().y) / 1, 
+			GLsizei(Texture[Level].dimensions().x) / 2, 
+			GLsizei(Texture[Level].dimensions().y) / 2, 
 			0, 
 			GLsizei(Texture[Level].capacity()), 
 			Texture[Level].data());
