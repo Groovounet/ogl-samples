@@ -9,14 +9,8 @@ bool begin();
 bool end();
 void display();
 
-#ifdef _WIN32
-#define GLF_APIENTRY __stdcall
-#else 
-#define GLF_APIENTRY GLAPIENTRY
-#endif
-
-typedef void (GLF_APIENTRY * PFNGLMULTIDRAWARRAYSINDIRECTPROC) (GLenum mode, const void* indirect, GLsizei primcount, GLsizei stride);
-typedef void (GLF_APIENTRY * PFNGLMULTIDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum type, const GLvoid* indirect, GLsizei primcount, GLsizei stride);
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWARRAYSINDIRECTPROC) (GLenum mode, const void* indirect, GLsizei primcount, GLsizei stride);
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum type, const GLvoid* indirect, GLsizei primcount, GLsizei stride);
 
 PFNGLMULTIDRAWARRAYSINDIRECTPROC glMultiDrawArraysIndirectAMD = 0;
 PFNGLMULTIDRAWELEMENTSINDIRECTPROC glMultiDrawElementsIndirectAMD = 0;

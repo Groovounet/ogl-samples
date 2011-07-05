@@ -5,10 +5,11 @@
 
 // OpenGL
 #ifdef WIN32
+#	define WIN32_LEAN_AND_MEAN
+#	include <windows.h>
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
 //#	include <GL/glext.h>
-#	define GLEW_EXT_direct_state_access_memory 0
 #elif defined(linux) || defined(__linux)
 #	include <GL/glew.h>
 #	define GL_GLEXT_PROTOTYPES 1
