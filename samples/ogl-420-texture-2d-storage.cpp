@@ -40,7 +40,7 @@ namespace
 	};
 
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
 	vertex const VertexData[VertexCount] =
 	{
@@ -59,8 +59,6 @@ namespace
 	GLuint TextureName(0);
 
 	GLint UniformMVP(0);
-	GLint UniformDiffuse(0);
-
 }//namespace
 
 bool initProgram()
@@ -85,7 +83,6 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -194,7 +191,6 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glUniform1i(UniformDiffuse, 0);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);

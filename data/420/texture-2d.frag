@@ -1,11 +1,12 @@
-#version 330 core
+#version 410 core
+#extension ARB_uniform_block_binding_initialization : enable
 
 #define POSITION	0
 #define COLOR		3
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-uniform sampler2D Diffuse;
+layout(binding = 0) uniform sampler2D Diffuse;
 
 in block
 {
