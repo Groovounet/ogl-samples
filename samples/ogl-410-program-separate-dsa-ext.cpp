@@ -186,9 +186,9 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
 
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
+		glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), sizeof(glm::vec2));
+		glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), sizeof(glm::vec2));
 
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::TEXCOORD);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
