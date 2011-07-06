@@ -115,14 +115,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
 		FeedbackProgramName = glCreateProgram();
-		glAttachShader(FeedbackProgramName, VertexShaderName);
-		glAttachShader(FeedbackProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(FeedbackProgramName, VertShaderName);
+		glAttachShader(FeedbackProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);

@@ -13,9 +13,6 @@
 
 namespace
 {
-	typedef void (GLAPIENTRY * PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC) (GLuint texture, GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
-	PFNGLTEXTUREIMAGE2DMULTISAMPLEPROC glTextureImage2DMultisampleNV = 0;
-
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample DSA";	
 	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");

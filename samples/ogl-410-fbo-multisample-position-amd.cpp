@@ -210,10 +210,10 @@ bool initFramebuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MultisampleTextureName, 0);
 
-	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 0, &glm::vec2(0.5f, 0.5f)[0]);
-	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 1, &glm::vec2(0.5f, 0.5f)[0]);
-	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 2, &glm::vec2(0.5f, 0.5f)[0]);
-	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 3, &glm::vec2(0.5f, 0.5f)[0]);
+	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 0, &glm::vec2(0.5f, 0.5f)[0]);
+	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 1, &glm::vec2(0.5f, 0.5f)[0]);
+	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 2, &glm::vec2(0.5f, 0.5f)[0]);
+	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 3, &glm::vec2(0.5f, 0.5f)[0]);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;

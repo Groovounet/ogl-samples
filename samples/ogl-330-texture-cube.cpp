@@ -86,7 +86,7 @@ bool initProgram()
 		UniformCamera = glGetUniformLocation(ProgramName, "Camera");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated &&glf::checkError("initProgram");
 }
 
 bool initArrayBuffer()

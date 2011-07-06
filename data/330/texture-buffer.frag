@@ -12,7 +12,7 @@ uniform samplerBuffer Diffuse;
 
 in block
 {
-	int Instance;
+	flat int Instance;
 } In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
