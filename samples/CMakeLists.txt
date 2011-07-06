@@ -24,7 +24,6 @@ if(APPLE)
 set(GL_VERSION_GTC 210)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(buffer-type)
 glCreateSampleGTC(buffer-update)
 glCreateSampleGTC(draw-elements)
 glCreateSampleGTC(draw-range)
@@ -41,9 +40,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(sampler-anisotropy-ext)
 glCreateSampleGTC(sampler-filter)
 glCreateSampleGTC(sampler-wrap)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(test-scissor)
 
 else(APPLE)
 
@@ -51,7 +47,6 @@ else(APPLE)
 set(GL_VERSION_GTC 210)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(buffer-type)
 glCreateSampleGTC(buffer-update)
 glCreateSampleGTC(draw-elements)
 glCreateSampleGTC(draw-range)
@@ -68,9 +63,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(sampler-anisotropy-ext)
 glCreateSampleGTC(sampler-filter)
 glCreateSampleGTC(sampler-wrap)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(test-scissor)
 
 # OpenGL 3.0 samples
 set(GL_VERSION_GTC 300)
@@ -222,7 +214,7 @@ set(GL_VERSION_GTC 410)
 
 set(GL_SHADER_GTC separate.vert separate.frag)
 glCreateSampleGTC(debug-output-arb)
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+set(GL_SHADER_GTC draw-indirect.vert draw-indirect.frag)
 glCreateSampleGTC(draw-indirect-amd)
 set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geom layer.frag)
 glCreateSampleGTC(fbo-layered)

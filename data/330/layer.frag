@@ -20,9 +20,9 @@ in block
 	flat int Instance;
 } In;
 
-layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
 
 void main()
 {
-	Color = Color[In.Instance];
+	FragColor = Color[In.Instance];
 }

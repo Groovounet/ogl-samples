@@ -268,7 +268,10 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated = true;
+	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_NV_shader_buffer_load");
+	Validated = Validated && glf::checkExtension("GL_NV_vertex_buffer_unified_memory");
 
 	if(Validated)
 		Validated = initProgram();

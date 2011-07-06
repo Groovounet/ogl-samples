@@ -32,7 +32,7 @@ void main()
 		gl_ViewportIndex = gl_InvocationID;
 		gl_Position = MVP * gl_in[i].gl_Position;
 		Out.Instance = gl_InvocationID;
-		Out.Texcoord = In[i]Texcoord;
+		Out.Texcoord = In[i].Texcoord;
 		EmitVertex();
 	}
 

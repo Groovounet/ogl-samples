@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multi draw indirect";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/flat-color.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/draw-indirect.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/draw-indirect.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -23,7 +23,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);
 	glm::uint32 const ElementData[ElementCount] =
 	{
@@ -31,7 +31,7 @@ namespace
 		0, 2, 3
 	};
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionData[VertexCount] =
 	{
@@ -58,13 +58,13 @@ namespace
 		GLuint reservedMustBeZero;
     };
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
-	GLuint ArrayBufferName = 0;
-	GLuint IndirectBufferName = 0;
-	GLuint ElementBufferName = 0;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLuint ArrayBufferName(0);
+	GLuint IndirectBufferName(0);
+	GLuint ElementBufferName(0);
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 
 }//namespace
 
@@ -74,14 +74,14 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
@@ -98,16 +98,21 @@ bool initProgram()
 
 bool initIndirectBuffer()
 {
-	DrawElementsIndirectCommand Command;
-	Command.count = ElementCount;
-	Command.primCount = 1;
-	Command.firstIndex = 0;
-	Command.baseVertex = 0;
-	Command.reservedMustBeZero = 0;
+	DrawElementsIndirectCommand Command[2];
+	Command[0].count = ElementCount;
+	Command[0].primCount = 1;
+	Command[0].firstIndex = 0;
+	Command[0].baseVertex = 0;
+	Command[0].reservedMustBeZero = 0;
+	Command[1].count = ElementCount;
+	Command[1].primCount = 1;
+	Command[1].firstIndex = 0;
+	Command[1].baseVertex = 0;
+	Command[1].reservedMustBeZero = 0;
 
 	glGenBuffers(1, &IndirectBufferName);
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(Command), &Command, GL_STATIC_READ);
+    glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(Command), Command, GL_STATIC_READ);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
 	return glf::checkError("initIndirectBuffer");
@@ -190,8 +195,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName); //!\ Need to be called after glBindVertexArray...
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
-	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, 1, sizeof(DrawElementsIndirectCommand));
-	//glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, NULL);
+	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, 2, sizeof(DrawElementsIndirectCommand));
 
 	glf::checkError("display");
 	glf::swapBuffers();

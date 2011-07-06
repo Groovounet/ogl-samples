@@ -23,7 +23,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 6;
+	GLsizei const VertexCount(6);
 	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
 	glm::hvec2 const PositionDataF16[VertexCount] =
 	{
@@ -77,12 +77,12 @@ namespace
 		BUFFER_MAX
 	};
 
-	GLuint ProgramName = 0;
-	GLuint BufferName[BUFFER_MAX];
-	GLuint VertexArrayName[BUFFER_MAX];
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-	glm::ivec4 Viewport[BUFFER_MAX];
+	GLuint ProgramName(0);
+	GLuint BufferName[BUFFER_MAX] = {0, 0, 0, 0};
+	GLuint VertexArrayName[BUFFER_MAX] = {0, 0, 0, 0};
+	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
+	glm::ivec4 Viewport[BUFFER_MAX] = {glm::ivec4(0), glm::ivec4(0), glm::ivec4(0), glm::ivec4(0)};
 
 }//namespace
 
