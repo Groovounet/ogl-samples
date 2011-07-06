@@ -42,9 +42,6 @@ glCreateSampleGTC(sampler-anisotropy-ext)
 glCreateSampleGTC(sampler-filter)
 glCreateSampleGTC(sampler-wrap)
 
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(test-scissor)
-
 else(APPLE)
 
 # OpenGL 2.1 samples
@@ -68,9 +65,6 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(sampler-anisotropy-ext)
 glCreateSampleGTC(sampler-filter)
 glCreateSampleGTC(sampler-wrap)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(test-scissor)
 
 # OpenGL 3.0 samples
 set(GL_VERSION_GTC 300)
