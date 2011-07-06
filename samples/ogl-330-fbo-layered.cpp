@@ -93,7 +93,7 @@ bool initProgram()
 		glDeleteShader(GeomShaderName);
 		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName[LAYERING]);
-		Validated = glf::checkProgram(ProgramName[LAYERING]);
+		Validated = Validated && glf::checkProgram(ProgramName[LAYERING]);
 	}
 
 	if(Validated)
@@ -107,7 +107,7 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName[IMAGE_2D]);
-		Validated = glf::checkProgram(ProgramName[IMAGE_2D]);
+		Validated = Validated && glf::checkProgram(ProgramName[IMAGE_2D]);
 	}
 
 	if(Validated)
@@ -119,7 +119,7 @@ bool initProgram()
 		UniformLayer = glGetUniformLocation(ProgramName[IMAGE_2D], "Layer");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated && glf::checkError("initProgram");
 }
 
 bool initVertexBuffer()
