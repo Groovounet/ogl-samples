@@ -82,6 +82,15 @@ namespace
 
 }//namespace
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool initProgram()
 {
 	bool Validated = true;
@@ -210,11 +219,6 @@ bool initFramebuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MultisampleTextureName, 0);
 
-	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 0, &glm::vec2(0.5f, 0.5f)[0]);
-	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 1, &glm::vec2(0.5f, 0.5f)[0]);
-	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 2, &glm::vec2(0.5f, 0.5f)[0]);
-	//glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 3, &glm::vec2(0.5f, 0.5f)[0]);
-
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -260,6 +264,8 @@ bool begin()
 	//glSampleMaski(0, 0xFF);
 
 	if(Validated)
+		Validated = initDebugOutput();
+	if(Validated)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initSampler();
@@ -293,16 +299,43 @@ bool end()
 
 void renderFBO(GLuint Framebuffer)
 {
+	static int SamplesPositionsIndex = 0;
+	++SamplesPositionsIndex;
+	SamplesPositionsIndex %= 2;
+
 	glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
 	glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
 	glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
 	glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y)[0]);
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+
+	glm::vec2 SamplesPositions[2][4] =
+	{
+		{
+			glm::vec2(0.75f, 0.25f),
+			glm::vec2(1.00f, 0.75f),
+			glm::vec2(0.25f, 1.00f),
+			glm::vec2(0.00f, 0.25f)
+		},
+		{
+			glm::vec2(0.25f, 0.25f),
+			glm::vec2(1.00f, 0.25f),
+			glm::vec2(0.75f, 1.00f),
+			glm::vec2(0.00f, 0.75f)
+		}
+	};
+
+	// Set samples positions:
+	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 0, &SamplesPositions[SamplesPositionsIndex][0][0]);
+	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 1, &SamplesPositions[SamplesPositionsIndex][1][0]);
+	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 2, &SamplesPositions[SamplesPositionsIndex][2][0]);
+	glSetMultisamplefvAMD(GL_SAMPLE_POSITION, 3, &SamplesPositions[SamplesPositionsIndex][3][0]);
+
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
