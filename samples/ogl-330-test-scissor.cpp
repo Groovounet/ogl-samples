@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Test Scissor
-// 06/12/2009
+// 06/12/2009 - 06/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -212,6 +212,8 @@ void display()
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+
+	glDisable(GL_SCISSOR_TEST);
 
 	glf::checkError("display");
 	glf::swapBuffers();
