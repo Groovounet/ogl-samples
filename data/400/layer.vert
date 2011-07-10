@@ -2,17 +2,20 @@
 
 precision highp int;
 
-// Declare all the semantics
-#define ATTR_POSITION	0
-#define ATTR_COLOR		3
-#define ATTR_TEXCOORD	4
+#define POSITION		0
+#define COLOR			3
+#define TEXCOORD		4
 #define FRAG_COLOR		0
+#define FRAG_RED		0
+#define FRAG_GREEN		1
+#define FRAG_BLUE		2
+#define FRAG_ALPHA		3
 
-layout(location = ATTR_POSITION) in vec2 AttrPosition;
-layout(location = ATTR_TEXCOORD) in vec2 AttrTexcoord;
+layout(location = POSITION) in vec2 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
 
 void main()
 {	
-	gl_Position = vec4(AttrPosition, 0.0, 1.0);
+	gl_Position = vec4(Position, 0.0, 1.0);
 }
 
