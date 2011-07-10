@@ -38,12 +38,12 @@ namespace
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionDataF32[VertexCount] =
 	{
-		glm::vec2(glm::hvec2(-1.0f,-1.0f)),
-		glm::vec2(glm::hvec2( 1.0f,-1.0f)),
-		glm::vec2(glm::hvec2( 1.0f, 1.0f)),
-		glm::vec2(glm::hvec2( 1.0f, 1.0f)),
-		glm::vec2(glm::hvec2(-1.0f, 1.0f)),
-		glm::vec2(glm::hvec2(-1.0f,-1.0f))
+		glm::vec2(-1.0f,-1.0f),
+		glm::vec2( 1.0f,-1.0f),
+		glm::vec2( 1.0f, 1.0f),
+		glm::vec2( 1.0f, 1.0f),
+		glm::vec2(-1.0f, 1.0f),
+		glm::vec2(-1.0f,-1.0f)
 	};
 
 	GLsizeiptr const PositionSizeI8 = VertexCount * sizeof(glm::i8vec2);
@@ -178,33 +178,8 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool initDebugOutput()
-{
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
-
-	return glf::checkError("initDebugOutput");
-}
-
 bool begin()
 {
-	float f = 1.0f;
-	glm::half h(f);
-	float g(h.toFloat());
-	
-	glm::vec2 f2(0.0f, 1.0f);
-	glm::hvec2 h2(f2);
-	glm::vec2 g2(h2);
-
-	glm::vec3 f3(0.0f, 1.0f, 0.5f);
-	glm::hvec3 h3(f3);
-	glm::vec3 g3(h3);
-
-	glm::vec4 f4(0.0f, 1.0f, 0.5f, 0.25f);
-	glm::hvec4 h4(f4);
-	glm::vec4 g4(h4);
-
 	Viewport[BUFFER_F16] = glm::ivec4(0, 0, Window.Size >> 1);
 	Viewport[BUFFER_F32] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
 	Viewport[BUFFER_I8]  = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
@@ -215,8 +190,6 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
-	if(Validated)
-		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
