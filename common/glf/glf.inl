@@ -680,7 +680,9 @@ namespace glf
 
 	static void idle()
 	{
-                //glutPostRedisplay();
+#if defined(WIN32)
+		glutPostRedisplay();
+#endif
 	}
 
 	static void close()
@@ -713,7 +715,7 @@ namespace glf
 #if defined(WIN32)
 			glutInitContextProfile(GLUT_CORE_PROFILE); // GLUT_COMPATIBILITY_PROFILE
 #else
-                        glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE); // GLUT_COMPATIBILITY_PROFILE
+			glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE); // GLUT_COMPATIBILITY_PROFILE
 #endif
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 		}
