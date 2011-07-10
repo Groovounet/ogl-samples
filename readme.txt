@@ -39,7 +39,8 @@ MacOSX or MinGW are not supported yet...
 Visual C++ instructions
 --------------------------------------------------------------------------------
 The OpenGL Samples Pack's project can be generated for Visual C++ 2008 and 2010,
-in 32 and 64 bits.
+in 32 and 64 bits using CMake.
+http://www.cmake.org/cmake/resources/software.html
 
 The samples run only when launched from Visual C++ IDE.
 
@@ -48,7 +49,7 @@ Linux G++ instructions
 --------------------------------------------------------------------------------
 Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Install FreeGLUT package
-- Download GLEW 1.6.0 and install depend packages
+- Download GLEW 1.6.0 (http://glew.sourceforge.net) and install depend packages
 - Run CMake to create a makefile for G++
 - Launch the sample from the build output directory
 
