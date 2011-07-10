@@ -167,7 +167,7 @@ void display()
 #	ifdef WIN32
 #		define CONV(x)		x
 #	else
-#		define CONV(x)		(const void **)x
+#		define CONV(x)		(void **)x
 #	endif
 
 	glBindVertexArray(VertexArrayName);

@@ -710,7 +710,11 @@ namespace glf
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 320)
 		{
+#if defined(WIN32)
 			glutInitContextProfile(GLUT_CORE_PROFILE); // GLUT_COMPATIBILITY_PROFILE
+#else
+                        glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE); // GLUT_COMPATIBILITY_PROFILE
+#endif
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
 		}
 #endif//__APPLE__
