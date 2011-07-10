@@ -14,9 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Blit";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken-color-rgb.dds");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(512, 512);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -72,6 +72,15 @@ namespace
 
 }//namespace
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool initProgram()
 {
 	bool Validated = true;
@@ -79,14 +88,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
@@ -136,6 +145,8 @@ bool initTexture2D()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -171,6 +182,8 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
@@ -203,6 +216,8 @@ bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

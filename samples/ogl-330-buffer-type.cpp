@@ -13,9 +13,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Buffer Type";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
+	std::string const SAMPLE_NAME("OpenGL Buffer Type");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -24,15 +24,15 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(6);
-	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec2);
-	glm::hvec2 const PositionDataF16[VertexCount] =
+	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec4);
+	glm::hvec4 const PositionDataF16[VertexCount] =
 	{
-		glm::hvec2(-1.0f, -1.0f),
-		glm::hvec2( 1.0f, -1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2( 1.0f,  1.0f),
-		glm::hvec2(-1.0f,  1.0f),
-		glm::hvec2(-1.0f, -1.0f)
+		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f),
+		glm::hvec4( 1.0f, -1.0f, 0.0f, 1.0f),
+		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
+		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
+		glm::hvec4(-1.0f,  1.0f, 0.0f, 1.0f),
+		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
@@ -93,14 +93,14 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
@@ -145,7 +145,7 @@ bool initVertexArray()
 
     glBindVertexArray(VertexArrayName[BUFFER_F16]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec2), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec4), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -178,6 +178,15 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool begin()
 {
 	Viewport[BUFFER_F16] = glm::ivec4(0, 0, Window.Size >> 1);
@@ -190,6 +199,8 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
