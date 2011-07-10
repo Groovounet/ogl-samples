@@ -166,7 +166,7 @@ bool initTexture2D()
 		glCopyImageSubDataNV(
 			TextureName[texture::DIFFUSE], GL_TEXTURE_2D, Level, 0, 0, 0,
 			TextureName[texture::COPY], GL_TEXTURE_2D, Level, 0, 0, 0,
-			GLsizei(Image[Level].dimensions().x), GLsizei(Image[Level].dimensions().y), 0);
+			GLsizei(Image[Level].dimensions().x), GLsizei(Image[Level].dimensions().y), 1);
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -190,12 +190,23 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_NV_copy_image");
 
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -228,17 +239,24 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glf::checkError("display 4");
+
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform4fv(ProgramName, UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
+	glf::checkError("display 5");
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glf::checkError("display 6");
 
 	glUseProgram(ProgramName);
+	glf::checkError("display 7");
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COPY]);
+	glf::checkError("display 8");
 	glBindVertexArray(VertexArrayName);
+	glf::checkError("display 9");
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
