@@ -9,7 +9,7 @@ function(glCreateSampleGTC NAME)
 	source_group("Shader Files" FILES ${SHADER_PATH})
 	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
 	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
-	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES})
+        target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES} GLEW glut)
 endfunction(glCreateSampleGTC)
 
 #add_subdirectory(ogl-alpha-discard)
@@ -20,28 +20,7 @@ endfunction(glCreateSampleGTC)
 #add_subdirectory(ogl-buffer-streaming)
 #add_subdirectory(ogl-buffer-texture)
 
-if(APPLE)
-set(GL_VERSION_GTC 210)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(buffer-update)
-glCreateSampleGTC(draw-elements)
-glCreateSampleGTC(draw-range)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(texture-2d)
-glCreateSampleGTC(texture-compressed-ext)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(query-occlusion)
-glCreateSampleGTC(rasterizer-viewport)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(sampler-anisotropy-ext)
-glCreateSampleGTC(sampler-filter)
-glCreateSampleGTC(sampler-wrap)
-
-else(APPLE)
+if(MSVC)
 
 # OpenGL 2.1 samples
 set(GL_VERSION_GTC 210)
@@ -248,4 +227,48 @@ glCreateSampleGTC(texture-copy-nv)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image-ext)
 
-endif(APPLE)
+elif(APPLE)
+
+set(GL_VERSION_GTC 210)
+
+set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+glCreateSampleGTC(buffer-update)
+glCreateSampleGTC(draw-elements)
+glCreateSampleGTC(draw-range)
+
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(texture-2d)
+glCreateSampleGTC(texture-compressed-ext)
+
+set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+glCreateSampleGTC(query-occlusion)
+glCreateSampleGTC(rasterizer-viewport)
+
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(sampler-anisotropy-ext)
+glCreateSampleGTC(sampler-filter)
+glCreateSampleGTC(sampler-wrap)
+
+else(MSVC)
+
+set(GL_VERSION_GTC 210)
+
+set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+glCreateSampleGTC(buffer-update)
+glCreateSampleGTC(draw-elements)
+glCreateSampleGTC(draw-range)
+
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(texture-2d)
+glCreateSampleGTC(texture-compressed-ext)
+
+set(GL_SHADER_GTC flat-color.vert flat-color.frag)
+glCreateSampleGTC(query-occlusion)
+glCreateSampleGTC(rasterizer-viewport)
+
+set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+glCreateSampleGTC(sampler-anisotropy-ext)
+glCreateSampleGTC(sampler-filter)
+glCreateSampleGTC(sampler-wrap)
+
+endif(MSVC)

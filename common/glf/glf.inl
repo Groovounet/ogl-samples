@@ -51,7 +51,8 @@ namespace glf
 
 	inline void init()
 	{
-#if ((defined(WIN32) || defined(__GNUC__) || defined(__MINGW32__)) && !defined(__APPLE__))
+//#if ((defined(WIN32) || defined(__GNUC__) || defined(__MINGW32__)) && !defined(__APPLE__))
+#if (defined(WIN32))
 		glewInit();
 		glGetError();
 
@@ -257,7 +258,7 @@ namespace glf
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glutGetProcAddress("glDebugMessageControlARB");
 		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC) glutGetProcAddress("glDebugMessageInsertARB");
 		glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC) glutGetProcAddress("glDebugMessageCallbackARB");
-		glGetDebugMessageLogARB = (PFNGLGETDEBUGMESSAGELOGARBPROC) glutGetProcAddress("glGetDebugMessageLogARB");
+                //glGetDebugMessageLogARB = (PFNGLGETDEBUGMESSAGELOGARBPROC) glutGetProcAddress("glGetDebugMessageLogARB");
 
 		// Load GL_EXT_direct_state_access extension
 		glNamedBufferDataEXT = (PFNGLNAMEDBUFFERDATAEXTPROC)glutGetProcAddress("glNamedBufferDataEXT");
@@ -519,7 +520,7 @@ namespace glf
 		return Name;
 	}
 #if !defined(__APPLE__)
-	static void APIENTRY debugOutput
+        static void GLAPIENTRY debugOutput
 	(
 		GLenum source,
 		GLenum type,
@@ -572,7 +573,7 @@ namespace glf
 			 //fclose(f);
 		}
 	}
-
+/*
 	void checkDebugOutput()
 	{
 		   unsigned int count = 10; // max. num. of messages that will be read from the log
@@ -603,6 +604,7 @@ namespace glf
 		   delete [] lengths;
 		   delete [] messageLog;
 	}
+*/
 #endif
 	static void keyboard(unsigned char key, int x, int y)
 	{
@@ -678,7 +680,7 @@ namespace glf
 
 	static void idle()
 	{
-		glutPostRedisplay();
+                //glutPostRedisplay();
 	}
 
 	static void close()
