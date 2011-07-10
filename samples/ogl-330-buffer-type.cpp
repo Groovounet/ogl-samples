@@ -24,26 +24,26 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(6);
-	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec4);
-	glm::hvec4 const PositionDataF16[VertexCount] =
+	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::half) * 2;
+	glm::half const PositionDataF16[VertexCount * 2] =
 	{
-		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f, -1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4(-1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f)
+		glm::half(-1.0f), glm::half(-1.0f),
+		glm::half( 1.0f), glm::half(-1.0f),
+		glm::half( 1.0f), glm::half( 1.0f),
+		glm::half( 1.0f), glm::half( 1.0f),
+		glm::half(-1.0f), glm::half( 1.0f),
+		glm::half(-1.0f), glm::half(-1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionDataF32[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f),
-		glm::vec2(-1.0f,-1.0f)
+		glm::vec2(glm::hvec2(-1.0f,-1.0f)),
+		glm::vec2(glm::hvec2( 1.0f,-1.0f)),
+		glm::vec2(glm::hvec2( 1.0f, 1.0f)),
+		glm::vec2(glm::hvec2( 1.0f, 1.0f)),
+		glm::vec2(glm::hvec2(-1.0f, 1.0f)),
+		glm::vec2(glm::hvec2(-1.0f,-1.0f))
 	};
 
 	GLsizeiptr const PositionSizeI8 = VertexCount * sizeof(glm::i8vec2);
@@ -123,7 +123,7 @@ bool initArrayBuffer()
 
 	// Allocate and copy buffers memory
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
@@ -145,7 +145,7 @@ bool initVertexArray()
 
     glBindVertexArray(VertexArrayName[BUFFER_F16]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec4), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -189,6 +189,22 @@ bool initDebugOutput()
 
 bool begin()
 {
+	float f = 1.0f;
+	glm::half h(f);
+	float g(h.toFloat());
+	
+	glm::vec2 f2(0.0f, 1.0f);
+	glm::hvec2 h2(f2);
+	glm::vec2 g2(h2);
+
+	glm::vec3 f3(0.0f, 1.0f, 0.5f);
+	glm::hvec3 h3(f3);
+	glm::vec3 g3(h3);
+
+	glm::vec4 f4(0.0f, 1.0f, 0.5f, 0.25f);
+	glm::hvec4 h4(f4);
+	glm::vec4 g4(h4);
+
 	Viewport[BUFFER_F16] = glm::ivec4(0, 0, Window.Size >> 1);
 	Viewport[BUFFER_F32] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
 	Viewport[BUFFER_I8]  = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
@@ -235,7 +251,7 @@ void display()
 	glProgramUniform4fv(ProgramName, UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(11.0f)[0]);
 
 	glUseProgram(ProgramName);
 
