@@ -12,11 +12,14 @@ uniform mat4 MVP;
 layout(location = POSITION) in vec2 Position;
 layout(location = COLOR) in vec4 Color;
 
-layout(location = COLOR) out vec4 VertColor;
+out block
+{
+	vec4 Color;
+} Out;
 
 void main()
 {	
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
-	VertColor = Color;
+	Out.Color = Color;
 }
 

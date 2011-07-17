@@ -11,11 +11,14 @@ uniform float Displacement;
 layout(location = POSITION) in vec2 Position;
 layout(location = TEXCOORD) in vec2 Texcoord;
 
-layout(location = TEXCOORD) out vec2 VertTexcoord;
+out block
+{
+	vec2 Texcoord;
+} Out;
 
 void main()
 {	
-	VertTexcoord = Texcoord;
+	Out.Texcoord = Texcoord;
 	gl_Position = MVP * vec4(Position, Displacement, 1.0);
 }
 

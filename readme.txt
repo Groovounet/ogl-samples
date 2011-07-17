@@ -30,12 +30,28 @@ THE SOFTWARE.
 ================================================================================
 OpenGL Samples Pack Usage
 --------------------------------------------------------------------------------
+The OpenGL Samples Pack supports Windows build through Visual C++ only and 
+Linux build with G++.
+
+MacOSX or MinGW are not supported yet... 
+
+================================================================================
+Visual C++ instructions
+--------------------------------------------------------------------------------
 The OpenGL Samples Pack's project can be generated for Visual C++ 2008 and 2010,
-in 32 and 64 bits.
+in 32 and 64 bits using CMake.
+http://www.cmake.org/cmake/resources/software.html
 
-The sample run only when launched from Visual C++ IDE.
+The samples run only when launched from Visual C++ IDE.
 
-Linux, MacOSX or MinGW are not supported... 
+================================================================================
+Linux G++ instructions
+--------------------------------------------------------------------------------
+Tested on Ubuntu 11.04 on a NVIDIA platform:
+- Install FreeGLUT package
+- Download GLEW 1.6.0 (http://glew.sourceforge.net) and install depend packages
+- Run CMake to create a makefile for G++
+- Launch the sample from the build output directory
 
 ================================================================================
 OpenGL Samples Pack 4.2.0.0: 2011-08-XX
@@ -47,12 +63,18 @@ OpenGL Samples Pack 4.2.0.0: 2011-08-XX
 - Added transform feedback instancing sample
 
 ================================================================================
-OpenGL Samples Pack 4.1.7.0: 2011-07-XX
+OpenGL Samples Pack 4.1.7.1: 2011-07-11
+--------------------------------------------------------------------------------
+- Added Linux support
+
+================================================================================
+OpenGL Samples Pack 4.1.7.0: 2011-07-10
 --------------------------------------------------------------------------------
 - Removed all the workaround used since OpenGL 3.3 beta drivers release
-- Completed transformed feedback tests
 - Some samples refactoring
+- Added more transformed feedback tests
 - Added pixel store for texture 2d sample
+- Fixed extension loading
 
 ================================================================================
 OpenGL Samples Pack 4.1.6.1: 2011-06-22

@@ -24,15 +24,15 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(6);
-	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::hvec4);
-	glm::hvec4 const PositionDataF16[VertexCount] =
+	GLsizeiptr const PositionSizeF16 = VertexCount * sizeof(glm::half) * 2;
+	glm::half const PositionDataF16[VertexCount * 2] =
 	{
-		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f, -1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4( 1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4(-1.0f,  1.0f, 0.0f, 1.0f),
-		glm::hvec4(-1.0f, -1.0f, 0.0f, 1.0f)
+		glm::half(-1.0f), glm::half(-1.0f),
+		glm::half( 1.0f), glm::half(-1.0f),
+		glm::half( 1.0f), glm::half( 1.0f),
+		glm::half( 1.0f), glm::half( 1.0f),
+		glm::half(-1.0f), glm::half( 1.0f),
+		glm::half(-1.0f), glm::half(-1.0f)
 	};
 
 	GLsizeiptr const PositionSizeF32 = VertexCount * sizeof(glm::vec2);
@@ -123,7 +123,7 @@ bool initArrayBuffer()
 
 	// Allocate and copy buffers memory
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, PositionSizeF16, PositionDataF16, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F32]);
     glBufferData(GL_ARRAY_BUFFER, PositionSizeF32, PositionDataF32, GL_STATIC_DRAW);
@@ -145,7 +145,7 @@ bool initVertexArray()
 
     glBindVertexArray(VertexArrayName[BUFFER_F16]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_F16]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec4), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_HALF_FLOAT, GL_FALSE, sizeof(glm::hvec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -178,15 +178,6 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool initDebugOutput()
-{
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
-
-	return glf::checkError("initDebugOutput");
-}
-
 bool begin()
 {
 	Viewport[BUFFER_F16] = glm::ivec4(0, 0, Window.Size >> 1);
@@ -199,8 +190,6 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
-	if(Validated)
-		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -235,7 +224,7 @@ void display()
 	glProgramUniform4fv(ProgramName, UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(11.0f)[0]);
 
 	glUseProgram(ProgramName);
 

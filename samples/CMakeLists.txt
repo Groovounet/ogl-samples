@@ -9,7 +9,11 @@ function(glCreateSampleGTC NAME)
 	source_group("Shader Files" FILES ${SHADER_PATH})
 	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
 	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
+if(MSVC)
 	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES})
+else(MSVC)
+	target_link_libraries(${SAMPLE_NAME} ${BINARY_FILES} GLEW glut)
+endif(MSVC)
 endfunction(glCreateSampleGTC)
 
 #add_subdirectory(ogl-alpha-discard)
@@ -21,6 +25,7 @@ endfunction(glCreateSampleGTC)
 #add_subdirectory(ogl-buffer-texture)
 
 if(APPLE)
+
 set(GL_VERSION_GTC 210)
 
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)

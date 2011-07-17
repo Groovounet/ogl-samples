@@ -28,6 +28,7 @@ endmacro(addExternalPackageGTC)
 
 find_package(OpenGL)
 find_package(GLUT)
+find_package(GLEW)
 if(NOT OPENGL_FOUND)
 	message("ERROR: OpenGL not found")
 endif(NOT OPENGL_FOUND)
@@ -35,8 +36,10 @@ endif(NOT OPENGL_FOUND)
 ################################
 # Add External package
 
-addExternalPackageGTC("GLEW" "glew-1.6.0")
-addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
+if(MSVC)
+    addExternalPackageGTC("GLEW" "glew-1.6.0")
+    addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
+endif(MSVC)
 addExternalPackageGTC("GLM" "glm-0.9.2.4")
 addExternalPackageGTC("GLI" "gli-0.3.1.0")
 
@@ -54,7 +57,7 @@ set(BINARY_FILES
 	${FREEGLUT_LIBRARY} 
 	${GLEW_LIBRARY}
 	${GLM_LIBRARY} 
-	${GLI_LIBRARY})
+        ${GLI_LIBRARY})
 endif(APPLE)
 
 ################################

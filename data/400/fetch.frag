@@ -8,7 +8,7 @@
 
 uniform sampler2D Diffuse;
 
-in vert
+in block
 {
 	vec2 Texcoord;
 } In;

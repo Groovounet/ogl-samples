@@ -126,7 +126,7 @@ bool initUniformBuffer()
 
 	glGetActiveUniformBlockiv(
 		ProgramName, 
-		UniformTransform,
+		UniformMaterial,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSizeMaterial);
 	UniformBlockSizeMaterial = ((UniformBlockSizeMaterial / UniformBufferOffset) + 1) * UniformBufferOffset;
