@@ -19,6 +19,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Point";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/point.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/point.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -39,8 +40,10 @@ namespace
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
 	GLuint BufferName(0);
+	GLuint TextureName(0);
 	GLint UniformMVP(0);
 	GLint UniformMV(0);
+	GLint UniformDiffuse(0);
 
 }//namespace
 
@@ -69,6 +72,7 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformMV = glGetUniformLocation(ProgramName, "MV");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -111,16 +115,51 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initTexture2D()
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, &TextureName);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	// Set image
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
+	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+	{
+		glTexImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			GL_RGBA8, 
+			GLsizei(Image[Level].dimensions().x), 
+			GLsizei(Image[Level].dimensions().y), 
+			0,  
+			GL_BGRA, 
+			GL_UNSIGNED_BYTE, 
+			Image[Level].data());
+	}
+	
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+	return glf::checkError("initTexture2D");
+}
+
 bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
 
+	if(Validated)
+		Validated = initTexture2D();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -135,6 +174,7 @@ bool end()
 {
 	// Delete objects
 	glDeleteBuffers(1, &BufferName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
@@ -154,12 +194,17 @@ void display()
 	glProgramUniformMatrix4fv(ProgramName, UniformMV, 1, GL_FALSE, &MV[0][0]);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
+	float Depth(1.0f);
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
 
 	glUseProgram(ProgramName);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
+
 	glDrawArraysInstanced(GL_POINTS, 0, VertexCount, 1);
 
 	glf::checkError("display");
