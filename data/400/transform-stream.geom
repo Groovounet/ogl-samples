@@ -14,17 +14,27 @@ in block
 
 out block
 {
-	layout(stream = 0) vec4 Color;
+	layout(stream = 0) vec4 StripPosition;
+	layout(stream = 0) vec4 StripColor;
+	layout(stream = 1) vec4 PointPosition;
+	layout(stream = 1) vec4 PointColor;
 } Out;
 
 void main()
 {
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
-		Out.Color = In[i].Color;
-		gl_Position = gl_in[i].gl_Position;
-		EmitVertex();
+		Out.StripPosition = gl_in[i].gl_Position - vec4(0.0, 0.0, 0.1, 0.0);
+		Out.StripColor = In[i].Color * 0.5 + 0.5;
+		EmitStreamVertex(0);
 	}
-	EndPrimitive();
-}
+	EndStreamPrimitive(0);
 
+	for(int i = 0; i < gl_in.length(); ++i)
+	{
+		Out.PointPosition = gl_in[i].gl_Position + vec4(0.0, 0.0, 0.2, 0.0);
+		Out.PointColor = In[i].Color;
+		EmitStreamVertex(1);
+	}
+	EndStreamPrimitive(1);
+}

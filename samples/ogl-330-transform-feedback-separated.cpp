@@ -68,7 +68,7 @@ bool initProgram()
 #if 1
 		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_SEPARATE_ATTRIBS); 
-#else
+#else // OpenGL 4.0
 		GLchar const * Strings[] = {"gl_Position", "gl_NextBuffer", "VertColor"}; 
 		glTransformFeedbackVaryings(TransformProgramName, 3, Strings, GL_INTERLEAVED_ATTRIBS); 
 #endif

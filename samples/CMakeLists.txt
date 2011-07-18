@@ -213,7 +213,7 @@ set(GL_SHADER_GTC image-2d.vert image-2d.frag)
 glCreateSampleGTC(texture-compressed-arb)
 set(GL_SHADER_GTC feedback.vert feedback.frag transform.vert)
 glCreateSampleGTC(transform-feedback-object)
-set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)
+set(GL_SHADER_GTC feedback-stream-point.vert feedback-stream-point.frag feedback-stream-strip.vert feedback-stream-strip.frag transform-stream.vert transform-stream.geom)
 glCreateSampleGTC(transform-feedback-stream)
 
 # OpenGL 4.1 samples
