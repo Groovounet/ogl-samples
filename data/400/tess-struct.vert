@@ -19,10 +19,10 @@ struct vertex
 layout(location = POSITION) in vec2 Position;
 layout(location = COLOR) in vec4 Color;
 
-layout(location = 0) out vertex Out;
+out vertex Vert;
 
 void main()
 {	
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
-	Out.Color = Color;
+	Vert.Color = Color;
 }

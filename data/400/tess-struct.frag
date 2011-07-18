@@ -14,10 +14,10 @@ struct vertex
 	vec4 Color;
 };
 
-layout(location = 0) in vertex In;
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+in vertex Geom;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	FragColor = In.Color;
+	Color = Geom.Color;
 }
