@@ -174,6 +174,7 @@ bool begin()
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	glGenQueries(1, &Query);
+	glPointSize(64);
 
 	if(Validated)
 		Validated = initProgram();
@@ -244,7 +245,7 @@ void display()
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDrawTransformFeedbackStreamInstanced(GL_TRIANGLE_STRIP, FeedbackName, 0, 0);
+	glDrawTransformFeedbackStreamInstanced(GL_TRIANGLES, FeedbackName, 0);
 
 	glf::swapBuffers();
 }
