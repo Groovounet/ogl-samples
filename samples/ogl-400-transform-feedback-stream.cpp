@@ -16,10 +16,8 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Stream";
 	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/transform-stream.vert");
 	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/transform-stream.geom");
-	std::string const VERT_SHADER_SOURCE_FEEDBACK_STRIP(glf::DATA_DIRECTORY + "400/feedback-stream-strip.vert");
-	std::string const FRAG_SHADER_SOURCE_FEEDBACK_STRIP(glf::DATA_DIRECTORY + "400/feedback-stream-strip.frag");
-	std::string const VERT_SHADER_SOURCE_FEEDBACK_POINT(glf::DATA_DIRECTORY + "400/feedback-stream-point.vert");
-	std::string const FRAG_SHADER_SOURCE_FEEDBACK_POINT(glf::DATA_DIRECTORY + "400/feedback-stream-point.frag");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback-stream.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback-stream.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -53,13 +51,11 @@ namespace
 	GLuint TransformVertexArrayName(0);
 	GLint TransformUniformMVP(0);
 
-	GLuint FeedbackStripProgramName(0);
-	GLuint FeedbackStripArrayBufferName(0);
-	GLuint FeedbackStripVertexArrayName(0);
+	GLuint FeedbackProgramName(0);
+	GLuint FeedbackArrayBufferName(0);
+	GLuint FeedbackVertexArrayName(0);
 
-	GLuint FeedbackPointProgramName(0);
-	GLuint FeedbackPointArrayBufferName(0);
-	GLuint FeedbackPointVertexArrayName(0);
+	GLuint Query(0);
 
 }//namespace
 
@@ -79,15 +75,8 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(GeomShaderName);
 
-		GLchar const * Strings[] = 
-		{
-			"block.StripPosition", 
-			"block.StripColor", 
-			"gl_NextBuffer", 
-			"block.PointPosition", 
-			"block.PointColor"
-		}; 
-		glTransformFeedbackVaryings(TransformProgramName, 5, Strings, GL_INTERLEAVED_ATTRIBS);
+		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
+		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS);
 		glLinkProgram(TransformProgramName);
 
 		Validated = Validated && glf::checkProgram(TransformProgramName);
@@ -103,31 +92,16 @@ bool initProgram()
 	// Create program
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK_STRIP);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK_STRIP);
+		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
+		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
-		FeedbackStripProgramName = glCreateProgram();
-		glAttachShader(FeedbackStripProgramName, VertShaderName);
-		glAttachShader(FeedbackStripProgramName, FragShaderName);
-		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
-		glLinkProgram(FeedbackStripProgramName);
-		Validated = Validated && glf::checkProgram(FeedbackStripProgramName);
-	}
-
-	// Create program
-	if(Validated)
-	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK_POINT);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK_POINT);
-
-		FeedbackPointProgramName = glCreateProgram();
-		glAttachShader(FeedbackPointProgramName, VertShaderName);
-		glAttachShader(FeedbackPointProgramName, FragShaderName);
-		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
-		glLinkProgram(FeedbackPointProgramName);
-		Validated = Validated && glf::checkProgram(FeedbackPointProgramName);
+		FeedbackProgramName = glCreateProgram();
+		glAttachShader(FeedbackProgramName, VertexShaderName);
+		glAttachShader(FeedbackProgramName, FragmentShaderName);
+		glDeleteShader(VertexShaderName);
+		glDeleteShader(FragmentShaderName);
+		glLinkProgram(FeedbackProgramName);
+		Validated = Validated && glf::checkProgram(FeedbackProgramName);
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -150,23 +124,9 @@ bool initVertexArray()
 	glf::checkError("initVertexArray 1");
 
 	// Build a vertex array object
-	glGenVertexArrays(1, &FeedbackStripVertexArrayName);
-    glBindVertexArray(FeedbackStripVertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, FeedbackStripArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), 0);
-		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec4)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
-	glBindVertexArray(0);
-
-	glf::checkError("initVertexArray 2");
-
-	// Build a vertex array object
-	glGenVertexArrays(1, &FeedbackPointVertexArrayName);
-    glBindVertexArray(FeedbackPointVertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, FeedbackPointArrayBufferName);
+	glGenVertexArrays(1, &FeedbackVertexArrayName);
+    glBindVertexArray(FeedbackVertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), 0);
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec4)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -183,8 +143,7 @@ bool initFeedback()
 	// Generate a buffer object
 	glGenTransformFeedbacks(1, &FeedbackName);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackStripArrayBufferName); 
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, FeedbackPointArrayBufferName); 
+	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
 	return glf::checkError("initFeedback");
@@ -202,14 +161,9 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &FeedbackStripArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, FeedbackStripArrayBufferName);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * 4, NULL, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &FeedbackPointArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, FeedbackPointArrayBufferName);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * 4, NULL, GL_STATIC_DRAW);
+	glGenBuffers(1, &FeedbackArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * 6, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
@@ -219,9 +173,8 @@ bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
-	glEnable(GL_PROGRAM_POINT_SIZE);
-	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-	glPointSize(32.f);
+	glGenQueries(1, &Query);
+	glPointSize(64);
 
 	if(Validated)
 		Validated = initProgram();
@@ -243,13 +196,11 @@ bool end()
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(TransformProgramName);
 
-	glDeleteVertexArrays(1, &FeedbackPointVertexArrayName);
-	glDeleteVertexArrays(1, &FeedbackStripVertexArrayName);
-	glDeleteBuffers(1, &FeedbackPointArrayBufferName);
-	glDeleteBuffers(1, &FeedbackStripArrayBufferName);
-	glDeleteProgram(FeedbackPointProgramName);
-	glDeleteProgram(FeedbackStripProgramName);
-	
+	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
+	glDeleteBuffers(1, &FeedbackArrayBufferName);
+	glDeleteProgram(FeedbackProgramName);
+
+	glDeleteQueries(1, &Query);
 	glDeleteTransformFeedbacks(1, &FeedbackName);
 
 	return glf::checkError("end");
@@ -269,8 +220,6 @@ void display()
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
 	// Clear color buffer
-	float Depth(1.0f);
-	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// First draw, capture the attributes
@@ -292,17 +241,11 @@ void display()
 	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
-	glUseProgram(FeedbackStripProgramName);
-	glBindVertexArray(FeedbackStripVertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
-	glDrawTransformFeedbackStream(GL_TRIANGLE_STRIP, FeedbackName, 0);
+	glUseProgram(FeedbackProgramName);
 
-	glUseProgram(FeedbackPointProgramName);
-	glBindVertexArray(FeedbackPointVertexArrayName);
+	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glDrawTransformFeedbackStream(GL_POINTS, FeedbackName, 1);
+	glDrawTransformFeedbackStream(GL_TRIANGLES, FeedbackName, 0);
 
 	glf::swapBuffers();
 }
