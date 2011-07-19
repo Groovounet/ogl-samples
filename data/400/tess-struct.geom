@@ -8,15 +8,15 @@ struct vertex
 	vec4 Color;
 };
 
-layout(location = 0) in vertex In[];
-layout(location = 0) out vertex Out;
+in vertex Eval[];
+out vertex Geom;
 
 void main()
 {	
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		Out.Color = In[i].Color;
+		Geom.Color = Eval[i].Color;
 		EmitVertex();
 	}
 	EndPrimitive();

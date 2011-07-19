@@ -19,14 +19,14 @@ namespace
 	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "400/tess-struct.eval");
 	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "400/tess-struct.geom");
 	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "400/tess-struct.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 4;
-	int const SAMPLE_MINOR_VERSION = 0;
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(0);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fc4f);
 	glf::vertex_v2fc4f const VertexData[VertexCount] =
 	{
@@ -36,10 +36,10 @@ namespace
 		glf::vertex_v2fc4f(glm::vec2(-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f))
 	};
 
-	GLuint ProgramName = 0;
-	GLuint ArrayBufferName = 0;
-	GLuint VertexArrayName = 0;
-	GLint UniformMVP = 0;
+	GLuint ProgramName(0);
+	GLuint ArrayBufferName(0);
+	GLuint VertexArrayName(0);
+	GLint UniformMVP(0);
 }//namespace
 
 bool initProgram()
