@@ -244,7 +244,7 @@ void display()
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDrawTransformFeedback(GL_TRIANGLE_STRIP, FeedbackName);
+	glDrawTransformFeedbackStream(GL_TRIANGLE_STRIP, FeedbackName, 0);
 
 	glf::swapBuffers();
 }
