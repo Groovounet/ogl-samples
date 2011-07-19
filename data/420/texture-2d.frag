@@ -1,5 +1,4 @@
-#version 410 core
-#extension ARB_uniform_block_binding_initialization : enable
+#version 420 core
 
 #define POSITION	0
 #define COLOR		3

@@ -16,58 +16,8 @@ else(MSVC)
 endif(MSVC)
 endfunction(glCreateSampleGTC)
 
-#add_subdirectory(ogl-alpha-discard)
-#add_subdirectory(ogl-alpha-test)
 #add_subdirectory(ogl-alpha-to-coverage)
-
 #add_subdirectory(ogl-buffer-render)
-#add_subdirectory(ogl-buffer-streaming)
-#add_subdirectory(ogl-buffer-texture)
-
-if(APPLE)
-
-set(GL_VERSION_GTC 210)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(buffer-update)
-glCreateSampleGTC(draw-elements)
-glCreateSampleGTC(draw-range)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(texture-2d)
-glCreateSampleGTC(texture-compressed-ext)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(query-occlusion)
-glCreateSampleGTC(rasterizer-viewport)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(sampler-anisotropy-ext)
-glCreateSampleGTC(sampler-filter)
-glCreateSampleGTC(sampler-wrap)
-
-else(APPLE)
-
-# OpenGL 2.1 samples
-set(GL_VERSION_GTC 210)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(buffer-update)
-glCreateSampleGTC(draw-elements)
-glCreateSampleGTC(draw-range)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(texture-2d)
-glCreateSampleGTC(texture-compressed-ext)
-
-set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(query-occlusion)
-glCreateSampleGTC(rasterizer-viewport)
-
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(sampler-anisotropy-ext)
-glCreateSampleGTC(sampler-filter)
-glCreateSampleGTC(sampler-wrap)
 
 # OpenGL 3.0 samples
 set(GL_VERSION_GTC 300)
@@ -209,8 +159,6 @@ set(GL_SHADER_GTC sampler-array-gtc.vert sampler-array-gtc.frag)
 glCreateSampleGTC(sampler-array-gtc)
 set(GL_SHADER_GTC texture-buffer.vert texture-buffer.frag)
 glCreateSampleGTC(texture-buffer-rgb)
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
-glCreateSampleGTC(texture-compressed-arb)
 set(GL_SHADER_GTC feedback.vert feedback.frag transform.vert)
 glCreateSampleGTC(transform-feedback-object)
 set(GL_SHADER_GTC feedback-stream-point.vert feedback-stream-point.frag feedback-stream-strip.vert feedback-stream-strip.frag transform-stream.vert transform-stream.geom)
@@ -258,15 +206,19 @@ glCreateSampleGTC(texture-image-ext)
 # OpenGL 4.2 samples
 set(GL_VERSION_GTC 420)
 
+set(GL_SHADER_GTC atomic-counter.vert atomic-counter.frag)
+glCreateSampleGTC(atomic-counter)
+set(GL_SHADER_GTC buffer-uniform.vert buffer-uniform.frag)
+glCreateSampleGTC(buffer-uniform)
 set(GL_SHADER_GTC draw-base-instance.vert draw-base-instance.frag)
 glCreateSampleGTC(draw-base-instance)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-2d-pixel-store)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-2d-storage)
+set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
+glCreateSampleGTC(texture-compressed)
 set(GL_SHADER_GTC texture-image.vert texture-image.frag)
 glCreateSampleGTC(texture-image)
 set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)
 glCreateSampleGTC(transform-feedback-instanced)
-
-endif(APPLE)
