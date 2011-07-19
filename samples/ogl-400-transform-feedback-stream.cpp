@@ -174,6 +174,7 @@ bool begin()
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	glGenQueries(1, &Query);
+	glPointSize(64);
 
 	if(Validated)
 		Validated = initProgram();

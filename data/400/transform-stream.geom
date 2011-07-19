@@ -23,8 +23,8 @@ void main()
 	{
 		Out.Color = In[i].Color;
 		gl_Position = gl_in[i].gl_Position;
-		EmitVertex();
+		EmitStreamVertex(0);
 	}
-	EndPrimitive();
+	EndStreamPrimitive(0);
 }
 
