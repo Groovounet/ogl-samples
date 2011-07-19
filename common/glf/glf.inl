@@ -287,6 +287,7 @@ namespace glf
 		glPauseTransformFeedback = (PFNGLPAUSETRANSFORMFEEDBACKPROC)glutGetProcAddress("glPauseTransformFeedback");
 		glResumeTransformFeedback = (PFNGLRESUMETRANSFORMFEEDBACKPROC)glutGetProcAddress("glResumeTransformFeedback");
 		glDrawTransformFeedback = (PFNGLDRAWTRANSFORMFEEDBACKPROC)glutGetProcAddress("glDrawTransformFeedback");
+		glDrawTransformFeedbackStream = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC)glutGetProcAddress("glDrawTransformFeedbackStream");
 		glPatchParameteri = (PFNGLPATCHPARAMETERIPROC)glutGetProcAddress("glPatchParameteri");
 		glPatchParameterfv = (PFNGLPATCHPARAMETERFVPROC)glutGetProcAddress("glPatchParameterfv");
 		glGetActiveSubroutineName = (PFNGLGETACTIVESUBROUTINENAMEPROC)glutGetProcAddress("glGetActiveSubroutineName");

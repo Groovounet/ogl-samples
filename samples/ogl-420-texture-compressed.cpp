@@ -1,6 +1,9 @@
 //**********************************
+// OpenGL Samples Pack 
+// ogl-samples.g-truc.net
+//**********************************
 // OpenGL Texture 2D Compressed
-// 29/09/2010 - 29/09/2010
+// 29/09/2010 - 19/08/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -333,7 +336,7 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindVertexArray(VertexArrayName);
 
