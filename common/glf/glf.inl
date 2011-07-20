@@ -708,6 +708,13 @@ namespace glf
 		glutInitWindowPosition(64, 64);
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);// | GLUT_MULTISAMPLE);
+
+		int WindowHandle = glutCreateWindow(argv[0]);
+#if !defined(__APPLE__)
+		glewInit();
+#endif//__APPLE__
+		glutDestroyWindow(WindowHandle);
+
 #if !defined(__APPLE__)
 		glutInitContextVersion(Major, Minor);
 		if(glf::version(Major, Minor) >= 320)
@@ -722,13 +729,6 @@ namespace glf
 #endif//__APPLE__
 
 		glutCreateWindow(argv[0]);
-
-#if !defined(__APPLE__)
-		glewInit();
-#endif//__APPLE__
-
-		glGetError();
-		glf::init();
 
 		if(begin())
 		{
