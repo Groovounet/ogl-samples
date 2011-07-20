@@ -4,7 +4,7 @@
 #define COLOR		3
 #define FRAG_COLOR	0
 
-layout(triangle_strip, max_vertices = 4) out;
+layout(triangle_strip, max_vertices = 3) out;
 precision highp float;
 
 in block
@@ -23,8 +23,8 @@ void main()
 	{
 		Out.Color = In[i].Color;
 		gl_Position = gl_in[i].gl_Position;
-		EmitVertex();
+		EmitStreamVertex(0);
 	}
-	EndPrimitive();
+	EndStreamPrimitive(0);
 }
 
