@@ -131,6 +131,7 @@ bool initTexture2D()
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
