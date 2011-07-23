@@ -1,13 +1,23 @@
-#version 330 core
+#version 410 core
+#extension GL_ARB_shading_language_420pack : enable
 
-uniform transform
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define FRAG_COLOR	0
+
+#define MATERIAL	0
+#define TRANSFORM0	1
+#define TRANSFORM1	2	
+
+layout(binding = TRANSFORM0) uniform transform
 {
 	mat4 MVP;
-} Transform;
+} Transform[2];
 
-in vec3 Position;
+layout(location = POSITION) in vec2 Position;
 
 void main()
 {	
-	gl_Position = Transform.MVP * vec4(Position, 1.0);
+	gl_Position = Transform[gl_InstanceID].MVP * vec4(Position, 0.0, 1.0);
 }
