@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Immutable Texture 2D
-// 27/06/2011 - 01/07/2011
+// OpenGL Atomic Counter
+// 23/07/2011 - 23/07/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
+	std::string const SAMPLE_NAME = "OpenGL Atomic Counter";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/atomic-counter.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/atomic-counter.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -62,6 +62,7 @@ namespace
 	GLuint TextureName(0);
 
 	GLint UniformMVP(0);
+	GLint UniformDiffuse(0);
 }//namespace
 
 bool initProgram()
@@ -70,8 +71,8 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertShaderName);
@@ -86,6 +87,7 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
+		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
 	return glf::checkError("initProgram");
@@ -104,11 +106,10 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
-
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &TextureName);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -117,19 +118,22 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
-	glTexStorage2D(GL_TEXTURE_2D, GLint(Image.levels()), GL_RGBA8, GLsizei(Image[0].dimensions().x), GLsizei(Image[0].dimensions().y));
 
+	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
-		glTexSubImage2D(
+		glTexImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			0, 0, 
+			GL_RGBA8, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
-			GL_BGRA, GL_UNSIGNED_BYTE, 
+			0,  
+			GL_BGRA, 
+			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -156,7 +160,6 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_texture_storage");
 
 	if(Validated)
 		Validated = initTexture2D();
@@ -194,6 +197,7 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
+	glUniform1i(UniformDiffuse, 0);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
