@@ -63,6 +63,8 @@ namespace
 
 	GLint UniformMVP(0);
 	GLint UniformDiffuse(0);
+
+	GLuint AtomicCounter(0);
 }//namespace
 
 bool initProgram()
@@ -156,11 +158,24 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initAtomicCounter()
+{
+	glGenBuffers(1, &AtomicCounter);
+
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, 4, NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
+	return glf::checkError("initAtomicCounter");
+}
+
 bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	if(Validated)
+		Validated = initAtomicCounter();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -203,6 +218,7 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, AtomicCounter);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
