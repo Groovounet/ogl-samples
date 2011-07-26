@@ -54,6 +54,15 @@ Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Launch the sample from the build output directory
 
 ================================================================================
+OpenGL Samples Pack 4.1.7.2: 2011-07-29
+--------------------------------------------------------------------------------
+- Added point sprite sample
+- Added interface matching sample
+- Fixed interface matching of some samples
+- Fixed transform feedback stream sample
+- Fixed GLEW extension loading
+
+================================================================================
 OpenGL Samples Pack 4.1.7.1: 2011-07-11
 --------------------------------------------------------------------------------
 - Added Linux support
