@@ -1,5 +1,4 @@
-#version 410 core
-#extension GL_ARB_shader_atomic_counters : enable
+#version 420 core
 
 #define POSITION	0
 #define COLOR		3

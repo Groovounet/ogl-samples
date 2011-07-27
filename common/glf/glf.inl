@@ -210,7 +210,7 @@ namespace glf
 #if (defined(WIN32))
 		glewInit();
 		glGetError();
-
+/*
 		// Load OpenGL 3.0 functions
 		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)glutGetProcAddress("glBindBufferBase");
 		glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)glutGetProcAddress("glBindFragDataLocation");
@@ -409,7 +409,7 @@ namespace glf
 
 		glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC)glutGetProcAddress("glGetProgramBinary");
 		glProgramBinary = (PFNGLPROGRAMBINARYPROC)glutGetProcAddress("glProgramBinary");
-
+*/
 		// Load OpenGL 4.2 entry points
 		glDrawArraysInstancedBaseInstance = (PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC) glutGetProcAddress("glDrawArraysInstancedBaseInstance");		
 		glDrawElementsInstancedBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC) glutGetProcAddress("glDrawElementsInstancedBaseInstance");		
@@ -430,7 +430,7 @@ namespace glf
 		glTextureStorage1DEXT = (PFNGLTEXTURESTORAGE1DEXTPROC) glutGetProcAddress("glTextureStorage1DEXT");
 		glTextureStorage2DEXT = (PFNGLTEXTURESTORAGE2DEXTPROC) glutGetProcAddress("glTextureStorage2DEXT");
 		glTextureStorage3DEXT = (PFNGLTEXTURESTORAGE3DEXTPROC) glutGetProcAddress("glTextureStorage3DEXT");
-
+/*
 		// Load GL_ARB_debug_output
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glutGetProcAddress("glDebugMessageControlARB");
 		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC) glutGetProcAddress("glDebugMessageInsertARB");
@@ -487,6 +487,7 @@ namespace glf
 
 		// Load GL_NV_copy_image extension
 		glCopyImageSubDataNV = (PFNGLCOPYIMAGESUBDATANVPROC)glutGetProcAddress("glCopyImageSubDataNV");
+*/
 #endif// All but Apple
 	}
 
@@ -889,6 +890,7 @@ namespace glf
 		int WindowHandle = glutCreateWindow(argv[0]);
 #if !defined(__APPLE__)
 		glewInit();
+		init();
 #endif//__APPLE__
 		glutDestroyWindow(WindowHandle);
 

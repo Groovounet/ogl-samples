@@ -1,4 +1,4 @@
-#version 410 core
+#version 420 core
 
 #define POSITION	0
 #define TEXCOORD	4

@@ -1,9 +1,8 @@
-#version 410 core
-#extension GL_ARB_shader_image_load_store : enable
+#version 420 core
 
 #define FRAG_COLOR		0
 
-layout(rgba8) coherent uniform uimage2D ImageData;
+layout(rgba8) coherent uniform image2D ImageData;
 uniform uvec2 ImageSize;
 
 struct vertex
@@ -17,5 +16,5 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = imageLoad(ImageData, ivec2(Vertex.Texcoord * ImageSize)).x;
+	Color = imageLoad(ImageData, ivec2(Vertex.Texcoord * ImageSize));
 }

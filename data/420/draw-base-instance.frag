@@ -1,4 +1,4 @@
-#version 410 core
+#version 420 core
 
 #define FRAG_COLOR		0
 

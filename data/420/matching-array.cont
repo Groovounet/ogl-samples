@@ -1,5 +1,4 @@
-#version 410 core
-#extension GL_EXT_geometry_shader4 : enable
+#version 420 core
 
 #define POSITION		0
 #define COLOR			3
