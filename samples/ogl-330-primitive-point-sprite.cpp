@@ -157,7 +157,8 @@ bool begin()
 	glDepthFunc(GL_LESS);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-
+	//glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_UPPER_LEFT);
+	
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -196,8 +197,17 @@ void display()
 
 	float Depth(1.0f);
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
+
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(Window.Size.x / 4, Window.Size.y / 4, Window.Size.x / 2, Window.Size.y / 2);
+
+	glViewportIndexedf(0, float(Window.Size.x) * 0.25f, float(Window.Size.y) * 0.25f, float(Window.Size.x) * 0.5f, float(Window.Size.y) * 0.5f);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
+
+	glDisable(GL_SCISSOR_TEST);
 
 	glUseProgram(ProgramName);
 
