@@ -189,6 +189,14 @@ bool initDebugOutput()
 	return glf::checkError("initDebugOutput");
 }
 
+bool initTest()
+{
+	bool Validated = true;
+	glEnable(GL_DEPTH_TEST);
+
+	return Validated && glf::checkError("initTest");
+}
+
 bool begin()
 {
 	bool Validated = true;
@@ -197,6 +205,10 @@ bool begin()
 
 	glGenQueries(1, &Query);
 
+	//if(Validated)
+	//	Validated = initDebugOutput();
+	if(Validated)
+		Validated = initTest();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -240,7 +252,8 @@ void display()
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
-	// Clear color buffer
+	float Depth(1.0f);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	// First draw, capture the attributes
