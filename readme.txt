@@ -54,11 +54,16 @@ Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Launch the sample from the build output directory
 
 ================================================================================
-OpenGL Samples Pack 4.2.0.0: 2011-08-XX
+OpenGL Samples Pack 4.2.0.0: 2011-08-09
 --------------------------------------------------------------------------------
+- Added atomic counter sample
+- Added buffer uniform sample
 - Added draw base instance sample
+- Added GLSL interface matching array sample
+- Added depth conservative test sample
 - Added pixel store for compressed texture 2d sample
 - Added immunable texture sample
+- Added compressed texture
 - Added texture image sample
 - Added transform feedback instancing sample
 
