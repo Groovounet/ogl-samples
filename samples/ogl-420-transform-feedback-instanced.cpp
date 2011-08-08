@@ -205,8 +205,8 @@ bool begin()
 
 	glGenQueries(1, &Query);
 
-	//if(Validated)
-	//	Validated = initDebugOutput();
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTest();
 	if(Validated)

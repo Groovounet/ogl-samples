@@ -430,6 +430,12 @@ namespace glf
 		glTextureStorage1DEXT = (PFNGLTEXTURESTORAGE1DEXTPROC) glutGetProcAddress("glTextureStorage1DEXT");
 		glTextureStorage2DEXT = (PFNGLTEXTURESTORAGE2DEXTPROC) glutGetProcAddress("glTextureStorage2DEXT");
 		glTextureStorage3DEXT = (PFNGLTEXTURESTORAGE3DEXTPROC) glutGetProcAddress("glTextureStorage3DEXT");
+
+		// Load GL_ARB_debug_output
+		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glutGetProcAddress("glDebugMessageControlARB");
+		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC) glutGetProcAddress("glDebugMessageInsertARB");
+		glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC) glutGetProcAddress("glDebugMessageCallbackARB");
+  
 /*
 		// Load GL_ARB_debug_output
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glutGetProcAddress("glDebugMessageControlARB");
@@ -890,7 +896,6 @@ namespace glf
 		int WindowHandle = glutCreateWindow(argv[0]);
 #if !defined(__APPLE__)
 		glewInit();
-		init();
 #endif//__APPLE__
 		glutDestroyWindow(WindowHandle);
 
@@ -908,6 +913,7 @@ namespace glf
 #endif//__APPLE__
 
 		glutCreateWindow(argv[0]);
+		init();
 
 		if(begin())
 		{
