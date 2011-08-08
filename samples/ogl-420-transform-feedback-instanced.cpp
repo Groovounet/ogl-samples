@@ -57,6 +57,7 @@ namespace
 	GLuint FeedbackProgramName(0);
 	GLuint FeedbackArrayBufferName(0);
 	GLuint FeedbackVertexArrayName(0);
+	GLint FeedbackUniformMVP(0);
 
 	GLuint Query(0);
 
@@ -105,6 +106,13 @@ bool initProgram()
 		glDeleteShader(FragmentShaderName);
 		glLinkProgram(FeedbackProgramName);
 		Validated = Validated && glf::checkProgram(FeedbackProgramName);
+	}
+
+	// Get variables locations
+	if(Validated)
+	{
+		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
+		Validated = Validated && (FeedbackUniformMVP >= 0);
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -170,6 +178,15 @@ bool initArrayBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
+}
+
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
 }
 
 bool begin()
@@ -246,6 +263,7 @@ void display()
 
 	// Second draw, reuse the captured attributes
 	glUseProgram(FeedbackProgramName);
+	glUniformMatrix4fv(FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

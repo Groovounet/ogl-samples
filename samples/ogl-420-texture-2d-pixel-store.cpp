@@ -3,7 +3,7 @@
 // ogl-samples.g-truc.net
 //**********************************
 // OpenGL Texture 2D Compressed
-// 02/07/2011 - 03/07/2011
+// 02/07/2011 - 08/08/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -25,7 +25,7 @@ namespace
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(1);
+	int const SAMPLE_MINOR_VERSION(2);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -104,7 +104,7 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return glf::checkError("initArrayBuffer");
 }
 
 bool initTexture2D()
@@ -169,6 +169,15 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool begin()
 {
 	bool Validated = true;
@@ -176,14 +185,16 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_EXT_texture_compression_s3tc");
 	Validated = Validated && glf::checkExtension("GL_ARB_compressed_texture_pixel_storage");
 
+	//if(Validated)
+	//	Validated = initDebugOutput();
+	if(Validated)
+		Validated = initTexture2D();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
-	if(Validated)
-		Validated = initTexture2D();
 
 	return Validated && glf::checkError("begin");
 }
