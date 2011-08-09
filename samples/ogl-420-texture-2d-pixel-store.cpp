@@ -138,13 +138,16 @@ bool initTexture2D()
 	for(std::size_t Level = 0; Level < Texture.levels() - 1; ++Level)
 	{
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, Texture[Level].dimensions().x);
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, GLsizei(Texture[Level].dimensions().x) / 4);
-		glPixelStorei(GL_UNPACK_SKIP_ROWS, GLsizei(Texture[Level].dimensions().y) / 4);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, glm::max(GLsizei(Texture[Level].dimensions().x) / 4, 4));
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, glm::max(GLsizei(Texture[Level].dimensions().y) / 4, 4));
 
 		GLsizei LevelWidth(Texture[Level].dimensions().x / 2);
 		GLsizei LevelHeight(Texture[Level].dimensions().y / 2);
 		GLsizei LevelSize(glm::max(GLsizei(Texture[Level].capacity() / 4), DXT1BlockSize));
 		//GLsizei(DXT1BlockSize * GLsizei(glm::ceil(Texture[Level].dimensions().x / DXT1BlockWidth)) * GLsizei(glm::ceil(Texture[Level].dimensions().y / DXT1BlockHeight))),
+
+		//if(DXT1BlockSize <= 8)
+		//	break;
 
 		glCompressedTexImage2D(
 			GL_TEXTURE_2D,
