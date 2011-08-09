@@ -34,27 +34,39 @@ namespace
 		0, 2, 3
 	};
 
-	GLsizei const VertexCount(12);
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec3);
-	glm::vec3 const PositionData[VertexCount] =
+	GLsizei const InstanceCount(5);
+
+	GLsizei const VertexCount(5);
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
+	glm::vec2 const PositionData[VertexCount] =
 	{
-		glm::vec3(-1.0f,-1.0f, 0.5f),
-		glm::vec3( 1.0f,-1.0f, 0.5f),
-		glm::vec3( 1.0f, 1.0f, 0.5f),
-		glm::vec3(-1.0f, 1.0f, 0.5f),
-		glm::vec3(-0.5f,-1.0f,-0.5f),
-		glm::vec3( 0.5f,-1.0f,-0.5f),
-		glm::vec3( 1.5f, 1.0f,-0.5f),
-		glm::vec3(-1.5f, 1.0f,-0.5f),
-		glm::vec3(-0.5f,-0.5f,-0.5f),
-		glm::vec3( 0.5f,-0.5f,-0.5f),
-		glm::vec3( 0.5f, 0.5f,-0.5f),
-		glm::vec3(-0.5f, 0.5f,-0.5f)
+		glm::vec2( 0.0f, 0.0f),
+		glm::vec2(-1.0f,-1.0f),
+		glm::vec2( 1.0f,-1.0f),
+		glm::vec2( 1.0f, 1.0f),
+		glm::vec2(-1.0f, 1.0f)
+	};
+
+	GLsizei const ColorCount(10);
+	GLsizeiptr const ColorSize = ColorCount * sizeof(glm::vec4);
+	glm::vec4 const ColorData[ColorCount] =
+	{
+		glm::vec4(1.0f, 0.5f, 0.0f, 1.0f),
+		glm::vec4(0.8f, 0.4f, 0.0f, 1.0f),
+		glm::vec4(0.6f, 0.3f, 0.0f, 1.0f),
+		glm::vec4(0.4f, 0.2f, 0.0f, 1.0f),
+		glm::vec4(0.2f, 0.1f, 0.0f, 1.0f),
+		glm::vec4(0.0f, 0.1f, 0.2f, 1.0f),
+		glm::vec4(0.0f, 0.2f, 0.4f, 1.0f),
+		glm::vec4(0.0f, 0.3f, 0.6f, 1.0f),
+		glm::vec4(0.0f, 0.4f, 0.8f, 1.0f),
+		glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)
 	};
 
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
-	GLuint ArrayBufferName(0);
+	GLuint PositionArrayBufferName(0);
+	GLuint ColorArrayBufferName(0);
 	GLuint ElementBufferName(0);
 	GLint UniformMVP(0);
 	GLint UniformDiffuse(0);
@@ -100,9 +112,14 @@ bool initProgram()
 
 bool initArrayBuffer()
 {
-	glGenBuffers(1, &ArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+	glGenBuffers(1, &PositionArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenBuffers(1, &ColorArrayBufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, ColorArrayBufferName);
+    glBufferData(GL_ARRAY_BUFFER, ColorSize, ColorData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &ElementBufferName);
@@ -117,11 +134,15 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::POSITION, 1);
+		glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, ColorArrayBufferName);
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -148,7 +169,8 @@ bool begin()
 bool end()
 {
 	// Delete objects
-	glDeleteBuffers(1, &ArrayBufferName);
+	glDeleteBuffers(1, &PositionArrayBufferName);
+	glDeleteBuffers(1, &ColorArrayBufferName);
 	glDeleteBuffers(1, &ElementBufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -179,7 +201,7 @@ void display()
 
     glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 4, 4);
+	glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 1, 5);
 
 	glf::checkError("display");
 	glf::swapBuffers();

@@ -109,11 +109,16 @@ bool initArrayBuffer()
 
 bool initTexture2D()
 {
+	GLint DXT1BlockWidth = 4;
+	GLint DXT1BlockHeight = 4;
+	GLint DXT1BlockDepth = 1;
+	GLint DXT1BlockSize = 8;
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, 4);
-	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT, 4);
-	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, 1);
-	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, 8);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, DXT1BlockWidth);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT, DXT1BlockHeight);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, DXT1BlockDepth);
+	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, DXT1BlockSize);
 
 	glGenTextures(1, &Texture2DName);
 
@@ -130,21 +135,28 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 
-	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
+	for(std::size_t Level = 0; Level < Texture.levels() - 1; ++Level)
 	{
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, Texture[Level].dimensions().x);
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, GLsizei(Texture[Level].dimensions().x) / 4);
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, GLsizei(Texture[Level].dimensions().y) / 4);
 
+		GLsizei LevelWidth(Texture[Level].dimensions().x / 2);
+		GLsizei LevelHeight(Texture[Level].dimensions().y / 2);
+		GLsizei LevelSize(glm::max(GLsizei(Texture[Level].capacity() / 4), DXT1BlockSize));
+		//GLsizei(DXT1BlockSize * GLsizei(glm::ceil(Texture[Level].dimensions().x / DXT1BlockWidth)) * GLsizei(glm::ceil(Texture[Level].dimensions().y / DXT1BlockHeight))),
+
 		glCompressedTexImage2D(
 			GL_TEXTURE_2D,
 			GLint(Level),
 			GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-			GLsizei(Texture[Level].dimensions().x) / 2, 
-			GLsizei(Texture[Level].dimensions().y) / 2, 
+			LevelWidth, 
+			LevelHeight, 
 			0, 
-			GLsizei(Texture[Level].capacity()), 
+			LevelSize, 
 			Texture[Level].data());
+
+		assert(glf::checkError("initTexture2D N"));
 	}
 
 	glActiveTexture(GL_TEXTURE0);
