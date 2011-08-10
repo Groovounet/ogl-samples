@@ -165,7 +165,7 @@ bool initAtomicCounter()
 	glGenBuffers(1, &AtomicCounter);
 
     glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, 4, &InitialValue, GL_STATIC_DRAW);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, 4, &InitialValue, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
 	return glf::checkError("initAtomicCounter");
@@ -210,8 +210,12 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	GLuint InitialValue = 0;
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, 4, &InitialValue, GL_DYNAMIC_DRAW);
+
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
 	glUniform1i(UniformDiffuse, 0);
