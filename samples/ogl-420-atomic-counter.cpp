@@ -202,6 +202,11 @@ bool end()
 
 void display()
 {
+	// Setup blending
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
@@ -226,7 +231,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, AtomicCounter);
 
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
 
 	glf::checkError("display");
 	glf::swapBuffers();

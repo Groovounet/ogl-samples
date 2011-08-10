@@ -117,6 +117,9 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Image.levels()), GL_RGBA8, GLsizei(Image[0].dimensions().x), GLsizei(Image[0].dimensions().y));
 
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
@@ -130,6 +133,7 @@ bool initTexture2D()
 			GL_BGRA, GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
+	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
