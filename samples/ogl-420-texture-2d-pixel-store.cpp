@@ -146,8 +146,8 @@ bool initTexture2D()
 		GLsizei LevelSize(glm::max(GLsizei(Texture[Level].capacity() / 4), DXT1BlockSize));
 		//GLsizei(DXT1BlockSize * GLsizei(glm::ceil(Texture[Level].dimensions().x / DXT1BlockWidth)) * GLsizei(glm::ceil(Texture[Level].dimensions().y / DXT1BlockHeight))),
 
-		//if(DXT1BlockSize <= 8)
-		//	break;
+		if(LevelWidth < DXT1BlockWidth)
+			break;
 
 		glCompressedTexImage2D(
 			GL_TEXTURE_2D,
