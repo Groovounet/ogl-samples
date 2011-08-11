@@ -119,8 +119,8 @@ void main()
 	//Color = vec4(rgbColor(hsv), 1.0);
 
 	Color = vec4(
-		//((Counter & (Mask <<  0)) % 16) / 16.f,
-		0.0f,
+		((Counter & (Mask <<  0)) % 255) / 255.f,
+		//0.0f,
 		((Counter & (Mask <<  8)) % 255) / 255.f,
 		((Counter & (Mask << 16)) % 255) / 5.f,
 		0.5);

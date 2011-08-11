@@ -23,7 +23,7 @@ namespace
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(2);
+	int const SAMPLE_MINOR_VERSION(1);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -122,6 +122,8 @@ bool initTexture2D()
 
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Image.levels()), GL_RGBA8, GLsizei(Image[0].dimensions().x), GLsizei(Image[0].dimensions().y));
 
+	assert(glf::checkError("initTexture2D 5"));
+
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexSubImage2D(
@@ -132,6 +134,8 @@ bool initTexture2D()
 			GLsizei(Image[Level].dimensions().y), 
 			GL_BGRA, GL_UNSIGNED_BYTE, 
 			Image[Level].data());
+
+		assert(glf::checkError("initTexture2D N"));
 	}
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
@@ -160,7 +164,7 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_texture_storage");
+	//Validated = Validated && glf::checkExtension("GL_ARB_texture_storage");
 
 	if(Validated)
 		Validated = initTexture2D();
