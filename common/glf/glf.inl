@@ -436,6 +436,13 @@ namespace glf
 		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC) glutGetProcAddress("glDebugMessageInsertARB");
 		glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC) glutGetProcAddress("glDebugMessageCallbackARB");
   
+		// Load GL_AMD_multi_draw_indirect extension
+		glMultiDrawArraysIndirectAMD = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)glutGetProcAddress("glMultiDrawArraysIndirectAMD");
+		glMultiDrawElementsIndirectAMD = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)glutGetProcAddress("glMultiDrawElementsIndirectAMD");
+
+		// Load GL_NV_copy_image extension
+		glCopyImageSubDataNV = (PFNGLCOPYIMAGESUBDATANVPROC)glutGetProcAddress("glCopyImageSubDataNV");
+
 /*
 		// Load GL_ARB_debug_output
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC) glutGetProcAddress("glDebugMessageControlARB");
@@ -486,13 +493,6 @@ namespace glf
 		glMakeBufferResidentNV = (PFNGLMAKEBUFFERRESIDENTNVPROC)glutGetProcAddress("glMakeBufferResidentNV");
 		glVertexAttribFormatNV = (PFNGLVERTEXATTRIBFORMATNVPROC)glutGetProcAddress("glVertexAttribFormatNV");
 		glBufferAddressRangeNV = (PFNGLBUFFERADDRESSRANGENVPROC)glutGetProcAddress("glBufferAddressRangeNV");
-
-		// Load GL_AMD_multi_draw_indirect extension
-		glMultiDrawArraysIndirectAMD = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)glutGetProcAddress("glMultiDrawArraysIndirectAMD");
-		glMultiDrawElementsIndirectAMD = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)glutGetProcAddress("glMultiDrawElementsIndirectAMD");
-
-		// Load GL_NV_copy_image extension
-		glCopyImageSubDataNV = (PFNGLCOPYIMAGESUBDATANVPROC)glutGetProcAddress("glCopyImageSubDataNV");
 */
 #endif// All but Apple
 	}
