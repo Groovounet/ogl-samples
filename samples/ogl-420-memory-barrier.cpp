@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Texture barrier
-// 11/03/2011 - 11/03/2011
+// OpenGL Memory Barrier
+// 11/03/2011 - 13/08/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Texture barrier";
+	std::string const SAMPLE_NAME = "OpenGL Memory barrier";
 	std::string const SHADER_VERT_SOURCE_BLUR(glf::DATA_DIRECTORY + "410/texture-barrier-nv.vert");
 	std::string const SHADER_FRAG_SOURCE_BLUR(glf::DATA_DIRECTORY + "410/texture-barrier-nv.frag");
 	std::string const SHADER_VERT_SOURCE_DRAW(glf::DATA_DIRECTORY + "410/texture-2d.vert");
@@ -270,8 +270,6 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_NV_shader_buffer_load");
-	Validated = Validated && glf::checkExtension("GL_NV_vertex_buffer_unified_memory");
 
 	if(Validated)
 		Validated = initProgram();
@@ -336,12 +334,14 @@ void display()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glBindProgramPipeline(PipelineName[PIPELINE_BLUR]);
-	renderScene(FrameIndex ? ColorbufferName : Texture2DName);
 
-	//glTextureBarrierNV();
+	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+	renderScene(FrameIndex ? ColorbufferName : Texture2DName);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindProgramPipeline(PipelineName[PIPELINE_DRAW]);
+	
+	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 	renderScene(ColorbufferName);
 
 	glf::checkError("display");
