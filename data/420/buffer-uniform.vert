@@ -14,6 +14,11 @@ layout(binding = TRANSFORM0) uniform transform
 	mat4 MVP;
 } Transform[2];
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
 layout(location = POSITION) in vec2 Position;
 
 void main()

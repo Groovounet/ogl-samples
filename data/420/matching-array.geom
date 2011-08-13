@@ -22,8 +22,6 @@ layout(location = 0) in vec4 Color[][1];
 out gl_PerVertex 
 {
 	vec4 gl_Position;
-	float gl_PointSize;
-	float gl_ClipDistance[];
 };
 
 layout(location = 0) out vec4 ColorGeom;

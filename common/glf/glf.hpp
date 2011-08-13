@@ -98,6 +98,14 @@ namespace glf
 			};
 		};
 
+		namespace image
+		{
+			enum type
+			{
+				DIFFUSE = 0
+			};
+		}//namesapce image
+
 		namespace attr
 		{
 			enum type

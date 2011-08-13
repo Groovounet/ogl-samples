@@ -13,15 +13,13 @@ out gl_PerVertex
     vec4 gl_Position;
 };
 
-struct vertex
+out block
 {
 	vec2 Texcoord;
-};
-
-out vertex Vertex;
+} Out;
 
 void main()
 {	
-	Vertex.Texcoord = Texcoord;
+	Out.Texcoord = Texcoord;
 	gl_Position = MVP * vec4(Position, 0.0, 1.0);
 }

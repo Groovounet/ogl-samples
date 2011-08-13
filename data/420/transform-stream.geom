@@ -7,6 +7,11 @@
 layout(triangle_strip, max_vertices = 3) out;
 precision highp float;
 
+in gl_PerVertex
+{
+	vec4 gl_Position;
+} gl_in[];
+
 in block
 {
 	vec4 Color;

@@ -11,6 +11,11 @@ uniform mat4 MVP;
 layout(location = POSITION) in vec2 Position;
 layout(location = COLOR) in vec4 Color;
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
 out block
 {
 	vec4 Color;

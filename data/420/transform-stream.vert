@@ -8,6 +8,11 @@ uniform mat4 MVP;
 
 layout(location = POSITION) in vec4 Position;
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
 out block
 {
 	vec4 Color;

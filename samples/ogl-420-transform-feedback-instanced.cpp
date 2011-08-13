@@ -46,15 +46,26 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
+	namespace pipeline
+	{
+		enum type
+		{
+			TRANSFORM,
+			FEEDBACK,
+			MAX
+		};
+	}//namespace pipeline
+
+	GLuint PipelineName[pipeline::MAX] = {0, 0};
+	GLuint ProgramName[pipeline::MAX] = {0, 0};
+
 	GLuint FeedbackName(0);
 
-	GLuint TransformProgramName(0);
 	GLuint TransformArrayBufferName(0);
 	GLuint TransformElementBufferName(0);
 	GLuint TransformVertexArrayName(0);
 	GLint TransformUniformMVP(0);
 
-	GLuint FeedbackProgramName(0);
 	GLuint FeedbackArrayBufferName(0);
 	GLuint FeedbackVertexArrayName(0);
 	GLint FeedbackUniformMVP(0);
@@ -67,29 +78,40 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	glGenProgramPipelines(pipeline::MAX, PipelineName);
+
 	// Create program
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_TRANSFORM);
 		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE_TRANSFORM);
 
-		TransformProgramName = glCreateProgram();
-		glAttachShader(TransformProgramName, VertShaderName);
-		glAttachShader(TransformProgramName, GeomShaderName);
+		ProgramName[pipeline::TRANSFORM] = glCreateProgram();
+		glProgramParameteri(ProgramName[pipeline::TRANSFORM], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[pipeline::TRANSFORM], VertShaderName);
+		glAttachShader(ProgramName[pipeline::TRANSFORM], GeomShaderName);
 		glDeleteShader(VertShaderName);
 		glDeleteShader(GeomShaderName);
 
 		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
-		glTransformFeedbackVaryings(TransformProgramName, 2, Strings, GL_INTERLEAVED_ATTRIBS);
-		glLinkProgram(TransformProgramName);
+		glTransformFeedbackVaryings(ProgramName[pipeline::TRANSFORM], 2, Strings, GL_INTERLEAVED_ATTRIBS);
+		glLinkProgram(ProgramName[pipeline::TRANSFORM]);
 
-		Validated = Validated && glf::checkProgram(TransformProgramName);
+		Validated = Validated && glf::checkProgram(ProgramName[pipeline::TRANSFORM]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(
+			PipelineName[pipeline::TRANSFORM], 
+			GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, 
+			ProgramName[pipeline::TRANSFORM]);
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
-		TransformUniformMVP = glGetUniformLocation(TransformProgramName, "MVP");
+		TransformUniformMVP = glGetUniformLocation(ProgramName[pipeline::TRANSFORM], "MVP");
 		Validated = Validated && (TransformUniformMVP >= 0);
 	}
 
@@ -99,19 +121,28 @@ bool initProgram()
 		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_FEEDBACK);
 		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_FEEDBACK);
 
-		FeedbackProgramName = glCreateProgram();
-		glAttachShader(FeedbackProgramName, VertexShaderName);
-		glAttachShader(FeedbackProgramName, FragmentShaderName);
+		ProgramName[pipeline::FEEDBACK] = glCreateProgram();
+		glProgramParameteri(ProgramName[pipeline::FEEDBACK], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[pipeline::FEEDBACK], VertexShaderName);
+		glAttachShader(ProgramName[pipeline::FEEDBACK], FragmentShaderName);
 		glDeleteShader(VertexShaderName);
 		glDeleteShader(FragmentShaderName);
-		glLinkProgram(FeedbackProgramName);
-		Validated = Validated && glf::checkProgram(FeedbackProgramName);
+		glLinkProgram(ProgramName[pipeline::FEEDBACK]);
+		Validated = Validated && glf::checkProgram(ProgramName[pipeline::FEEDBACK]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(
+			PipelineName[pipeline::FEEDBACK], 
+			GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, 
+			ProgramName[pipeline::FEEDBACK]);
 	}
 
 	// Get variables locations
 	if(Validated)
 	{
-		FeedbackUniformMVP = glGetUniformLocation(FeedbackProgramName, "MVP");
+		FeedbackUniformMVP = glGetUniformLocation(ProgramName[pipeline::FEEDBACK], "MVP");
 		Validated = Validated && (FeedbackUniformMVP >= 0);
 	}
 
@@ -205,8 +236,8 @@ bool begin()
 
 	glGenQueries(1, &Query);
 
-//	if(Validated)
-//		Validated = initDebugOutput();
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTest();
 	if(Validated)
@@ -227,11 +258,11 @@ bool end()
 
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
-	glDeleteProgram(TransformProgramName);
+	glDeleteProgram(ProgramName[pipeline::TRANSFORM]);
 
 	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
 	glDeleteBuffers(1, &FeedbackArrayBufferName);
-	glDeleteProgram(FeedbackProgramName);
+	glDeleteProgram(ProgramName[pipeline::FEEDBACK]);
 
 	glDeleteQueries(1, &Query);
 	glDeleteTransformFeedbacks(1, &FeedbackName);
@@ -249,6 +280,9 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName[pipeline::TRANSFORM], TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glProgramUniformMatrix4fv(ProgramName[pipeline::FEEDBACK], FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
 	// Set the display viewport
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
 
@@ -260,8 +294,8 @@ void display()
 	// Disable rasterisation, vertices processing only!
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glUseProgram(TransformProgramName);
-	glUniformMatrix4fv(TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glBindProgramPipeline(PipelineName[pipeline::TRANSFORM]);
+	//glUseProgram(ProgramName[pipeline::TRANSFORM]);
 
 	glBindVertexArray(TransformVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
@@ -275,12 +309,12 @@ void display()
 	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
-	glUseProgram(FeedbackProgramName);
-	glUniformMatrix4fv(FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
+	glBindProgramPipeline(PipelineName[pipeline::FEEDBACK]);
+	//glUseProgram(ProgramName[pipeline::FEEDBACK]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDrawTransformFeedbackInstanced(GL_TRIANGLE_STRIP, FeedbackName, 5);
+	glDrawTransformFeedbackStreamInstanced(GL_TRIANGLE_STRIP, FeedbackName, 0, 5);
 
 	glf::swapBuffers();
 }

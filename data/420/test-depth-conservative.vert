@@ -9,6 +9,11 @@ uniform mat4 MVP;
 
 layout(location = POSITION) in vec2 Position;
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
 out block
 {
 	float Instance;
