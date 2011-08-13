@@ -78,7 +78,7 @@ OpenGL Samples Pack 4.2.0.0: 2011-08-09
 - Added transform feedback instancing sample
 
 ================================================================================
-OpenGL Samples Pack 4.1.7.2: 2011-07-29
+OpenGL Samples Pack 4.1.7.2: 2011-08-04
 --------------------------------------------------------------------------------
 - Added point sprite sample
 - Added interface matching sample
