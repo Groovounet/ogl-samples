@@ -93,7 +93,7 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(GeomShaderName);
 
-		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
+		GLchar const * Strings[] = {"gl_PerVertex.gl_Position", "block.Color"}; 
 		glTransformFeedbackVaryings(ProgramName[pipeline::TRANSFORM], 2, Strings, GL_INTERLEAVED_ATTRIBS);
 		glLinkProgram(ProgramName[pipeline::TRANSFORM]);
 

@@ -22,6 +22,11 @@ out block
 	layout(stream = 0) vec4 Color;
 } Out;
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+} gl_Out;
+
 void main()
 {
 	for(int i = 0; i < gl_in.length(); ++i)
