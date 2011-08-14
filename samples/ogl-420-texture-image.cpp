@@ -66,6 +66,8 @@ namespace
 		{
 			VERTEX,
 			ELEMENT,
+			TRANSFORM,
+			MATERIAL,
 			MAX
 		};
 	}//namespace buffer
@@ -126,13 +128,6 @@ bool initProgram()
 	{
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
 		Validated = Validated && glf::checkError("initProgram - stage");
-	}
-
-	// Get variables locations
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName[program::VERT], "MVP");
-		UniformImageSize = glGetUniformLocation(ProgramName[program::FRAG], "ImageSize");
 	}
 
 	return Validated && glf::checkError("initProgram");
@@ -202,12 +197,50 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initUniformBuffer()
+{
+	GLint UniformBufferOffset(0);
+
+	glGetIntegerv(
+		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+		&UniformBufferOffset);
+
+	{
+		GLint UniformBlockSize = glm::max(GLint(sizeof(glm::mat4)), UniformBufferOffset);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	{
+		GLint UniformBlockSize = glm::max(GLint(sizeof(glm::uvec2)), UniformBufferOffset);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::MATERIAL]);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	return glf::checkError("initUniformBuffer");
+}
+
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_shader_image_load_store");
 
+	if(Validated)
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
@@ -216,6 +249,8 @@ bool begin()
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
+	if(Validated)
+		Validated = initUniformBuffer();
 
 	return Validated && glf::checkError("begin");
 }
@@ -242,11 +277,17 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniformMatrix4fv(ProgramName[program::VERT], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform2uiv(ProgramName[program::FRAG], UniformImageSize, 1, &ImageSize[0]);
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::MATERIAL]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ImageSize), &ImageSize[0]);
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, BufferName[buffer::MATERIAL]);
 
 	glBindProgramPipeline(PipelineName);
 

@@ -3,8 +3,16 @@
 #define FRAG_COLOR		0
 #define DIFFUSE			0
 
+#define MATERIAL	0
+#define TRANSFORM0	1
+#define TRANSFORM1	2	
+
 layout(binding = DIFFUSE, rgba8) coherent uniform image2D Diffuse;
-uniform uvec2 ImageSize;
+
+layout(binding = MATERIAL) uniform material
+{
+	uvec2 ImageSize;
+} Material;
 
 in block
 {
@@ -15,5 +23,5 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = imageLoad(Diffuse, ivec2(In.Texcoord * ImageSize));
+	Color = imageLoad(Diffuse, ivec2(In.Texcoord * Material.ImageSize));
 }
