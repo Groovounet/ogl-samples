@@ -97,7 +97,7 @@ namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 
 	glGenProgramPipelines(1, &PipelineName);
 	glBindProgramPipeline(PipelineName);
@@ -135,6 +135,8 @@ bool initProgram()
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(buffer::MAX, BufferName);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
@@ -145,11 +147,13 @@ bool initArrayBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return true;
+	return Validated;
 }
 
 bool initTexture2D()
 {
+	bool Validated(true);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &TextureName);
@@ -177,11 +181,13 @@ bool initTexture2D()
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-	return true;
+	return Validated;
 }
 
 bool initVertexArray()
 {
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
@@ -193,11 +199,13 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return true;
+	return Validated;
 }
 
 bool initUniformBuffer()
 {
+	bool Validated(true);
+
 	GLint UniformBufferOffset(0);
 
 	glGetIntegerv(
@@ -220,21 +228,23 @@ bool initUniformBuffer()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	return true;
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return true;
+	return Validated;
 }
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_shader_image_load_store");
 
@@ -256,6 +266,8 @@ bool begin()
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -263,7 +275,7 @@ bool end()
 	glDeleteProgram(ProgramName[program::FRAG]);
 	glDeleteProgramPipelines(1, &PipelineName);
 
-	return true;
+	return Validated;
 }
 
 void display()

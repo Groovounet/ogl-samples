@@ -76,7 +76,7 @@ namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
 	glGenProgramPipelines(pipeline::MAX, PipelineName);
 
@@ -146,12 +146,12 @@ bool initProgram()
 		Validated = Validated && (FeedbackUniformMVP >= 0);
 	}
 
-	return Validated && glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initVertexArray()
 {
-	glf::checkError("initVertexArray 0");
+	bool Validated(true);
 
 	// Build a vertex array object
 	glGenVertexArrays(1, &TransformVertexArrayName);
@@ -162,8 +162,6 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
-
-	glf::checkError("initVertexArray 1");
 
 	// Build a vertex array object
 	glGenVertexArrays(1, &FeedbackVertexArrayName);
@@ -177,22 +175,26 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initFeedback()
 {
+	bool Validated(true);
+
 	// Generate a buffer object
 	glGenTransformFeedbacks(1, &FeedbackName);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
-	return glf::checkError("initFeedback");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(1, &TransformElementBufferName);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
@@ -208,29 +210,32 @@ bool initArrayBuffer()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glf::vertex_v4fc4f) * 6, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool initTest()
 {
-	bool Validated = true;
+	bool Validated(true);
+
 	glEnable(GL_DEPTH_TEST);
 
-	return Validated && glf::checkError("initTest");
+	return Validated;
 }
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_transform_feedback_instanced");
 
@@ -249,12 +254,12 @@ bool begin()
 	if(Validated)
 		Validated = initFeedback();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
-	glf::checkError("end 0");
+	bool Validated(true);
 
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
@@ -267,7 +272,7 @@ bool end()
 	glDeleteQueries(1, &Query);
 	glDeleteTransformFeedbacks(1, &FeedbackName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void display()
@@ -295,7 +300,6 @@ void display()
 	glEnable(GL_RASTERIZER_DISCARD);
 
 	glBindProgramPipeline(PipelineName[pipeline::TRANSFORM]);
-	//glUseProgram(ProgramName[pipeline::TRANSFORM]);
 
 	glBindVertexArray(TransformVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
@@ -310,7 +314,6 @@ void display()
 
 	// Second draw, reuse the captured attributes
 	glBindProgramPipeline(PipelineName[pipeline::FEEDBACK]);
-	//glUseProgram(ProgramName[pipeline::FEEDBACK]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

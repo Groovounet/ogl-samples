@@ -66,7 +66,7 @@ namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
 	if(Validated)
 	{
@@ -88,22 +88,26 @@ bool initProgram()
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(1, &BufferName);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return Validated;
 }
 
 bool initTexture2D()
 {
+	bool Validated(true);
+
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -122,8 +126,6 @@ bool initTexture2D()
 
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Image.levels()), GL_RGBA8, GLsizei(Image[0].dimensions().x), GLsizei(Image[0].dimensions().y));
 
-	assert(glf::checkError("initTexture2D 5"));
-
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexSubImage2D(
@@ -134,18 +136,18 @@ bool initTexture2D()
 			GLsizei(Image[Level].dimensions().y), 
 			GL_BGRA, GL_UNSIGNED_BYTE, 
 			Image[Level].data());
-
-		assert(glf::checkError("initTexture2D N"));
 	}
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-	return glf::checkError("initTexture2D");
+	return Validated;
 }
 
 bool initVertexArray()
 {
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -157,21 +159,23 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_texture_storage");
 
@@ -186,17 +190,19 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void display()
@@ -221,7 +227,6 @@ void display()
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

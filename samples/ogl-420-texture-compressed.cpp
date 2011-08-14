@@ -87,7 +87,7 @@ namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
 	if(Validated)
 	{
@@ -109,22 +109,26 @@ bool initProgram()
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 	}
 
-	return glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(1, &BufferName);
 
     glBindBuffer(GL_ARRAY_BUFFER, BufferName);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return Validated;
 }
 
 bool initTexture2D()
 {
+	bool Validated(true);
+
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(TEXTURE_MAX, Texture2DName);
 
@@ -150,8 +154,6 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
-		
-		glf::checkError("initTexture2D 6");
 	}
 
 	{
@@ -174,7 +176,6 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
-		glf::checkError("initTexture2D 7");
 	}
 
 	{
@@ -201,7 +202,6 @@ bool initTexture2D()
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
-		glf::checkError("initTexture2D 8");
 	}
 
 	{
@@ -244,17 +244,18 @@ bool initTexture2D()
 				Texture[Level].data());
 		}
 		*/
-		glf::checkError("initTexture2D 9");
 	}
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	return glf::checkError("initTexture2D");
+	return Validated;
 }
 
 bool initVertexArray()
 {
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -266,11 +267,13 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initSampler()
 {
+	bool Validated(true);
+
 	glGenSamplers(1, &SamplerName);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -284,16 +287,18 @@ bool initSampler()
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
-	return glf::checkError("initSampler");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool begin()
@@ -303,7 +308,7 @@ bool begin()
 	Viewport[TEXTURE_BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
 	Viewport[TEXTURE_BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
@@ -319,18 +324,20 @@ bool begin()
 	if(Validated)
 		Validated = initSampler();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteBuffers(1, &BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(TEXTURE_MAX, Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteSamplers(1, &SamplerName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void display()
@@ -361,7 +368,6 @@ void display()
 		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	}
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

@@ -86,7 +86,7 @@ namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
 	glGenProgramPipelines(PIPELINE_MAX, PipelineName);
 	glBindProgramPipeline(PipelineName[PIPELINE_BLUR]);
@@ -159,32 +159,38 @@ bool initProgram()
 		UniformDiffuse[PIPELINE_DRAW] = glGetUniformLocation(ProgramName[PROGRAM_FRAG_DRAW], "Diffuse");
 	}
 
-	return Validated && glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(1, &BufferName);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return Validated;
 }
 
 bool initSampler()
 {
+	bool Validated(true);
+
 	glGenSamplers(1, &SamplerName);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	return glf::checkError("initSampler");
+	return Validated;
 }
 
 bool initTexture2D()
 {
+	bool Validated(true);
+
 	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
 	FRAMEBUFFER_SIZE = Image[0].dimensions();
 
@@ -234,24 +240,28 @@ bool initTexture2D()
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Image[0].dimensions().x, Image[0].dimensions().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	//glGenerateMipmap(GL_TEXTURE_2D);
 
-	return glf::checkError("initTexture2D");
+	return Validated;
 }
 
 bool initFramebuffer()
 {
+	bool Validated(true);
+
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ColorbufferName, 0);
 
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		return false;
+	Validated = Validated && (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	return glf::checkError("initFramebuffer");
+
+	return Validated;
 }
 
 bool initVertexArray()
 {
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
@@ -263,21 +273,23 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
@@ -295,11 +307,13 @@ bool begin()
 	if(Validated)
 		Validated = initFramebuffer();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteTextures(1, &ColorbufferName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteBuffers(1, &BufferName);
@@ -312,7 +326,7 @@ bool end()
 	glDeleteSamplers(1, &SamplerName);
 	glDeleteProgramPipelines(PROGRAM_MAX, ProgramName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void renderScene
@@ -326,8 +340,6 @@ void renderScene
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
-
-	glf::checkError("renderScene");
 }
 
 void display()
@@ -355,7 +367,6 @@ void display()
 	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 	renderScene(ColorbufferName);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

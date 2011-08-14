@@ -74,15 +74,16 @@ namespace
 
 bool initTest()
 {
-	bool Validated = true;
+	bool Validated(true);
+
 	glEnable(GL_DEPTH_TEST);
 
-	return Validated && glf::checkError("initTest");
+	return Validated;
 }
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
 	// Create program
 	if(Validated)
@@ -107,11 +108,13 @@ bool initProgram()
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 	}
 
-	return Validated && glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
+	bool Validated(true);
+
 	glGenBuffers(1, &PositionArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
@@ -127,11 +130,13 @@ bool initArrayBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return Validated;
 }
 
 bool initVertexArray()
 {
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
@@ -145,21 +150,23 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_base_instance");
 
@@ -174,19 +181,20 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
-	// Delete objects
+	bool Validated(true);
+
 	glDeleteBuffers(1, &PositionArrayBufferName);
 	glDeleteBuffers(1, &ColorArrayBufferName);
 	glDeleteBuffers(1, &ElementBufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void display()
@@ -214,7 +222,6 @@ void display()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 1, 5);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

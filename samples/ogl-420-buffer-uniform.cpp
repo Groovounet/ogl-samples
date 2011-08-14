@@ -52,45 +52,35 @@ namespace
 	GLuint VertexArrayName(0);
 	GLuint TransformBufferName(0);
 	GLuint MaterialBufferName(0);
-	GLint UniformTransform[Instances] = {0, 0};
-	GLint UniformMaterial(0);
 	GLint UniformBufferOffset(0);
 }//namespace
 
 bool initProgram()
 {
-	bool Validated = true;
+	bool Validated(true);
 	
-	// Create program
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		Validated = Validated && glf::checkProgram(ProgramName);
 	}
 
-	// Get variables locations
-	if(Validated)
-	{
-		UniformMaterial = glGetUniformBlockIndex(ProgramName, "material");
-		UniformTransform[0] = glGetUniformBlockIndex(ProgramName, "transform[0]");
-		UniformTransform[1] = glGetUniformBlockIndex(ProgramName, "transform[1]");
-	}
-
-	return Validated && glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initVertexArray()
 {
-	// Build a vertex array object
+	bool Validated(true);
+
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
@@ -99,12 +89,13 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return Validated;
 }
 
 bool initArrayBuffer()
 {
-	// Generate a buffer object
+	bool Validated(true);
+
 	glGenBuffers(1, &ElementBufferName);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
@@ -115,16 +106,18 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return Validated;
 }
 
 bool initUniformBuffer()
 {
+	bool Validated(true);
+
 	GLint UniformBlockSize(0);
 
 	glGetActiveUniformBlockiv(
 		ProgramName, 
-		UniformTransform[0],
+		glf::semantic::uniform::TRANSFORM0,
 		GL_UNIFORM_BLOCK_DATA_SIZE,
 		&UniformBlockSize);
 	UniformBlockSize = ((UniformBlockSize / UniformBufferOffset) + 1) * UniformBufferOffset;
@@ -144,7 +137,7 @@ bool initUniformBuffer()
 
 		glGetActiveUniformBlockiv(
 			ProgramName, 
-			UniformMaterial,
+			glf::semantic::uniform::MATERIAL,
 			GL_UNIFORM_BLOCK_DATA_SIZE,
 			&UniformBlockSize);
 
@@ -157,16 +150,18 @@ bool initUniformBuffer()
 		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, MaterialBufferName);
 	}
 
-	return glf::checkError("initUniformBuffer");
+	return Validated;
 }
 
 bool initDebugOutput()
 {
+	bool Validated(true);
+
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return Validated;
 }
 
 bool begin()
@@ -188,11 +183,13 @@ bool begin()
 	if(Validated)
 		Validated = initUniformBuffer();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteBuffers(1, &ArrayBufferName);
 	glDeleteBuffers(1, &ElementBufferName);
@@ -200,7 +197,7 @@ bool end()
 	glDeleteBuffers(1, &MaterialBufferName);
 	glDeleteProgram(ProgramName);
 
-	return glf::checkError("end");
+	return Validated;
 }
 
 void display()
@@ -241,7 +238,6 @@ void display()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 2);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 
