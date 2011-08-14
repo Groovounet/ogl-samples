@@ -236,7 +236,7 @@ bool begin()
 
 	glGenQueries(1, &Query);
 
-	if(Validated)
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTest();
