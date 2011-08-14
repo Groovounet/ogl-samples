@@ -56,27 +56,30 @@ namespace
 		};
 	}//namespace buffer
 
+	GLuint PipelineName(0);
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
-
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
 	GLuint TextureName(0);
+	GLuint AtomicCounter(0);
 
 	GLint UniformMVP(0);
-
-	GLuint AtomicCounter(0);
 }//namespace
 
 bool initProgram()
 {
 	bool Validated(true);
 	
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertShaderName);
 		glAttachShader(ProgramName, FragShaderName);
 		glDeleteShader(VertShaderName);
@@ -90,6 +93,11 @@ bool initProgram()
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	glBindProgramPipeline(0);
 
 	return Validated;
 }
@@ -238,6 +246,8 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
 	GLuint InitialValue = 0;
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &InitialValue);
@@ -245,9 +255,7 @@ void display()
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-
+	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);

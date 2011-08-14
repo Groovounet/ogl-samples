@@ -15,6 +15,11 @@ out block
 	vec2 Texcoord;
 } Out;
 
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
 void main()
 {	
 	Out.Texcoord = Texcoord;
