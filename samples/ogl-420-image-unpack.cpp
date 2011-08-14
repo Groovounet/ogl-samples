@@ -154,6 +154,8 @@ bool initTexture2D()
 {
 	bool Validated(true);
 
+	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &TextureName);
@@ -162,19 +164,17 @@ bool initTexture2D()
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 
-	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
-		glTexImage2D(
+		glTexSubImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGBA8, 
+			0, 0, 
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
-			0,  
-			GL_BGRA, 
-			GL_UNSIGNED_BYTE, 
+			GL_BGRA, GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}
 	ImageSize = glm::uvec2(Texture[0].dimensions());
@@ -280,29 +280,34 @@ bool end()
 
 void display()
 {
-	glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 1000.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 1000.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::MATERIAL]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ImageSize), &ImageSize[0]);
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(MVP), GL_MAP_WRITE_BIT);
+		*Pointer = MVP;
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
+	
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::MATERIAL]);
+		glm::uvec2* Pointer = (glm::uvec2*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(glm::uvec2), GL_MAP_WRITE_BIT);
+		*Pointer = ImageSize;
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, BufferName[buffer::MATERIAL]);
-
 	glBindProgramPipeline(PipelineName);
-
 	glBindImageTexture(glf::semantic::image::DIFFUSE, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
-
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
