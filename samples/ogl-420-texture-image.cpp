@@ -130,7 +130,7 @@ bool initProgram()
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
-	return Validated && glf::checkError("initProgram");
+	return Validated;
 }
 
 bool initArrayBuffer()
@@ -145,7 +145,7 @@ bool initArrayBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return true;
 }
 
 bool initTexture2D()
@@ -159,7 +159,6 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	// Set image
 	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
@@ -178,7 +177,7 @@ bool initTexture2D()
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-	return glf::checkError("initTexture2D");
+	return true;
 }
 
 bool initVertexArray()
@@ -194,7 +193,7 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
-	return glf::checkError("initVertexArray");
+	return true;
 }
 
 bool initUniformBuffer()
@@ -221,7 +220,7 @@ bool initUniformBuffer()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	return glf::checkError("initUniformBuffer");
+	return true;
 }
 
 bool initDebugOutput()
@@ -230,7 +229,7 @@ bool initDebugOutput()
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
-	return glf::checkError("initDebugOutput");
+	return true;
 }
 
 bool begin()
@@ -239,7 +238,7 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_ARB_shader_image_load_store");
 
-	if(Validated)
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
@@ -252,7 +251,7 @@ bool begin()
 	if(Validated)
 		Validated = initUniformBuffer();
 
-	return Validated && glf::checkError("begin");
+	return Validated;
 }
 
 bool end()
@@ -264,12 +263,11 @@ bool end()
 	glDeleteProgram(ProgramName[program::FRAG]);
 	glDeleteProgramPipelines(1, &PipelineName);
 
-	return glf::checkError("end");
+	return true;
 }
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 1000.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
@@ -298,7 +296,6 @@ void display()
 
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 
