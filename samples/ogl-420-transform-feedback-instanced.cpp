@@ -288,8 +288,7 @@ void display()
 	glProgramUniformMatrix4fv(ProgramName[pipeline::TRANSFORM], TransformUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniformMatrix4fv(ProgramName[pipeline::FEEDBACK], FeedbackUniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	// Set the display viewport
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+	glViewportIndexedf(0, 0, 0, Window.Size.x, Window.Size.y);
 
 	float Depth(1.0f);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);

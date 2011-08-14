@@ -233,10 +233,10 @@ void display()
 
 	glUseProgram(ProgramName);
 
-	// Bind vertex array & draw 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	glDrawElementsInstanced(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 2);
+	glDrawElementsInstancedBaseVertexBaseInstance(
+		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 2, 0, 0);
 
 	glf::swapBuffers();
 }

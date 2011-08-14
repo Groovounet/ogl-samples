@@ -220,7 +220,8 @@ void display()
 
     glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-	glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 1, 5);
+	glDrawElementsInstancedBaseVertexBaseInstance(
+		GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 1, 5);
 
 	glf::swapBuffers();
 }
