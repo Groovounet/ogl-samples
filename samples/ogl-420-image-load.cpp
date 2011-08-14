@@ -2,7 +2,7 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Texture image
+// OpenGL Image Load
 // 01/07/2011 - 02/07/2011
 //**********************************
 // Christophe Riccio
@@ -16,9 +16,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME("OpenGL Texture image");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-image.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-image.frag");
+	std::string const SAMPLE_NAME("OpenGL Image Load");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/image-load.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/image-load.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
