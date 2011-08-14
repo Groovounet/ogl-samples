@@ -2,9 +2,6 @@
 
 #define FRAG_COLOR		0
 
-precision highp float;
-precision highp int;
-
 uniform vec4 Diffuse;
 
 in block

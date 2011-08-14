@@ -162,6 +162,16 @@ bool initTexture2D()
 			0, 
 			LevelSize, 
 			Texture[Level].data());
+
+		//glCompressedTexSubImage2D(
+		//	GL_TEXTURE_2D,
+		//	GLint(Level),
+		//	0, 0,
+		//	LevelWidth, 
+		//	LevelHeight, 
+		//	GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
+		//	LevelSize, 
+		//	Texture[Level].data());
 	}
 
 	glActiveTexture(GL_TEXTURE0);

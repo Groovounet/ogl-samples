@@ -2,9 +2,6 @@
 
 #define POSITION	0
 
-precision highp float;
-precision highp int;
-
 uniform mat4 MVP;
 
 layout(location = POSITION) in vec2 Position;

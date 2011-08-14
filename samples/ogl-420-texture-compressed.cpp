@@ -75,9 +75,9 @@ namespace
 		};
 	}//namespace texture
 
-	GLuint VertexArrayName(0);
+	GLuint PipelineName(0);
 	GLuint ProgramName(0);
-
+	GLuint VertexArrayName(0);
 	GLuint SamplerName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
 	GLuint Texture2DName[texture::MAX] = {0, 0, 0, 0};
@@ -90,12 +90,16 @@ bool initProgram()
 {
 	bool Validated(true);
 	
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertShaderName);
 		glAttachShader(ProgramName, FragShaderName);
 		glDeleteShader(VertShaderName);
@@ -104,6 +108,11 @@ bool initProgram()
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	glBindProgramPipeline(0);
 
 	return Validated;
 }
@@ -358,9 +367,8 @@ void display()
 	// Clear the color buffer
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	// Bind draw inputs
-	glUseProgram(ProgramName);
-
+	// Bind rendering objects
+	glBindProgramPipeline(PipelineName);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
