@@ -18,8 +18,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
 	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
 	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
@@ -62,26 +62,36 @@ namespace
 		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	enum texture_type
+	namespace buffer
 	{
-		TEXTURE_BC3,
-		TEXTURE_BC4,
-		TEXTURE_BC6,
-		TEXTURE_BC7,
-		TEXTURE_MAX
-	};
+		enum type
+		{
+			VERTEX,
+			TRANSFORM,
+			MAX
+		};
+	}//namespace buffer
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
+	namespace texture
+	{
+		enum type
+		{
+			BC3,
+			BC4,
+			BC6,
+			BC7,
+			MAX
+		};
+	}//namespace texture
 
-	GLuint SamplerName = 0;
-	GLuint BufferName = 0;
-	GLuint Texture2DName[TEXTURE_MAX];
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
 
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLuint SamplerName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0};
+	GLuint Texture2DName[texture::MAX] = {0, 0, 0, 0};
 
-	glm::ivec4 Viewport[TEXTURE_MAX];
+	glm::ivec4 Viewport[texture::MAX];
 
 }//namespace
 
@@ -91,22 +101,17 @@ bool initProgram()
 	
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
-	}
-
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 	}
 
 	return Validated;
@@ -116,9 +121,9 @@ bool initArrayBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(1, &BufferName[buffer::VERTEX]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -130,14 +135,14 @@ bool initTexture2D()
 	bool Validated(true);
 
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(TEXTURE_MAX, Texture2DName);
+	glGenTextures(texture::MAX, Texture2DName);
 
 	// Set image
 	{
 		//Texture2DName[TEXTURE_BC7] = gli::createTexture2D(TEXTURE_DIFFUSE_BC7);
 		//Texture2DName[TEXTURE_BC7] = 0;
 		
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC7]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC7]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);//GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -159,7 +164,7 @@ bool initTexture2D()
 	{
 		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC3]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC3]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -181,7 +186,7 @@ bool initTexture2D()
 	{
 		//Texture2DName[TEXTURE_BC4] = gli::createTexture2D(TEXTURE_DIFFUSE_BC4);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC4]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC4]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
@@ -208,7 +213,7 @@ bool initTexture2D()
 		//Texture2DName[TEXTURE_BC6] = gli::createTexture2D(TEXTURE_BC6);
 		//Texture2DName[TEXTURE_BC6] = 0;
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -228,7 +233,7 @@ bool initTexture2D()
 		}
 
 		/*
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[TEXTURE_BC6]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
 
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC6);
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
@@ -258,7 +263,7 @@ bool initVertexArray()
 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -290,6 +295,28 @@ bool initSampler()
 	return Validated;
 }
 
+bool initUniformBuffer()
+{
+	bool Validated(true);
+
+	GLint UniformBufferOffset(0);
+
+	glGetIntegerv(
+		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+		&UniformBufferOffset);
+
+	{
+		GLint UniformBlockSize = glm::max(GLint(sizeof(glm::mat4)), UniformBufferOffset);
+
+		glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	return Validated;
+}
+
 bool initDebugOutput()
 {
 	bool Validated(true);
@@ -303,10 +330,10 @@ bool initDebugOutput()
 
 bool begin()
 {
-	Viewport[TEXTURE_BC3] = glm::ivec4(0, 0, Window.Size >> 1);
-	Viewport[TEXTURE_BC7] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
-	Viewport[TEXTURE_BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
-	Viewport[TEXTURE_BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[texture::BC3] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[texture::BC7] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[texture::BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[texture::BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
@@ -323,6 +350,8 @@ bool begin()
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initSampler();
+	if(Validated)
+		Validated = initUniformBuffer();
 
 	return Validated;
 }
@@ -331,9 +360,9 @@ bool end()
 {
 	bool Validated(true);
 
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(TEXTURE_MAX, Texture2DName);
+	glDeleteTextures(texture::MAX, Texture2DName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteSamplers(1, &SamplerName);
 
@@ -342,7 +371,6 @@ bool end()
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
 	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
 	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
@@ -350,15 +378,19 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MVP), &MVP[0][0]);
+
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
 	glBindVertexArray(VertexArrayName);
 
 	glBindSampler(0, SamplerName);
-	for(std::size_t Index = 0; Index < TEXTURE_MAX; ++Index)
+	for(std::size_t Index = 0; Index < texture::MAX; ++Index)
 	{
 		glViewport(Viewport[Index].x, Viewport[Index].y, Viewport[Index].z, Viewport[Index].w);
 
