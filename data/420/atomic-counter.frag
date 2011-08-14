@@ -5,7 +5,6 @@
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-layout(binding = 0) uniform sampler2D Diffuse;
 layout(binding = 0, offset = 0) uniform atomic_uint Atomic;
 
 in block

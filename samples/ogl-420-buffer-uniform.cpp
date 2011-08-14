@@ -69,12 +69,16 @@ bool initProgram()
 {
 	bool Validated(true);
 	
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertShaderName);
 		glAttachShader(ProgramName, FragShaderName);
 		glDeleteShader(VertShaderName);
@@ -83,6 +87,11 @@ bool initProgram()
 		glLinkProgram(ProgramName);
 		Validated = Validated && glf::checkProgram(ProgramName);
 	}
+
+	if(Validated)
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	glBindProgramPipeline(0);
 
 	return Validated;
 }
@@ -125,17 +134,19 @@ bool initUniformBuffer()
 
 	GLint UniformBlockSize(0);
 
-	glGetActiveUniformBlockiv(
-		ProgramName, 
-		glf::semantic::uniform::TRANSFORM0,
-		GL_UNIFORM_BLOCK_DATA_SIZE,
-		&UniformBlockSize);
-	UniformBlockSize = glm::max(UniformBufferOffset, UniformBlockSize) * Instances;
+	{
+		glGetActiveUniformBlockiv(
+			ProgramName, 
+			glf::semantic::uniform::TRANSFORM0,
+			GL_UNIFORM_BLOCK_DATA_SIZE,
+			&UniformBlockSize);
+		UniformBlockSize = glm::max(UniformBufferOffset, UniformBlockSize) * Instances;
 
-	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize * Instances, 0, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize * Instances, 0, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 
 	{
 		glm::vec4 Diffuse(1.0f, 0.5f, 0.0f, 1.0f);
@@ -237,8 +248,6 @@ void display()
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
-
-	glUseProgram(ProgramName);
 
 	glBindProgramPipeline(PipelineName);
 	glBindVertexArray(VertexArrayName);
