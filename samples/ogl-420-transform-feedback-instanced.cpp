@@ -261,6 +261,8 @@ bool end()
 {
 	bool Validated(true);
 
+	glDeleteProgramPipelines(pipeline::MAX, PipelineName);
+
 	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(ProgramName[pipeline::TRANSFORM]);

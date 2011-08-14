@@ -132,11 +132,7 @@ bool initTexture2D()
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(texture::MAX, Texture2DName);
 
-	// Set image
 	{
-		//Texture2DName[TEXTURE_BC7] = gli::createTexture2D(TEXTURE_DIFFUSE_BC7);
-		//Texture2DName[TEXTURE_BC7] = 0;
-		
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC7]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);//GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -157,8 +153,6 @@ bool initTexture2D()
 	}
 
 	{
-		//Texture2DName[TEXTURE_BC3] = gli::createTexture2D(TEXTURE_DIFFUSE_BC3);
-
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC3]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -179,8 +173,6 @@ bool initTexture2D()
 	}
 
 	{
-		//Texture2DName[TEXTURE_BC4] = gli::createTexture2D(TEXTURE_DIFFUSE_BC4);
-
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC4]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -205,9 +197,6 @@ bool initTexture2D()
 	}
 
 	{
-		//Texture2DName[TEXTURE_BC6] = gli::createTexture2D(TEXTURE_BC6);
-		//Texture2DName[TEXTURE_BC6] = 0;
-
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -226,24 +215,6 @@ bool initTexture2D()
 				GL_UNSIGNED_BYTE, 
 				Image[Level].data());
 		}
-
-		/*
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
-
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC6);
-		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
-		{
-			glCompressedTexImage2D(
-				GL_TEXTURE_2D,
-				GLint(Level),
-				GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB,
-				GLsizei(Texture[Level].dimensions().x), 
-				GLsizei(Texture[Level].dimensions().y), 
-				0, 
-				GLsizei(Texture[Level].capacity()), 
-				Texture[Level].data());
-		}
-		*/
 	}
 
 	glActiveTexture(GL_TEXTURE0);
@@ -382,8 +353,6 @@ void display()
 		glm::mat4 MVP = Projection * View * Model;
 
 		*Pointer = Projection * View * Model;
-
-		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
 	// Clear the color buffer
@@ -396,6 +365,9 @@ void display()
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+
+	// Make sure the uniform buffer is uploaded
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
 
 	// Draw each texture in different viewports
 	for(std::size_t Index = 0; Index < texture::MAX; ++Index)
