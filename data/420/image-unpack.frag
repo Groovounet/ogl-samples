@@ -7,7 +7,7 @@
 #define TRANSFORM0	1
 #define TRANSFORM1	2	
 
-layout(binding = DIFFUSE, rgba8) coherent uniform image2D Diffuse;
+layout(/*binding = DIFFUSE, */r32ui) coherent uniform uimage2D ImageData;
 
 layout(binding = MATERIAL) uniform material
 {
@@ -23,5 +23,7 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = imageLoad(Diffuse, ivec2(In.Texcoord * Material.ImageSize));
+//	Color = imageLoad(ImageData, ivec2(In.Texcoord * Material.ImageSize));
+	unsigned int Fetch = imageLoad(ImageData, ivec2(In.Texcoord * Material.ImageSize)).x;
+	Color = unpackUnorm4x8(Fetch);
 }
