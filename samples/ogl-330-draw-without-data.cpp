@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Draw Without Vertex Data";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/empty.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/empty.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/draw-without-data.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/draw-without-data.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -113,7 +113,7 @@ void display()
 	glUseProgram(ProgramName);
 
 	glBindVertexArray(VertexArrayName);
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
 
 	glf::swapBuffers();
 	glf::checkError("display");

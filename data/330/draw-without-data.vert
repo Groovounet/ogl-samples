@@ -2,10 +2,12 @@
 
 uniform mat4 MVP;
 
-const int VertexCount = 4;
+const int VertexCount = 6;
 const vec2 Position[VertexCount] = vec2[](
 	vec2(-1.0f,-1.0f),
 	vec2( 1.0f,-1.0f),
+	vec2( 1.0f, 1.0f),
+	vec2(-1.0f,-1.0f),
 	vec2( 1.0f, 1.0f),
 	vec2(-1.0f, 1.0f));
 
