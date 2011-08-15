@@ -797,6 +797,8 @@ namespace glf
 		case 27:
 			end();
 			exit(0);
+
+			//exit(end());
 			break;
 		}
 	}

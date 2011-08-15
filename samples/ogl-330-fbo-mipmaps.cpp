@@ -199,6 +199,8 @@ bool begin()
 
 bool end()
 {
+	bool Validated = true;
+
 	glDeleteTextures(1, &ColorbufferName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteBuffers(1, &BufferName);
@@ -207,7 +209,9 @@ bool end()
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteSamplers(1, &SamplerName);
 
-	return glf::checkError("end");
+	Validated = Validated && glf::checkError("end");
+
+	return Validated;
 }
 
 void renderScene

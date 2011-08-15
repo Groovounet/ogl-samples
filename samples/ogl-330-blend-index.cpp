@@ -209,11 +209,9 @@ void display()
 
 int main(int argc, char* argv[])
 {
-	if(glf::run(
+	return glf::run(
 		argc, argv,
 		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
 		::SAMPLE_MAJOR_VERSION, 
-		::SAMPLE_MINOR_VERSION))
-		return 0;
-	return 1;
+		::SAMPLE_MINOR_VERSION);
 }
