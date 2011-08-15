@@ -335,11 +335,11 @@ bool end()
 {
 	bool Validated(true);
 
-	//glDeleteBuffers(buffer::MAX, BufferName);
-	//glDeleteProgram(ProgramName);
-	//glDeleteTextures(texture::MAX, Texture2DName);
-	//glDeleteVertexArrays(1, &VertexArrayName);
-	//glDeleteSamplers(1, &SamplerName);
+	glDeleteBuffers(buffer::MAX, BufferName);
+	glDeleteProgram(ProgramName);
+	glDeleteTextures(texture::MAX, Texture2DName);
+	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteSamplers(1, &SamplerName);
 
 	return Validated;
 }
