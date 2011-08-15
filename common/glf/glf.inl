@@ -719,7 +719,7 @@ namespace glf
 		//f = fopen("debug_output.txt","a");
 		//if(f)
 		{
-			char debSource[16], debType[20], debSev[5];
+			char debSource[32], debType[32], debSev[32];
 			if(source == GL_DEBUG_SOURCE_API_ARB)
 				strcpy(debSource, "OpenGL");
 			else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)

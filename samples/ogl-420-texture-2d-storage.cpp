@@ -19,7 +19,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -141,10 +141,9 @@ bool initTexture2D()
 			0, 0, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
-			GL_BGRA, GL_UNSIGNED_BYTE, 
+			GL_BGR, GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}
-	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
