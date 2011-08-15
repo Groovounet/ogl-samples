@@ -129,10 +129,9 @@ bool initTexture2D()
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, DXT1BlockDepth);
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, DXT1BlockSize);
 
-	glGenTextures(1, &TextureName);
-
 	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC1);
 
+	glGenTextures(1, &TextureName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -143,6 +142,9 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexStorage2D(GL_TEXTURE_2D, 
+		GLint(Texture.levels() - 1), GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
+		GLsizei(Texture[0].dimensions().x / 2), GLsizei(Texture[0].dimensions().y / 2));
 
 	for(std::size_t Level = 0; Level < Texture.levels() - 1; ++Level)
 	{
@@ -158,25 +160,15 @@ bool initTexture2D()
 		if(LevelWidth < DXT1BlockWidth)
 			break;
 
-		glCompressedTexImage2D(
+		glCompressedTexSubImage2D(
 			GL_TEXTURE_2D,
 			GLint(Level),
-			GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+			0, 0,
 			LevelWidth, 
 			LevelHeight, 
-			0, 
+			GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
 			LevelSize, 
 			Texture[Level].data());
-
-		//glCompressedTexSubImage2D(
-		//	GL_TEXTURE_2D,
-		//	GLint(Level),
-		//	0, 0,
-		//	LevelWidth, 
-		//	LevelHeight, 
-		//	GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
-		//	LevelSize, 
-		//	Texture[Level].data());
 	}
 
 	glActiveTexture(GL_TEXTURE0);
