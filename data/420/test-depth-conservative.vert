@@ -2,7 +2,12 @@
 
 #define POSITION	0
 
-uniform mat4 MVP;
+#define TRANSFORM0	1
+
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 layout(location = POSITION) in vec2 Position;
 
@@ -18,6 +23,6 @@ out block
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position, float(gl_InstanceID) * 0.25 - 0.5, 1.0);
+	gl_Position = Transform.MVP * vec4(Position, float(gl_InstanceID) * 0.25 - 0.5, 1.0);
 	Out.Instance = float(gl_InstanceID);
 }

@@ -274,20 +274,10 @@ bool initUniformBuffer()
 {
 	bool Validated(true);
 
-	GLint UniformBufferOffset(0);
-
-	glGetIntegerv(
-		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
-		&UniformBufferOffset);
-
-	{
-		GLint UniformBlockSize = glm::max(GLint(sizeof(glm::mat4)), UniformBufferOffset);
-
-		glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
+	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -379,7 +369,7 @@ void display()
 	// Draw each texture in different viewports
 	for(std::size_t Index = 0; Index < texture::MAX; ++Index)
 	{
-		glViewportIndexedf(0, Viewport[Index].x, Viewport[Index].y, Viewport[Index].z, Viewport[Index].w);
+		glViewportIndexedfv(0, &glm::vec4(Viewport[Index])[0]);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[Index]);

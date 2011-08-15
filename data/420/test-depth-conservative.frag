@@ -2,7 +2,7 @@
 
 #define FRAG_COLOR		0
 
-uniform vec4 Diffuse;
+vec4 Diffuse = vec4(1.0, 0.5, 0.0, 1.0);
 
 in block
 {
