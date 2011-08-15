@@ -253,7 +253,7 @@ void display()
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformDiffuseRGB, 0);
 	glUniform1i(UniformDiffuseBGR, 1);
-	glUniform1ui(UniformDiffuseIndex, (DiffuseIndex / 1000) % 2);
+	glUniform1ui(UniformDiffuseIndex, (DiffuseIndex / 100) % 2);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::RGB]);

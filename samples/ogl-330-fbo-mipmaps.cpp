@@ -225,7 +225,6 @@ void renderScene
 	glEnablei(GL_SCISSOR_TEST, 0);
 	glScissorIndexed(0, Border, Border, Window.Size.x - Border * 2, Window.Size.y - Border * 2);
 	glClearBufferfv(GL_COLOR, 0, &ClearColor[0]);
-	glDisablei(GL_SCISSOR_TEST, 0);
 
 	// Bind the program for use
 	glUseProgram(ProgramName);
@@ -236,6 +235,8 @@ void renderScene
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+
+	glDisablei(GL_SCISSOR_TEST, 0);
 
 	glf::checkError("renderScene");
 }
