@@ -142,46 +142,49 @@ bool initTexture2D()
 	glGenTextures(texture::MAX, Texture2DName);
 
 	{
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC7]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);//GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_BPTC_UNORM_ARB, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
-			glCompressedTexImage2D(
+			glCompressedTexSubImage2D(
 				GL_TEXTURE_2D,
 				GLint(Level),
-				GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,
+				0, 0,
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
-				0, 
+				GL_COMPRESSED_RGBA_BPTC_UNORM_ARB, 
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
 	}
 
 	{
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
+
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC3]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
-			glCompressedTexImage2D(
+			glCompressedTexSubImage2D(
 				GL_TEXTURE_2D,
 				GLint(Level),
-				GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+				0, 0,
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
-				0, 
+				GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, 
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
 	}
 
 	{
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC4]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -189,40 +192,40 @@ bool initTexture2D()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE);
-
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RED_RGTC1, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
-			glCompressedTexImage2D(
+			glCompressedTexSubImage2D(
 				GL_TEXTURE_2D,
 				GLint(Level),
-				GL_COMPRESSED_RED_RGTC1, //GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+				0, 0,
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
-				0, 
+				GL_COMPRESSED_RED_RGTC1, 
 				GLsizei(Texture[Level].capacity()), 
 				Texture[Level].data());
 		}
 	}
 
 	{
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
-		for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
-			glTexImage2D(
+			glTexSubImage2D(
 				GL_TEXTURE_2D, 
 				GLint(Level), 
-				GL_RGB, 
-				GLsizei(Image[Level].dimensions().x), 
-				GLsizei(Image[Level].dimensions().y), 
-				0,  
+				0, 0,
+				GLsizei(Texture[Level].dimensions().x), 
+				GLsizei(Texture[Level].dimensions().y), 
 				GL_BGR, 
 				GL_UNSIGNED_BYTE, 
-				Image[Level].data());
+				Texture[Level].data());
 		}
 	}
 
