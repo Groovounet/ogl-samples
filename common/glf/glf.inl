@@ -881,7 +881,7 @@ namespace glf
 		Window.RotationCurrent = Window.MouseButtonFlags & glf::MOUSE_BUTTON_RIGHT ? Window.RotationOrigin + (Window.MouseCurrent - Window.MouseOrigin) : Window.RotationOrigin;
 	}
 
-	inline bool run
+	inline int run
 	(
 		int argc, char* argv[], 
 		glm::ivec2 const & Size, 
