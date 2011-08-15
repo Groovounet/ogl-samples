@@ -2,9 +2,6 @@
 
 #define FRAG_COLOR		0
 
-precision highp float;
-precision highp int;
-
 vec4 Diffuse = vec4(1.0, 0.5, 0.0, 1.0);
 
 in block

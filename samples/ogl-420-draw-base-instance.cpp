@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Draw base instance";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -63,13 +63,22 @@ namespace
 		glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)
 	};
 
-	GLuint VertexArrayName(0);
+	namespace buffer
+	{
+		enum type
+		{
+			POSITION,
+			COLOR,
+			ELEMENT,
+			TRANSFORM,
+			MAX
+		};
+	}//namespace buffer
+
+	GLuint PipelineName(0);
 	GLuint ProgramName(0);
-	GLuint PositionArrayBufferName(0);
-	GLuint ColorArrayBufferName(0);
-	GLuint ElementBufferName(0);
-	GLint UniformMVP(0);
-	GLint UniformDiffuse(0);
+	GLuint VertexArrayName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0, 0, 0};
 }//namespace
 
 bool initTest()
@@ -85,28 +94,29 @@ bool initProgram()
 {
 	bool Validated(true);
 	
-	// Create program
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
 
-	// Get variables locations
 	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	glBindProgramPipeline(0);
 
 	return Validated;
 }
@@ -115,18 +125,18 @@ bool initArrayBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &PositionArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
+	glGenBuffers(1, &BufferName[buffer::POSITION]);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &ColorArrayBufferName);
-    glBindBuffer(GL_ARRAY_BUFFER, ColorArrayBufferName);
+	glGenBuffers(1, &BufferName[buffer::COLOR]);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
     glBufferData(GL_ARRAY_BUFFER, ColorSize, ColorData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -139,16 +149,28 @@ bool initVertexArray()
 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, PositionArrayBufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, ColorArrayBufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glVertexAttribDivisor(glf::semantic::attr::COLOR, 1);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
+
+	return Validated;
+}
+
+bool initUniformBuffer()
+{
+	bool Validated(true);
+
+	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -179,6 +201,8 @@ bool begin()
 		Validated = initArrayBuffer();
 	if(Validated)
 		Validated = initVertexArray();
+	if(Validated)
+		Validated = initUniformBuffer();
 
 	return Validated;
 }
@@ -187,10 +211,9 @@ bool end()
 {
 	bool Validated(true);
 
-	glDeleteBuffers(1, &PositionArrayBufferName);
-	glDeleteBuffers(1, &ColorArrayBufferName);
-	glDeleteBuffers(1, &ElementBufferName);
+	glDeleteProgramPipelines(1, &PipelineName);
 	glDeleteProgram(ProgramName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
 	return Validated;
@@ -198,16 +221,24 @@ bool end()
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y + 45.0f, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x + 45.0f, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
+	// Asynchrone update of the uniform buffer
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(
+			GL_UNIFORM_BUFFER, 0,	sizeof(glm::mat4),
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 
-	glProgramUniform4fv(ProgramName, UniformDiffuse, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		
+		*Pointer = Projection * View * Model;
+
+		// Make sure the uniform buffer is uploaded
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
@@ -215,10 +246,11 @@ void display()
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
+	glBindProgramPipeline(PipelineName);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glBindVertexArray(VertexArrayName);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
-    glBindVertexArray(VertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0, 5, 1, 5);
 
