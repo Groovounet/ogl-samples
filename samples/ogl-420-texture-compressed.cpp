@@ -144,8 +144,6 @@ bool initTexture2D()
 	{
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC7]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);//GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_BPTC_UNORM_ARB, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -165,8 +163,6 @@ bool initTexture2D()
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC3]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -186,8 +182,6 @@ bool initTexture2D()
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC4]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
@@ -211,9 +205,6 @@ bool initTexture2D()
 		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
