@@ -168,7 +168,6 @@ bool begin()
 {
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_base_instance");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();

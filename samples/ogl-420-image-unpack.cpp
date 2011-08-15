@@ -246,7 +246,6 @@ bool begin()
 {
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_shader_image_load_store");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
@@ -311,7 +310,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
+	glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0, 0);
 
 	glf::swapBuffers();
 }
