@@ -31,14 +31,18 @@ namespace
 		0, 2, 3
 	};
 
-	GLsizei const VertexCount(4);
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
-	glm::vec2 const PositionData[VertexCount] =
+	GLsizei const VertexCount(8);
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec4);
+	glm::vec4 const PositionData[VertexCount] =
 	{
-		glm::vec2(-1.0f,-1.0f),
-		glm::vec2( 1.0f,-1.0f),
-		glm::vec2( 1.0f, 1.0f),
-		glm::vec2(-1.0f, 1.0f)
+		glm::vec4(-1.0f,-1.0f, 0.5f, 1.0f),
+		glm::vec4( 1.0f,-1.0f, 0.5f, 1.0f),
+		glm::vec4( 1.0f, 1.0f, 0.5f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 0.5f, 1.0f),
+		glm::vec4(-0.5f,-1.0f,-0.5f, 1.0f),
+		glm::vec4( 0.5f,-1.0f,-0.5f, 1.0f),
+		glm::vec4( 1.5f, 1.0f,-0.5f, 1.0f),
+		glm::vec4(-1.5f, 1.0f,-0.5f, 1.0f)
 	};
 
     struct DrawArraysIndirectCommand
@@ -46,7 +50,7 @@ namespace
 		GLuint count;
 		GLuint primCount;
 		GLuint first;
-		GLuint reservedMustBeZero;
+		GLuint baseInstance;
     };
 
     struct DrawElementsIndirectCommand
@@ -55,7 +59,7 @@ namespace
 		GLuint primCount;
 		GLuint firstIndex;
 		GLint  baseVertex;
-		GLuint reservedMustBeZero;
+		GLuint baseInstance;
     };
 
 	GLuint VertexArrayName(0);
@@ -103,12 +107,12 @@ bool initIndirectBuffer()
 	Command[0].primCount = 1;
 	Command[0].firstIndex = 0;
 	Command[0].baseVertex = 0;
-	Command[0].reservedMustBeZero = 0;
+	Command[0].baseInstance = 0;
 	Command[1].count = ElementCount;
 	Command[1].primCount = 1;
 	Command[1].firstIndex = 0;
-	Command[1].baseVertex = 0;
-	Command[1].reservedMustBeZero = 0;
+	Command[1].baseVertex = 4;
+	Command[1].baseInstance = 0;
 
 	glGenBuffers(1, &IndirectBufferName);
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
@@ -138,7 +142,7 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-			glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+			glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
