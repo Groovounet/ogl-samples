@@ -93,7 +93,7 @@ bool initProgram()
 		glDeleteShader(VertShaderName);
 		glDeleteShader(GeomShaderName);
 
-		GLchar const * Strings[] = {"gl_PerVertex.gl_Position", "block.Color"}; 
+		GLchar const * Strings[] = {"gl_Position", "block.Color"}; 
 		glTransformFeedbackVaryings(ProgramName[pipeline::TRANSFORM], 2, Strings, GL_INTERLEAVED_ATTRIBS);
 		glLinkProgram(ProgramName[pipeline::TRANSFORM]);
 
@@ -104,7 +104,7 @@ bool initProgram()
 	{
 		glUseProgramStages(
 			PipelineName[pipeline::TRANSFORM], 
-			GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, 
+			GL_VERTEX_SHADER_BIT | GL_GEOMETRY_SHADER_BIT, 
 			ProgramName[pipeline::TRANSFORM]);
 	}
 
