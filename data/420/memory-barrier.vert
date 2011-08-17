@@ -6,9 +6,14 @@
 #define COMMON		0
 #define FRAG_COLOR	0
 
-precision highp int;
+#define MATERIAL	0
+#define TRANSFORM0	1
+#define TRANSFORM1	2	
 
-uniform mat4 MVP;
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 layout(location = POSITION) in vec2 Position;
 
@@ -19,5 +24,5 @@ out gl_PerVertex
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	gl_Position = Transform.MVP * vec4(Position, 0.0, 1.0);
 }

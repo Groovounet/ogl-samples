@@ -6,9 +6,7 @@
 #define COMMON		0
 #define FRAG_COLOR	0
 
-precision highp int;
-
-uniform sampler2D Diffuse;
+layout(binding = 0) uniform sampler2D Diffuse;
 
 in vec4 gl_FragCoord;
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;

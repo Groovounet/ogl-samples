@@ -27,21 +27,6 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	struct vertex
-	{
-		vertex
-		(
-			glm::vec2 const & Position,
-			glm::vec2 const & Texcoord
-		) :
-			Position(Position),
-			Texcoord(Texcoord)
-		{}
-
-		glm::vec2 Position;
-		glm::vec2 Texcoord;
-	};
-
 	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
 	glf::vertex_v2fv2f const VertexData[VertexCount] =
