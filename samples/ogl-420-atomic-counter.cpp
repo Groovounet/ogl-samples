@@ -255,7 +255,6 @@ void display()
 	// Compute the MVP (Model View Projection matrix)
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-
 		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(
 			GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4),
 			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
@@ -272,12 +271,15 @@ void display()
 
 	{
 		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
+		//glm::uint32* Pointer = (glm::uint32*)glMapBufferRange(
+		//	GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(glm::uint32),
+		//	GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 
-		glm::uint32* Pointer = (glm::uint32*)glMapBufferRange(
-			GL_UNIFORM_BUFFER, 0, sizeof(glm::uint32),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		//*Pointer = 0;
+		glm::uint32 Data(0);
+		glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(glm::uint32), &Data);
 
-		*Pointer = 0;
+		//glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	}
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
@@ -293,7 +295,7 @@ void display()
 
 	// Make sure the uniform buffer is uploaded
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
-	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+	//glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);
