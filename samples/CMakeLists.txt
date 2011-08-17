@@ -163,8 +163,8 @@ glCreateSampleGTC(transform-feedback-stream)
 # OpenGL 4.1 samples
 set(GL_VERSION_GTC 410)
 
-set(GL_SHADER_GTC separate.vert separate.frag)
-glCreateSampleGTC(debug-output-arb)
+#set(GL_SHADER_GTC separate.vert separate.frag)
+#glCreateSampleGTC(debug-output-arb)
 set(GL_SHADER_GTC draw-indirect.vert draw-indirect.frag)
 glCreateSampleGTC(draw-indirect-amd)
 set(GL_SHADER_GTC viewport.vert viewport.geom viewport.frag layer.vert layer.geom layer.frag)
