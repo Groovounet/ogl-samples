@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Memory barrier";
-	std::string const SHADER_VERT_SOURCE_BLUR(glf::DATA_DIRECTORY + "420/memory-barrier.vert");
-	std::string const SHADER_FRAG_SOURCE_BLUR(glf::DATA_DIRECTORY + "420/memory-barrier.frag");
-	std::string const SHADER_VERT_SOURCE_DRAW(glf::DATA_DIRECTORY + "420/texture-2d.vert");
-	std::string const SHADER_FRAG_SOURCE_DRAW(glf::DATA_DIRECTORY + "420/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE_UPDATE(glf::DATA_DIRECTORY + "420/memory-barrier-update.vert");
+	std::string const SHADER_FRAG_SOURCE_UPDATE(glf::DATA_DIRECTORY + "420/memory-barrier-update.frag");
+	std::string const SHADER_VERT_SOURCE_BLIT(glf::DATA_DIRECTORY + "420/memory-barrier-blit.vert");
+	std::string const SHADER_FRAG_SOURCE_BLIT(glf::DATA_DIRECTORY + "420/memory-barrier-blit.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken640-rgb8.dds");
 	glm::ivec2 FRAMEBUFFER_SIZE(0);
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -43,10 +43,8 @@ namespace
 	{
 		enum type
 		{
-			VERT_BLUR,
-			FRAG_BLUR,
-			VERT_DRAW,
-			FRAG_DRAW,
+			UPDATE,
+			BLIT,
 			MAX
 		};
 	}//namespace program
@@ -55,8 +53,8 @@ namespace
 	{
 		enum type
 		{
-			BLUR,
-			DRAW,
+			UPDATE,
+			BLIT,
 			MAX
 		};
 	}//namespace pipeline
@@ -71,11 +69,20 @@ namespace
 		};
 	}//namespace buffer
 
+	namespace texture
+	{
+		enum type
+		{
+			DIFFUSE,
+			COLORBUFFER,
+			MAX
+		};
+	}//namespace texture
+
 	GLuint VertexArrayName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0};
-	GLuint Texture2DName(0);
+	GLuint TextureName[texture::MAX] = {0, 0};
 	GLuint SamplerName(0);
-	GLuint ColorbufferName(0);
 	GLuint FramebufferName(0);
 
 	GLuint ProgramName[program::MAX];
@@ -87,61 +94,49 @@ bool initProgram()
 	bool Validated(true);
 	
 	glGenProgramPipelines(pipeline::MAX, PipelineName);
-	glBindProgramPipeline(PipelineName[pipeline::BLUR]);
-	glBindProgramPipeline(PipelineName[pipeline::DRAW]);
+	glBindProgramPipeline(PipelineName[pipeline::UPDATE]);
+	glBindProgramPipeline(PipelineName[pipeline::BLIT]);
 	glBindProgramPipeline(0);
 
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_BLUR);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_BLUR);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_UPDATE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_UPDATE);
 
-		ProgramName[program::VERT_BLUR] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::VERT_BLUR], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::VERT_BLUR], VertShaderName);
+		ProgramName[program::UPDATE] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::UPDATE], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::UPDATE], VertShaderName);
+		glAttachShader(ProgramName[program::UPDATE], FragShaderName);
 		glDeleteShader(VertShaderName);
-		glLinkProgram(ProgramName[program::VERT_BLUR]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::VERT_BLUR]);
-
-		ProgramName[program::FRAG_BLUR] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::FRAG_BLUR], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::FRAG_BLUR], FragShaderName);
 		glDeleteShader(FragShaderName);
-		glLinkProgram(ProgramName[program::FRAG_BLUR]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG_BLUR]);
+		glLinkProgram(ProgramName[program::UPDATE]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::UPDATE]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName[pipeline::BLUR], GL_VERTEX_SHADER_BIT, ProgramName[program::VERT_BLUR]);
-		glUseProgramStages(PipelineName[pipeline::BLUR], GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG_BLUR]);
+		glUseProgramStages(PipelineName[pipeline::UPDATE], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[program::UPDATE]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_DRAW);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_DRAW);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, SHADER_VERT_SOURCE_BLIT);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, SHADER_FRAG_SOURCE_BLIT);
 
-		ProgramName[program::VERT_DRAW] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::VERT_DRAW], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::VERT_DRAW], VertShaderName);
+		ProgramName[program::BLIT] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::BLIT], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::BLIT], VertShaderName);
+		glAttachShader(ProgramName[program::BLIT], FragShaderName);
 		glDeleteShader(VertShaderName);
-		glLinkProgram(ProgramName[program::VERT_DRAW]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::VERT_DRAW]);
-
-		ProgramName[program::FRAG_DRAW] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::FRAG_DRAW], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::FRAG_DRAW], FragShaderName);
 		glDeleteShader(FragShaderName);
-		glLinkProgram(ProgramName[program::FRAG_DRAW]);
-		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG_DRAW]);
+		glLinkProgram(ProgramName[program::BLIT]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::BLIT]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName[pipeline::DRAW], GL_VERTEX_SHADER_BIT, ProgramName[program::VERT_DRAW]);
-		glUseProgramStages(PipelineName[pipeline::DRAW], GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG_DRAW]);
+		glUseProgramStages(PipelineName[pipeline::BLIT], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[program::BLIT]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
@@ -181,9 +176,10 @@ bool initTexture2D()
 	FRAMEBUFFER_SIZE = Image[0].dimensions();
 
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &Texture2DName);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	if(!TextureName[texture::DIFFUSE])
+		glGenTextures(texture::MAX, TextureName);
 
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glTexImage2D(
@@ -198,29 +194,8 @@ bool initTexture2D()
 			Image[Level].data());
 	}
 
-	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &ColorbufferName);
-	glBindTexture(GL_TEXTURE_2D, ColorbufferName);
-
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-	{
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGBA8, 
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
-			0,  
-			GL_BGR, 
-			GL_UNSIGNED_BYTE, 
-			Image[Level].data());
-	}
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glGenTextures(1, &ColorbufferName);
-	//glBindTexture(GL_TEXTURE_2D, ColorbufferName);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Image[0].dimensions().x, Image[0].dimensions().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	//glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLORBUFFER]);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 
 	return Validated;
 }
@@ -231,7 +206,7 @@ bool initFramebuffer()
 
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ColorbufferName, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName[texture::COLORBUFFER], 0);
 
 	Validated = Validated && (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
@@ -318,38 +293,21 @@ bool end()
 {
 	bool Validated(true);
 
-	glDeleteTextures(1, &ColorbufferName);
+	glDeleteTextures(texture::MAX, TextureName);
 	glDeleteFramebuffers(1, &FramebufferName);
 	glDeleteBuffers(buffer::MAX, BufferName);
-	glDeleteProgram(ProgramName[program::VERT_BLUR]);
-	glDeleteProgram(ProgramName[program::FRAG_BLUR]);
-	glDeleteProgram(ProgramName[program::VERT_DRAW]);
-	glDeleteProgram(ProgramName[program::FRAG_DRAW]);
-	glDeleteTextures(1, &Texture2DName);
+	glDeleteProgram(ProgramName[program::BLIT]);
+	glDeleteProgram(ProgramName[program::UPDATE]);
 	glDeleteVertexArrays(1, &VertexArrayName);
 	glDeleteSamplers(1, &SamplerName);
-	glDeleteProgramPipelines(program::MAX, PipelineName);
+	glDeleteProgramPipelines(pipeline::MAX, PipelineName);
 
 	return Validated;
-}
-
-void renderScene
-(
-	GLuint TextureName
-)
-{
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glBindSampler(0, SamplerName);
-
-	glBindVertexArray(VertexArrayName);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 }
 
 void display()
 {
 	static int FrameIndex = 0;
-	FrameIndex = (FrameIndex + 1) % 256;
 
 	{
 		glm::mat4 MVP = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
@@ -359,24 +317,34 @@ void display()
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-
+	// Bind shared objects
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glBindSampler(0, SamplerName);
+	glBindVertexArray(VertexArrayName);
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glBindProgramPipeline(PipelineName[pipeline::BLUR]);
+	// Update a colorbuffer bound as a framebuffer attachement and as a texture
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+	glBindProgramPipeline(PipelineName[pipeline::UPDATE]);
 
-	//glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
-	//renderScene(FrameIndex ? ColorbufferName : Texture2DName);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, FrameIndex ? TextureName[texture::COLORBUFFER] : TextureName[texture::DIFFUSE]);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glBindProgramPipeline(PipelineName[pipeline::DRAW]);
-	
 	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
-	renderScene(Texture2DName);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
+	// Blit to framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindProgramPipeline(PipelineName[pipeline::BLIT]);
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLORBUFFER]);
+
+	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 	glf::swapBuffers();
+
+	FrameIndex = (FrameIndex + 1) % 256;
 }
 
 int main(int argc, char* argv[])
