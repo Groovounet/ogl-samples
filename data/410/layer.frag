@@ -3,7 +3,6 @@
 #define POSITION	0
 #define COLOR		3
 #define TEXCOORD	4
-#define COMMON		0
 #define FRAG_COLOR	0
 
 precision highp int;
@@ -16,7 +15,7 @@ const vec4 ColorArray[4] = vec4[]
 	vec4(0.0, 0.0, 1.0, 1.0)
 );
 
-layout(location = COMMON) in block
+in block
 {
 	flat int Instance;
 } In;

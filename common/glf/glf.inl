@@ -873,7 +873,7 @@ namespace glf
 
 	static void close()
 	{
-		end();
+		exit(end() ? 0 : 1);
 	}
 
 	static void motion(int x, int y)

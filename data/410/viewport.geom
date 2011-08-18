@@ -3,7 +3,6 @@
 #define POSITION	0
 #define COLOR		3
 #define TEXCOORD	4
-#define COMMON		0
 #define FRAG_COLOR	0
 
 precision highp int;
@@ -11,12 +10,12 @@ precision highp int;
 layout(triangles, invocations = 4) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-layout(location = COMMON) in block
+in block
 {
 	vec2 Texcoord;
 } In[];
 
-layout(location = COMMON) out block
+out block
 {
 	vec2 Texcoord;
 	flat int Instance;
