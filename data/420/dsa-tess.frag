@@ -1,18 +1,17 @@
-#version 410 core
+#version 420 core
 
 #define POSITION		0
 #define COLOR			3
 #define FRAG_COLOR		0
 
-struct vertex
+in block
 {
 	vec4 Color;
-};
+} In;
 
-layout(location = 0) in vertex In;
-layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;
+layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	FragColor = In.Color;
+	Color = In.Color;
 }

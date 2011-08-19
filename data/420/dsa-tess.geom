@@ -1,13 +1,8 @@
-#version 410 core
+#version 420 core
 
 #define POSITION		0
 #define COLOR			3
 #define FRAG_COLOR		0
-
-struct vertex
-{
-	vec4 Color;
-};
 
 layout(triangles, invocations = 1) in;
 layout(triangle_strip, max_vertices = 4) out;
@@ -19,7 +14,10 @@ in gl_PerVertex
 	float gl_ClipDistance[];
 } gl_in[];
 
-layout(location = 0) in vertex In[];
+in block
+{
+	vec4 Color;
+} In[];
 
 out gl_PerVertex 
 {
@@ -28,7 +26,10 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
-layout(location = 0) out vertex Out;
+out block
+{
+	vec4 Color;
+} Out;
 
 void main()
 {	
