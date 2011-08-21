@@ -62,10 +62,10 @@ namespace
 		};
 	}//namespace program
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-image-2d.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "330/image-2d.frag",
+		glf::DATA_DIRECTORY + "330/instanced-image-2d.frag",
 		glf::DATA_DIRECTORY + "330/multisample-box.frag",
 		glf::DATA_DIRECTORY + "330/multisample-near.frag",
 	};
@@ -78,6 +78,7 @@ namespace
 	GLuint SamplerName = 0;
 	
 	GLuint MultisampleTextureName = 0;
+	GLuint DepthTextureName = 0;
 	GLuint ColorTextureName = 0;
 	
 	GLuint FramebufferRenderName = 0;
@@ -173,12 +174,16 @@ bool initFramebuffer()
 {
 	glGenTextures(1, &MultisampleTextureName);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
-	// The second parameter is the number of samples.
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+
+	glGenTextures(1, &DepthTextureName);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, DepthTextureName);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MultisampleTextureName, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthTextureName, 0);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
@@ -256,21 +261,32 @@ bool end()
 
 void renderFBO(GLuint Framebuffer)
 {
+	//glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
+	//glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
+	//glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
+	//glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
+	//glm::mat4 Model = glm::mat4(1.0f);
+	//glm::mat4 MVP = Perspective * View * Model;
+
 	glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
-	glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
-	glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
-	glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
+	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0 - 4.0));
+	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
 
 	glProgramUniform1i(ProgramName[program::THROUGH], UniformDiffuse[program::THROUGH], 0);
 	glProgramUniformMatrix4fv(ProgramName[program::THROUGH], UniformMVP[program::THROUGH], 1, GL_FALSE, &MVP[0][0]);
 
+	glEnable(GL_DEPTH_TEST);
+
 	glUseProgram(ProgramName[program::THROUGH]);
 
 	glViewportIndexedf(0, 0, 0, float(FRAMEBUFFER_SIZE.x), float(FRAMEBUFFER_SIZE.y));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+	float Depth(1.0f);
+	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -278,18 +294,27 @@ void renderFBO(GLuint Framebuffer)
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
+
+	glDisable(GL_DEPTH_TEST);
 
 	glf::checkError("renderFBO");
 }
 
 void resolveMultisampling()
 {
-	//glm::mat4 Projection(glm::ortho(-8.0f, 8.0f, -6.0f, 6.0f));
+	////glm::mat4 Projection(glm::ortho(-8.0f, 8.0f, -6.0f, 6.0f));
+	//glm::mat4 Perspective = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 100.0f);
+	//glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
+	//glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+	//glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	//glm::mat4 Model = glm::mat4(1.0f);
+	//glm::mat4 MVP = Perspective * View * Model;
+
 	glm::mat4 Perspective = glm::perspective(45.0f, float(Window.Size.x) / Window.Size.y, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
+	glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
+	glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Perspective * View * Model;
 
@@ -313,14 +338,14 @@ void resolveMultisampling()
 	{
 		glScissorIndexed(0, 1, 1, Window.Size.x  / 2 - 2, Window.Size.y - 2);
 		glUseProgram(ProgramName[program::RESOLVE_BOX]);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
 	}
 
 	// Near
 	{
 		glScissorIndexed(0, Window.Size.x / 2 + 1, 1, Window.Size.x / 2 - 2, Window.Size.y - 2);
 		glUseProgram(ProgramName[program::RESOLVE_NEAR]);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 5);
 	}
 
 	glDisable(GL_SCISSOR_TEST);
