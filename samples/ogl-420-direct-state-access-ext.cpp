@@ -179,7 +179,7 @@ bool initProgram()
 
 	return Validated && glf::checkError("initProgram");
 }
-
+/*
 bool initVertexArray()
 {
 	bool Validated(true);
@@ -198,6 +198,31 @@ bool initVertexArray()
 	glEnableVertexArrayAttribEXT(VertexArrayName[pipeline::RESOLVE], glf::semantic::attr::POSITION);
 
 	return Validated && glf::checkError("initVertexArray");
+}
+*/
+bool initVertexArray()
+{
+	bool Validated(true);
+
+	glGenVertexArrays(pipeline::MAX, VertexArrayName);
+
+    glBindVertexArray(VertexArrayName[pipeline::MULTISAMPLE]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
+	glBindVertexArray(0);
+
+    glBindVertexArray(VertexArrayName[pipeline::RESOLVE]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
+
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+	glBindVertexArray(0);
+
+	return Validated;
 }
 
 bool initSampler()
@@ -258,10 +283,15 @@ bool initTexture()
 			glGenerateTextureMipmapEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D);
 	}
 
-	// Create multisampled texture
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::MULTISAMPLED]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, GLsizei(Window.Size.x), GLsizei(Window.Size.y), GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, GLsizei(Window.Size.x), GLsizei(Window.Size.y), GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::DEPTH]);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, GLsizei(Window.Size.x), GLsizei(Window.Size.y), GL_TRUE);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+	//glTexImage2D(GL_TEXTURE_2D_MULTISAMPLE, GLint(0), GL_DEPTH_COMPONENT24, GLsizei(Window.Size.x), GLsizei(Window.Size.y),	0,  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
 	// Create resolved texture
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::RESOLVED]);
@@ -269,20 +299,18 @@ bool initTexture()
 	//glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, GLsizei(Window.Size.x), GLsizei(Window.Size.y));
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//glTextureStorage2DEXT(TextureName[texture::RESOLVED], GL_TEXTURE_2D, 1, GL_RGBA8, GLsizei(Window.Size.x), GLsizei(Window.Size.y));
+/*
+	// Create multisampled texture
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::MULTISAMPLED]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, GLsizei(Window.Size.x), GLsizei(Window.Size.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Create depth texture
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::DEPTH]);
-	glTexImage2D(GL_TEXTURE_2D, GLint(0), 
-			GL_DEPTH_COMPONENT24, 
-			GLsizei(Window.Size.x), 
-			GLsizei(Window.Size.y),
-			0,  
-			GL_DEPTH_COMPONENT, 
-			GL_UNSIGNED_BYTE, 
-			NULL);
+	glTexImage2D(GL_TEXTURE_2D, GLint(0), GL_DEPTH_COMPONENT24, GLsizei(Window.Size.x), GLsizei(Window.Size.y),	0,  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//glTextureStorage2DEXT(TextureName[texture::DEPTH], GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, GLsizei(Window.Size.x), GLsizei(Window.Size.y));
-
+*/
 	return Validated && glf::checkError("initTexture");
 }
 
@@ -292,12 +320,18 @@ bool initFramebuffer()
 
 	//glGenRenderbuffers(1, &ColorRenderbufferName);
 	//glNamedRenderbufferStorageMultisampleEXT(ColorRenderbufferName, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	Validated = Validated && glf::checkError("initFramebuffer0");
 
 	glGenFramebuffers(framebuffer::MAX, FramebufferName);
 
-	//glNamedFramebufferTexture2DEXT(FramebufferName[framebuffer::READ], GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, TextureName[texture::DEPTH], 0);
-	glNamedFramebufferTextureEXT(FramebufferName[framebuffer::READ], GL_COLOR_ATTACHMENT0, TextureName[texture::MULTISAMPLED], 0);
-	Validated = Validated && (glCheckNamedFramebufferStatusEXT(FramebufferName[framebuffer::READ], GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName[framebuffer::READ]);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, TextureName[texture::DEPTH], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName[texture::MULTISAMPLED], 0);
+	Validated = Validated && (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+	//glNamedFramebufferTextureEXT(FramebufferName[framebuffer::READ], GL_DEPTH_ATTACHMENT, TextureName[texture::DEPTH], 0);
+	//glNamedFramebufferTextureEXT(FramebufferName[framebuffer::READ], GL_COLOR_ATTACHMENT0, TextureName[texture::MULTISAMPLED], 0);
+	//Validated = Validated && (glCheckNamedFramebufferStatusEXT(FramebufferName[framebuffer::READ], GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
     glNamedFramebufferTextureEXT(FramebufferName[framebuffer::DRAW], GL_COLOR_ATTACHMENT0, TextureName[texture::RESOLVED], 0);
 	Validated = Validated && (glCheckNamedFramebufferStatusEXT(FramebufferName[framebuffer::DRAW], GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
