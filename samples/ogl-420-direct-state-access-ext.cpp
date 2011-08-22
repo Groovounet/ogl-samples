@@ -426,13 +426,15 @@ void display()
 
 	GLenum DrawBuffers[] = {GL_COLOR_ATTACHMENT0};
 
-	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size)[0]);
+	glViewportIndexedfv(0, &glm::vec4(64, 0, Window.Size)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Step 1: Render the scene in a multisampled framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);//FramebufferName[framebuffer::READ]);
-	//glDrawBuffers(1, DrawBuffers);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName[framebuffer::READ]);
+	glDrawBuffers(1, DrawBuffers);
 
-	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
+	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size)[0]);
+	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -444,7 +446,7 @@ void display()
 		glBindVertexArray(VertexArrayName[pipeline::MULTISAMPLE]);
 
 		glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
-		glDrawArraysInstancedBaseInstance(GL_PATCHES, 0, VertexCount, 1, 0);
+		glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 	}
 	glDisable(GL_MULTISAMPLE);
 
@@ -460,7 +462,7 @@ void display()
 		glNamedBufferSubDataEXT(BufferName[buffer::BLIT], 0, sizeof(glm::mat4), &MVP[0][0]);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::BLIT]);
-		glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
+		glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName[texture::RESOLVED]);
 		glBindProgramPipeline(PipelineName[pipeline::RESOLVE]);
 		glBindVertexArray(VertexArrayName[pipeline::RESOLVE]);
 
