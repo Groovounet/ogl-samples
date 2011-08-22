@@ -1,7 +1,7 @@
 #version 330 core
 #define FRAG_COLOR		0
 
-uniform sampler2DMS Diffuse;
+layout(binding = 0) uniform sampler2DMS Diffuse;
 
 in block
 {
