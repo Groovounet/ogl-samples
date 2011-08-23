@@ -139,6 +139,15 @@ namespace glf
 			};
 		}//namespace frag
 
+		namespace renderbuffer
+		{
+			enum type
+			{
+				DEPTH,
+				COLOR0
+			};
+		}//namespace renderbuffer
+
 	}//namespace semantic
 
 	struct vertex_v2fv2f
