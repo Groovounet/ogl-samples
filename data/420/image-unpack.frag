@@ -23,7 +23,6 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-//	Color = imageLoad(ImageData, ivec2(In.Texcoord * Material.ImageSize));
 	unsigned int Fetch = imageLoad(ImageData, ivec2(In.Texcoord * Material.ImageSize)).x;
 	Color = unpackUnorm4x8(Fetch);
 }
