@@ -20,12 +20,10 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
-	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
-	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
-	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
-	std::string const TEXTURE_DIFFUSE_BC6(glf::DATA_DIRECTORY + "kueken128-bc6h.dds");
-	std::string const TEXTURE_DIFFUSE_BC7(glf::DATA_DIRECTORY + "kueken256-bc7.dds");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
+	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
+	std::string const TEXTURE_DIFFUSE_RGTC(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
+	std::string const TEXTURE_DIFFUSE_BPTC(glf::DATA_DIRECTORY + "kueken256-bc7.dds");
+	std::string const TEXTURE_DIFFUSE_RGB8(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -67,10 +65,10 @@ namespace
 	{
 		enum type
 		{
-			BC3,
-			BC4,
-			BC6,
-			BC7,
+			RGB8,
+			DXT5,
+			RGTC,
+			BPTC,
 			MAX
 		};
 	}//namespace texture
@@ -142,8 +140,9 @@ bool initTexture2D()
 	glGenTextures(texture::MAX, Texture2DName);
 
 	{
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC7);
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC7]);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BPTC);
+
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BPTC]);
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_BPTC_UNORM_ARB, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -160,9 +159,9 @@ bool initTexture2D()
 	}
 
 	{
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC3);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_DXT5);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC3]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::DXT5]);
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -179,9 +178,9 @@ bool initTexture2D()
 	}
 
 	{
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_BC4);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_RGTC);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC4]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::RGTC]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
@@ -202,9 +201,9 @@ bool initTexture2D()
 	}
 
 	{
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_RGB8);
 
-		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::BC6]);
+		glBindTexture(GL_TEXTURE_2D, Texture2DName[texture::RGB8]);
 		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 		for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 		{
@@ -289,10 +288,10 @@ bool initDebugOutput()
 
 bool begin()
 {
-	Viewport[texture::BC3] = glm::ivec4(0, 0, Window.Size >> 1);
-	Viewport[texture::BC7] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
-	Viewport[texture::BC6] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
-	Viewport[texture::BC4] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[texture::RGB8] = glm::ivec4(0, 0, Window.Size >> 1);
+	Viewport[texture::DXT5] = glm::ivec4(Window.Size.x >> 1, 0, Window.Size >> 1);
+	Viewport[texture::RGTC] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, Window.Size >> 1);
+	Viewport[texture::BPTC] = glm::ivec4(0, Window.Size.y >> 1, Window.Size >> 1);
 
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
