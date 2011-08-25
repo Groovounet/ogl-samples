@@ -7,7 +7,7 @@
 #define TRANSFORM0	1
 #define TRANSFORM1	2	
 
-layout(/*binding = DIFFUSE, */r32ui) coherent uniform uimage2D ImageData;
+layout(binding = DIFFUSE, r32ui) coherent uniform uimage2D ImageData;
 
 layout(binding = MATERIAL) uniform material
 {
