@@ -99,6 +99,14 @@ endif(APPLE)
 set(OGL_DATA_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 
 ################################
+# Add options
+
+option(OGL_SAMPLES_STATUS "OGL_SAMPLES_STATUS" OFF)
+if(NOT OGL_SAMPLES_STATUS)
+	add_definitions(-DGLF_AUTO_STATUS)
+endif()
+
+################################
 # Add definitions
 
 if(MSVC)

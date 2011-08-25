@@ -703,8 +703,9 @@ namespace glf
 
 		return Name;
 	}
-#if !defined(__APPLE__)
-        static void GLAPIENTRY debugOutput
+
+	#if !defined(__APPLE__)
+    static void GLAPIENTRY debugOutput
 	(
 		GLenum source,
 		GLenum type,
@@ -883,6 +884,17 @@ namespace glf
 		Window.RotationCurrent = Window.MouseButtonFlags & glf::MOUSE_BUTTON_RIGHT ? Window.RotationOrigin + (Window.MouseCurrent - Window.MouseOrigin) : Window.RotationOrigin;
 	}
 
+	static void displayProxy()
+	{
+		static int FrameID = 0;
+		++FrameID;
+#ifdef GLF_AUTO_STATUS
+		if(FrameID > 10)
+			exit(end() ? 0 : 1);
+#endif//GLF_AUTO_STATUS
+		display();
+	}
+
 	inline int run
 	(
 		int argc, char* argv[], 
@@ -919,7 +931,7 @@ namespace glf
 
 		if(begin())
 		{
-			glutDisplayFunc(display); 
+			glutDisplayFunc(displayProxy); 
 			glutReshapeFunc(glf::reshape);
 			glutMouseFunc(glf::mouse);
 			glutMotionFunc(glf::motion);
