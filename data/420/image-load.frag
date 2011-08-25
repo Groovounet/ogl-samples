@@ -7,7 +7,7 @@
 #define TRANSFORM0	1
 #define TRANSFORM1	2	
 
-layout(binding = DIFFUSE, rgba8) coherent uniform image2D Diffuse;
+layout(binding = DIFFUSE) coherent uniform image2D Diffuse;
 
 layout(binding = MATERIAL) uniform material
 {
