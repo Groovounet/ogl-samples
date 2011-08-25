@@ -54,6 +54,14 @@ Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Launch the sample from the build output directory
 
 ================================================================================
+OpenGL Samples Pack 4.2.1.0: 2011-08-26
+--------------------------------------------------------------------------------
+- Added CTest
+- Rewritten OpenGL 4.2 samples
+- Refactored direct state access samples
+- Removed some deprecated/duplicated samples
+
+================================================================================
 OpenGL Samples Pack 4.2.0.2: 2011-08-11
 --------------------------------------------------------------------------------
 - Fixed samples on AMD implementation
