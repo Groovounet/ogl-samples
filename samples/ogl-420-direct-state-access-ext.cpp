@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Framebuffer Multisample
-// 20/02/2011 - 22/08/2011
+// OpenGL Direct State Access
+// 20/02/2011 - 26/09/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";	
+	std::string const SAMPLE_NAME = "OpenGL Direct State Access";	
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(160, 120);
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -226,6 +226,7 @@ bool begin()
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
 
 	if(Validated)
 		Validated = initDebugOutput();

@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 #define FRAG_COLOR		0
 
 layout(binding = 0) uniform sampler2DMS Diffuse;
