@@ -49,6 +49,9 @@ namespace glf
 #if (defined(WIN32))
 		glewInit();
 		glGetError();
+		
+		//glTextureStorage2DEXT = (PFNGLTEXTURESTORAGE2DEXTPROC)glutGetProcAddress("glTextureStorage2DEXT");
+		assert(glTextureStorage2DEXT);
 #endif
 	}
 
