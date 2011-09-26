@@ -37,7 +37,7 @@ endif(NOT OPENGL_FOUND)
 # Add External package
 
 if(MSVC)
-    addExternalPackageGTC("GLEW" "glew-1.6.0")
+    addExternalPackageGTC("GLEW" "glew-1.7.0")
     addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
 endif(MSVC)
 addExternalPackageGTC("GLM" "glm-0.9.3-beta")
