@@ -341,7 +341,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLORBUFFER]);
 
 	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
 	glf::swapBuffers();
 
 	FrameIndex = (FrameIndex + 1) % 256;

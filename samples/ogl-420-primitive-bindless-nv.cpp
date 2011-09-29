@@ -16,14 +16,14 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Bindless";
-	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.vert");
-	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "410/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(1);
+	int const SAMPLE_MINOR_VERSION(2);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -190,14 +190,26 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
+
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 	Validated = Validated && glf::checkExtension("GL_NV_shader_buffer_load");
 	Validated = Validated && glf::checkExtension("GL_NV_vertex_buffer_unified_memory");
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -231,31 +243,24 @@ void display()
 	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
-	glf::checkError("display 4");
 
 	glProgramUniformMatrix4fv(ProgramName[program::VERTEX], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName[program::FRAGMENT], UniformDiffuse, 0);
-	glf::checkError("display 5");
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
-	glf::checkError("display 6");
 
 	glBindProgramPipeline(PipelineName);
-	glf::checkError("display 7");
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture2DName);
 	glBindVertexArray(VertexArrayName);
-	glf::checkError("display 8");
 
 	glBufferAddressRangeNV(GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, glf::semantic::attr::POSITION, Address, VertexSize);
 	glBufferAddressRangeNV(GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, glf::semantic::attr::TEXCOORD, Address + sizeof(glm::vec2), VertexSize - sizeof(glm::vec2));
-	glf::checkError("display 9");
 
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 

@@ -14,13 +14,13 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture Copy";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(1);
+	int const SAMPLE_MINOR_VERSION(2);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -62,10 +62,20 @@ namespace
 		};
 	};
 
+	namespace buffer
+	{
+		enum type
+		{
+			VERTEX,
+			TRANSFORM,
+			MAX
+		};
+	}//namespace buffer
+
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
 
-	GLuint BufferName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint TextureName[texture::MAX] = {0, 0};
 
 	GLint UniformMVP(0);
@@ -101,15 +111,19 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(buffer::MAX, BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+    glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	return glf::checkError("initBuffer");;
 }
 
 bool initTexture2D()
@@ -178,7 +192,7 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -205,14 +219,14 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_NV_copy_image");
 
-	if(Validated)
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -221,7 +235,7 @@ bool begin()
 
 bool end()
 {
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(texture::MAX, TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -232,35 +246,32 @@ bool end()
 void display()
 {
 	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
+	{
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
 
-	glf::checkError("display 4");
-
-	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
-	glf::checkError("display 5");
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(MVP), GL_MAP_WRITE_BIT);
+		*Pointer = MVP;
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
 
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
-	glf::checkError("display 6");
 
 	glUseProgram(ProgramName);
-	glf::checkError("display 7");
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COPY]);
-	glf::checkError("display 8");
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindVertexArray(VertexArrayName);
-	glf::checkError("display 9");
 
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
 
-	glf::checkError("display");
 	glf::swapBuffers();
 }
 
