@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Separate program
-// 02/08/2010 - 02/08/2010
+// 02/08/2010 - 29/09/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Separate program DSA";
+	std::string const SAMPLE_NAME = "OpenGL Separate program";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "410/separate.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
@@ -74,8 +74,7 @@ namespace
 
 	GLuint BufferName[buffer::MAX];
 	GLuint VertexArrayName;
-	GLuint Texture2DName(0);
-
+	GLuint TextureName(0);
 }//namespace
 
 bool initUnifiedProgram()
@@ -144,39 +143,48 @@ bool initSeparateProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initTexture2D()
+bool initTexture()
 {
-	glGenTextures(1, &Texture2DName);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTextureParameteriEXT(Texture2DName, GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE_DXT5);
 
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE_DXT5);
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
+	glGenTextures(1, &TextureName);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+
+	for(std::size_t Level(0); Level < Texture.levels(); ++Level)
 	{
-		glCompressedTextureImage2DEXT(
-			Texture2DName,
+		glCompressedTexImage2D(
 			GL_TEXTURE_2D,
 			GLint(Level),
 			GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
+			GLsizei(Texture[Level].dimensions().x), 
+			GLsizei(Texture[Level].dimensions().y), 
 			0, 
-			GLsizei(Image[Level].capacity()), 
-			Image[Level].data());
+			GLsizei(Texture[Level].capacity()), 
+			Texture[Level].data());
 	}
 
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initVertexBuffer()
 {
 	glGenBuffers(buffer::MAX, BufferName);
-	glNamedBufferDataEXT(BufferName[buffer::VERTEX], VertexSize, VertexData, GL_STATIC_DRAW);
-	glNamedBufferDataEXT(BufferName[buffer::ELEMENT], ElementSize, ElementData, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+	glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return glf::checkError("initArrayBuffer");
 }
@@ -184,14 +192,15 @@ bool initVertexBuffer()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
+    glBindVertexArray(VertexArrayName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), sizeof(glm::vec2));
-
-	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::TEXCOORD);
-	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
@@ -200,7 +209,6 @@ bool begin()
 {
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 
 	if(Validated)
 		Validated = initSeparateProgram();
@@ -211,7 +219,7 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 
 	return Validated && glf::checkError("begin");
 }
@@ -221,7 +229,7 @@ bool end()
 	// Delete objects
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteVertexArrays(1, &VertexArrayName);
-	glDeleteTextures(1, &Texture2DName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteProgram(SeparateProgramName[program::VERTEX]);
 	glDeleteProgram(SeparateProgramName[program::FRAGMENT]);
 	glDeleteProgram(UnifiedProgramName);
@@ -243,7 +251,7 @@ void display()
 
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, Texture2DName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
