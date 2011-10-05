@@ -24,7 +24,7 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
-layout(location = COLOR) flat out vec4 GeomColor; // Error on AMD 644431: error(#355) layout location can only set once.
+layout(location = COLOR) flat out vec4 GeomColor;
 
 uniform mat4 MVP;
 
