@@ -72,27 +72,28 @@ namespace
 		};
 	}//namespace buffer
 
+	GLuint PipelineName(0);
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
 
 	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint TextureName[texture::MAX] = {0, 0};
-
-	GLint UniformMVP(0);
-	GLint UniformDiffuse(0);
-
 }//namespace
 
 bool initProgram()
 {
 	bool Validated = true;
 	
+	glGenProgramPipelines(1, &PipelineName);
+	glBindProgramPipeline(PipelineName);
+
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertShaderName);
 		glAttachShader(ProgramName, FragShaderName);
 		glDeleteShader(VertShaderName);
@@ -103,10 +104,9 @@ bool initProgram()
 	}
 
 	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
-	}
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	glBindProgramPipeline(0);
 
 	return glf::checkError("initProgram");
 }
@@ -235,6 +235,7 @@ bool begin()
 
 bool end()
 {
+	glDeleteProgramPipelines(1, &PipelineName);
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(texture::MAX, TextureName);
@@ -263,8 +264,7 @@ void display()
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	glUseProgram(ProgramName);
-
+	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COPY]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
