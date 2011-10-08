@@ -120,7 +120,7 @@ bool initBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return glf::checkError("initBuffer");;
@@ -178,8 +178,8 @@ bool initTexture2D()
 	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
 	{
 		glCopyImageSubDataNV(
-			TextureName[texture::DIFFUSE], GL_TEXTURE_2D, Level, 0, 0, 0,
-			TextureName[texture::COPY], GL_TEXTURE_2D, Level, 0, 0, 0,
+			TextureName[texture::DIFFUSE], GL_TEXTURE_2D, GLint(Level), 0, 0, 0,
+			TextureName[texture::COPY], GL_TEXTURE_2D, GLint(Level), 0, 0, 0,
 			GLsizei(Image[Level].dimensions().x), GLsizei(Image[Level].dimensions().y), 1);
 	}
 
@@ -271,6 +271,8 @@ void display()
 	glBindVertexArray(VertexArrayName);
 
 	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, 0);
 
 	glf::swapBuffers();
 }
