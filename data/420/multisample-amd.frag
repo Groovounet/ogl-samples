@@ -5,7 +5,7 @@
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-uniform sampler2D Diffuse;
+layout(binding = 0) uniform sampler2D Diffuse;
 
 layout(location = TEXCOORD) in vec2 Texcoord;
 layout(location = FRAG_COLOR, index = 0) out vec4 FragColor;

@@ -1,11 +1,16 @@
-#version 410 core
+#version 420 core
 
 #define POSITION	0
 #define COLOR		3
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-uniform mat4 MVP;
+#define TRANSFORM0	1
+
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 layout(location = POSITION) in vec2 Position;
 layout(location = TEXCOORD) in vec2 Texcoord;
@@ -19,5 +24,5 @@ out gl_PerVertex
 void main()
 {	
 	VertTexcoord = Texcoord;
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	gl_Position = Transform.MVP * vec4(Position, 0.0, 1.0);
 }

@@ -188,6 +188,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName); //!\ Need to be called after glBindVertexArray...
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IndirectBufferName);
+
 	glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0);
 
 	glf::checkError("display");

@@ -49,6 +49,7 @@ namespace
 		{
 			VERTEX,
 			ELEMENT,
+			TRANSFORM,
 			MAX
 		};
 	}//namespace buffer
@@ -135,13 +136,14 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	glGenBuffers(buffer::MAX, BufferName);
     glNamedBufferDataEXT(BufferName[buffer::ELEMENT], ElementSize, ElementData, GL_STATIC_DRAW);
     glNamedBufferDataEXT(BufferName[buffer::VERTEX], VertexSize, VertexData, GL_STATIC_DRAW);
+	glNamedBufferDataEXT(BufferName[buffer::TRANSFORM], VertexSize, VertexData, GL_DYNAMIC_DRAW);
 
-	return glf::checkError("initArrayBuffer");;
+	return glf::checkError("initBuffer");;
 }
 
 bool initSampler()
@@ -240,7 +242,7 @@ bool begin()
 	if(Validated)
 		Validated = initSampler();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -270,24 +272,29 @@ bool end()
 
 void renderFBO(GLuint Framebuffer)
 {
-	glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
-	glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
-	glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
-	glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Perspective * View * Model;
+	{
+		glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
+		glm::mat4 ViewFlip = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,-1.0f, 1.0f));
+		glm::mat4 ViewTranslate = glm::translate(ViewFlip, glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0));
+		glm::mat4 View = glm::rotate(ViewTranslate,-15.f, glm::vec3(0.f, 0.f, 1.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Perspective * View * Model;
 
-	glProgramUniformMatrix4fv(ProgramName[program::VERTEX], UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glProgramUniform1i(ProgramName[program::FRAGMENT], UniformDiffuse, 0);
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(MVP), GL_MAP_WRITE_BIT);
+		*Pointer = MVP;
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
 
 	glViewportIndexedf(0, 0, 0, float(FRAMEBUFFER_SIZE.x), float(FRAMEBUFFER_SIZE.y));
 	glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName);
-	
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 
 	glf::checkError("renderFBO");
