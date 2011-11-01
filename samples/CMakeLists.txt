@@ -129,7 +129,7 @@ set(GL_SHADER_GTC rtt-array.vert rtt-array.frag layer.vert layer.geom layer.frag
 glCreateSampleGTC(fbo-layered)
 set(GL_SHADER_GTC multisample.vert multisample.frag)
 glCreateSampleGTC(fbo-multisample)
-set(GL_SHADER_GTC image-2d.vert image-2d.frag)
+set(GL_SHADER_GTC fbo-rtt.vert fbo-rtt.frag)
 glCreateSampleGTC(fbo-rtt)
 set(GL_SHADER_GTC rtt-array.vert rtt-array.frag)
 glCreateSampleGTC(fbo-rtt-texture-array)

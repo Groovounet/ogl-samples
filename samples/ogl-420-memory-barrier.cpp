@@ -28,13 +28,6 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(3);
-	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
-	glf::vertex_v2fv2f const VertexData[VertexCount] =
-	{
-		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 0.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f))
-	};
 
 	namespace program
 	{

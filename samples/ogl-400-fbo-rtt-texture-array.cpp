@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL FBO texture array
-// 17/06/2010 - 17/06/2010
+// 17/06/2010 - 01/11/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,9 +13,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL FBO texture array";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.frag");
+	std::string const SAMPLE_NAME("OpenGL FBO texture array");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -24,30 +24,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
-	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
-	glf::vertex_v2fv2f const VertexData[VertexCount] =
-	{
-		glf::vertex_v2fv2f(glm::vec2(-4.0f,-3.0f), glm::vec2(0.0f, 0.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 4.0f,-3.0f), glm::vec2(1.0f, 0.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 4.0f, 3.0f), glm::vec2(1.0f, 1.0f)),
-		glf::vertex_v2fv2f(glm::vec2(-4.0f, 3.0f), glm::vec2(0.0f, 1.0f))
-	};
-
-	GLsizei const ElementCount = 6;
-	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
-	GLushort const ElementData[ElementCount] =
-	{
-		0, 1, 2, 
-		2, 3, 0
-	};
-
-	enum buffer_type
-	{
-		BUFFER_VERTEX,
-		BUFFER_ELEMENT,
-		BUFFER_MAX
-	};
+	GLsizei const VertexCount(3);
 
 	enum texture_type
 	{
@@ -57,19 +34,14 @@ namespace
 		TEXTURE_MAX
 	};
 
-	GLuint FramebufferName = 0;
-	GLuint VertexArrayName = 0;
-	GLuint SamplerName = 0;
+	GLuint FramebufferName(0);
+	GLuint VertexArrayName(0);
+	GLuint ProgramName(0);
+	GLint UniformDiffuse(0);
+	GLint UniformLayer(0);
+	GLuint TextureName(0);
 
-	GLuint ProgramName = 0;
-	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
-	GLint UniformLayer = 0;
-
-	GLuint BufferName[BUFFER_MAX];
-	GLuint Texture2DName = 0;
-
-	glm::ivec4 Viewport[TEXTURE_MAX];
+	glm::vec4 Viewport[TEXTURE_MAX];
 
 }//namespace
 
@@ -79,21 +51,20 @@ bool initProgram()
 
 	if(Validated)
 	{
-		GLuint VertexShaderName = glf::createShader(GL_VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-		GLuint FragmentShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
-		glAttachShader(ProgramName, VertexShaderName);
-		glAttachShader(ProgramName, FragmentShaderName);
-		glDeleteShader(VertexShaderName);
-		glDeleteShader(FragmentShaderName);
+		glAttachShader(ProgramName, VertShaderName);
+		glAttachShader(ProgramName, FragShaderName);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
 		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
 		UniformLayer = glGetUniformLocation(ProgramName, "Layer");
 	}
@@ -101,23 +72,25 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initTexture2D()
+bool initTexture()
 {
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &Texture2DName);
+	glGenTextures(1, &TextureName);
 
-	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureName);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1000);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 1);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage3D(
 		GL_TEXTURE_2D_ARRAY, 
 		0, 
-		GL_RGB, 
+		GL_RGBA8, 
 		GLsizei(FRAMEBUFFER_SIZE.x), 
 		GLsizei(FRAMEBUFFER_SIZE.y), 
 		GLsizei(3), //depth
@@ -133,9 +106,9 @@ bool initFramebuffer()
 {
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture2DName, 0, GLint(0));
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Texture2DName, 0, GLint(1));
-	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Texture2DName, 0, GLint(2));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName, 0, GLint(0));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureName, 0, GLint(1));
+	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureName, 0, GLint(2));
 	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
 
@@ -147,85 +120,39 @@ bool initFramebuffer()
 	return glf::checkError("initFramebuffer");
 }
 
-bool initVertexBuffer()
-{
-	glGenBuffers(BUFFER_MAX, BufferName);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
-    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return glf::checkError("initArrayBuffer");
-}
-
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[BUFFER_VERTEX]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
 }
 
-bool initSampler()
-{
-	glGenSamplers(1, &SamplerName);
-
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glSamplerParameterfv(SamplerName, GL_TEXTURE_BORDER_COLOR, &glm::vec4(0.0f)[0]);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_MIN_LOD, -1000.f);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_MAX_LOD, 1000.f);
-	glSamplerParameterf(SamplerName, GL_TEXTURE_LOD_BIAS, 0.0f);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-	glSamplerParameteri(SamplerName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-
-	return glf::checkError("initSampler");
-}
-
 bool begin()
 {
-	Viewport[TEXTURE_R] = glm::ivec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	Viewport[TEXTURE_G] = glm::ivec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
-	Viewport[TEXTURE_B] = glm::ivec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	Viewport[TEXTURE_R] = glm::vec4(Window.Size.x >> 1, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	Viewport[TEXTURE_G] = glm::vec4(Window.Size.x >> 1, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	Viewport[TEXTURE_B] = glm::vec4(0, Window.Size.y >> 1, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initVertexBuffer();
-	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 	if(Validated)
 		Validated = initFramebuffer();
-	if(Validated)
-		Validated = initSampler();
 
 	return Validated && glf::checkError("begin");
 }
 
 bool end()
 {
-	glDeleteBuffers(BUFFER_MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &Texture2DName);
+	glDeleteTextures(1, &TextureName);
 	glDeleteFramebuffers(1, &FramebufferName);
 
 	return glf::checkError("end");
@@ -242,31 +169,23 @@ void display()
 	glClearBufferfv(GL_COLOR, 3, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0]);
 
 	// Pass 2
-	glm::mat4 Projection = glm::ortho(-1.0f, 1.0f, 1.0f,-1.0f, -1.0f, 1.0f);
-	glm::mat4 View = glm::mat4(1.0f);
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(UniformDiffuse, 0);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, Texture2DName);
-	glBindSampler(0, SamplerName);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureName);
+	glBindVertexArray(VertexArrayName);
 
 	for(GLint i = 0; i < TEXTURE_MAX; ++i)
 	{
-		glViewport(Viewport[i].x, Viewport[i].y, Viewport[i].z, Viewport[i].w);
-		glProgramUniform1i(ProgramName, UniformLayer, i);
+		glViewportIndexedfv(0, &Viewport[i][0]);
+		glUniform1i(UniformLayer, i);
 
-		glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
-		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
+		glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
 	}
 
 	glf::checkError("display");
