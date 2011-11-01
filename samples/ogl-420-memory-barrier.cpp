@@ -27,16 +27,13 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount(6);
+	GLsizei const VertexCount(3);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
 	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
 		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f)),
 		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 0.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
-		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 0.0f))
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 1.0f))
 	};
 
 	namespace program
@@ -59,16 +56,6 @@ namespace
 		};
 	}//namespace pipeline
 
-	namespace buffer
-	{
-		enum type
-		{
-			VERTEX,
-			TRANSFORM,
-			MAX
-		};
-	}//namespace buffer
-
 	namespace texture
 	{
 		enum type
@@ -80,7 +67,6 @@ namespace
 	}//namespace texture
 
 	GLuint VertexArrayName(0);
-	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint TextureName[texture::MAX] = {0, 0};
 	GLuint SamplerName(0);
 	GLuint FramebufferName(0);
@@ -139,18 +125,6 @@ bool initProgram()
 		glUseProgramStages(PipelineName[pipeline::BLIT], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[program::BLIT]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
-
-	return Validated;
-}
-
-bool initArrayBuffer()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &BufferName[buffer::VERTEX]);
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
-    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return Validated;
 }
@@ -221,34 +195,7 @@ bool initVertexArray()
 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
-
-	return Validated;
-}
-
-bool initUniformBuffer()
-{
-	bool Validated(true);
-
-	GLint UniformBufferOffset(0);
-
-	glGetIntegerv(
-		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
-		&UniformBufferOffset);
-
-	GLint UniformBlockSize = glm::max(GLint(sizeof(glm::mat4)), UniformBufferOffset);
-
-	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -274,8 +221,6 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
 		Validated = initTexture2D();
@@ -283,8 +228,6 @@ bool begin()
 		Validated = initSampler();
 	if(Validated)
 		Validated = initFramebuffer();
-	if(Validated)
-		Validated = initUniformBuffer();
 
 	return Validated;
 }
@@ -295,7 +238,6 @@ bool end()
 
 	glDeleteTextures(texture::MAX, TextureName);
 	glDeleteFramebuffers(1, &FramebufferName);
-	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName[program::BLIT]);
 	glDeleteProgram(ProgramName[program::UPDATE]);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -309,17 +251,8 @@ void display()
 {
 	static int FrameIndex = 0;
 
-	{
-		glm::mat4 MVP = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(MVP), GL_MAP_WRITE_BIT);
-		*Pointer = MVP;
-		glUnmapBuffer(GL_UNIFORM_BUFFER);
-	}
-
 	// Bind shared objects
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindSampler(0, SamplerName);
 	glBindVertexArray(VertexArrayName);
 

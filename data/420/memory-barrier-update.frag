@@ -13,8 +13,5 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	vec2 TextureSize = vec2(textureSize(Diffuse, 0));
-	vec2 Texcoord = vec2(gl_FragCoord.x / TextureSize.x, gl_FragCoord.y / TextureSize.y);
-
-	Color = texture(Diffuse, Texcoord) - 1.0 / 255;
+	Color = texelFetch(Diffuse, ivec2(gl_FragCoord.xy), 0) - 1.0 / 255;
 }
