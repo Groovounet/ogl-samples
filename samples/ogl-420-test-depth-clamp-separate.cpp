@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Test Depth Conservative
-// 03/08/2011 - 03/08/2011
+// OpenGL Test Depth Clamp Separate
+// 21/11/2011 - 21/11/2011
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "Test Depth Conservative";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-conservative.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-conservative.frag");
+	std::string const SAMPLE_NAME = "Test Depth Clamp Separate";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-clamp-separate.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-clamp-separate.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -160,19 +160,20 @@ bool begin()
 {
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Validated = Validated && glf::checkExtension("GL_AMD_depth_clamp_separate");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
-		Validated = initDebugOutput();
+		Validated = Validated && initDebugOutput();
 	if(Validated)
-		Validated = initTest();
+		Validated = Validated && initTest();
 	if(Validated)
-		Validated = initProgram();
+		Validated = Validated && initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = Validated && initArrayBuffer();
 	if(Validated)
-		Validated = initVertexArray();
+		Validated = Validated && initVertexArray();
 	if(Validated)
-		Validated = initUniformBuffer();
+		Validated = Validated && initUniformBuffer();
 
 	return Validated;
 }
@@ -196,12 +197,13 @@ void display()
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
 		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(
 			GL_UNIFORM_BUFFER, 0,	sizeof(glm::mat4),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			GL_MAP_WRITE_BIT);
 
-		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		// Push the near clip plan far enough
+		glm::mat4 Projection = glm::perspective(45.0f, 2.0f / 3.0f, 4.0f, 10.0f);
 		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y + 30.f, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x + 30.f, glm::vec3(0.f, 1.f, 0.f));
 		glm::mat4 Model = glm::mat4(1.0f);
 		
 		*Pointer = Projection * View * Model;
@@ -209,8 +211,6 @@ void display()
 		// Make sure the uniform buffer is uploaded
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
-
-	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 
 	float Depth(1.0f);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
@@ -221,6 +221,13 @@ void display()
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 
+	glViewportIndexedf(0, 0, 0, float(Window.Size.x / 2), float(Window.Size.y));
+	glEnable(GL_DEPTH_CLAMP_NEAR_AMD);
+	glDrawElementsInstancedBaseVertexBaseInstance(
+		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);
+
+	glViewportIndexedf(0, float(Window.Size.x / 2), 0, float(Window.Size.x / 2), float(Window.Size.y));
+	glDisable(GL_DEPTH_CLAMP_NEAR_AMD);
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);
 
