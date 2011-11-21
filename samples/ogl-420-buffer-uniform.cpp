@@ -63,6 +63,7 @@ namespace
 	GLuint VertexArrayName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0, 0, 0};
 	GLint UniformBufferOffset(0);
+	GLint UniformInstance(0);
 }//namespace
 
 bool initProgram()
@@ -90,6 +91,11 @@ bool initProgram()
 
 	if(Validated)
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+
+	if(Validated)
+	{
+		UniformInstance = glGetUniformLocation(ProgramName, "Instance");
+	}
 
 	glBindProgramPipeline(0);
 
@@ -256,8 +262,12 @@ void display()
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM1, BufferName[buffer::TRANSFORM], UniformBufferOffset, BufferSize);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::MATERIAL, BufferName[buffer::MATERIAL]);
 
-	glDrawElementsInstancedBaseVertexBaseInstance(
-		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 2, 0, 0);
+	for(GLint i = 0; i < 2; ++i)
+	{
+		glProgramUniform1i(ProgramName, UniformInstance, i);
+		glDrawElementsInstancedBaseVertexBaseInstance(
+			GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 1, 0, 0);
+	}
 
 	glf::swapBuffers();
 }
