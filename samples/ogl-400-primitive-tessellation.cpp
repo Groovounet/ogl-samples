@@ -56,7 +56,7 @@ bool initProgram()
 
 		ProgramName = glCreateProgram();
 		glAttachShader(ProgramName, VertexShader);
-		glAttachShader(ProgramName, ControlShader);
+		//glAttachShader(ProgramName, ControlShader);
 		glAttachShader(ProgramName, EvaluationShader);
 		glAttachShader(ProgramName, GeometryShader);
 		glAttachShader(ProgramName, FragmentShader);
@@ -147,6 +147,8 @@ void display()
 
 	glBindVertexArray(VertexArrayName);
 	glPatchParameteri(GL_PATCH_VERTICES, VertexCount);
+	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, &glm::vec2(16.f)[0]);
+	glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, &glm::vec4(16.f)[0]);
 	glDrawArraysInstanced(GL_PATCHES, 0, VertexCount, 1);
 
 	glf::checkError("display");
