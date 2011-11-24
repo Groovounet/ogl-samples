@@ -49,9 +49,20 @@ Linux G++ instructions
 --------------------------------------------------------------------------------
 Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Install FreeGLUT package
-- Download GLEW 1.6.0 (http://glew.sourceforge.net) and install depend packages
+- Download GLEW 1.7.0 (http://glew.sourceforge.net) and install depend packages
 - Run CMake to create a makefile for G++
 - Launch the sample from the build output directory
+
+================================================================================
+OpenGL Samples Pack 4.2.2.0: 2011-11-26
+--------------------------------------------------------------------------------
+- Clean up DSA samples and build a single one
+- Added image store sample
+- Added clamp separate test
+- Take advantage of texture max level
+- Generalized pipeline and uniform buffer for OpenGL 4.2 samples
+- Fixed dynamic uniform variable use for sampler array and uniform block array
+- Tessellation without control shader
 
 ================================================================================
 OpenGL Samples Pack 4.2.1.1: 2011-08-26
