@@ -203,7 +203,7 @@ set(GL_SHADER_GTC matching-array.vert matching-array.cont matching-array.eval ma
 glCreateSampleGTC(interface-matching-array-gtc)
 set(GL_SHADER_GTC image-load.vert image-load.frag)
 glCreateSampleGTC(image-load)
-set(GL_SHADER_GTC image-store.vert image-store.frag)
+set(GL_SHADER_GTC image-store-write.vert image-store-write.frag image-store-read.vert image-store-read.frag)
 glCreateSampleGTC(image-store)
 set(GL_SHADER_GTC image-unpack.vert image-unpack.frag)
 glCreateSampleGTC(image-unpack)
