@@ -54,7 +54,7 @@ namespace glf
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC)glutGetProcAddress("glDebugMessageControlARB");
 		glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC)glutGetProcAddress("glDebugMessageCallbackARB");
 
-		assert(glTextureStorage2DEXT);
+		//assert(glTextureStorage2DEXT);
 #endif
 	}
 
