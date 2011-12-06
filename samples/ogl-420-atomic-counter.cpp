@@ -52,6 +52,7 @@ namespace
 			VERTEX,
 			ELEMENT,
 			TRANSFORM,
+			ATOMIC_COUNTER,
 			MAX
 		};
 	}//namespace buffer
@@ -59,11 +60,8 @@ namespace
 	GLuint PipelineName(0);
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
-	GLuint BufferName[buffer::MAX] = {0, 0, 0};
+	GLuint BufferName[buffer::MAX] = {0, 0, 0, 0};
 	GLuint TextureName(0);
-	GLuint AtomicCounter(0);
-
-	GLint UniformMVP(0);
 }//namespace
 
 bool initProgram()
@@ -90,11 +88,6 @@ bool initProgram()
 	}
 
 	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-	}
-
-	if(Validated)
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 
 	glBindProgramPipeline(0);
@@ -102,19 +95,27 @@ bool initProgram()
 	return Validated;
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
+	glGenBuffers(buffer::MAX, BufferName);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::VERTEX]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
 	return Validated;
 }
@@ -175,30 +176,6 @@ bool initVertexArray()
 	return Validated;
 }
 
-bool initAtomicCounter()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &AtomicCounter);
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
-	return Validated;
-}
-
-bool initUniformBuffer()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	return Validated;
-}
-
 bool initDebugOutput()
 {
 	bool Validated(true);
@@ -218,17 +195,13 @@ bool begin()
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
-		Validated = initAtomicCounter();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
 		Validated = initVertexArray();
-	if(Validated)
-		Validated = initUniformBuffer();
 
 	return Validated;
 }
@@ -272,7 +245,7 @@ void display()
 	}
 
 	{
-		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
 		glm::uint32* Pointer = (glm::uint32*)glMapBufferRange(
 			GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(glm::uint32),
 			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
@@ -290,12 +263,8 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, AtomicCounter);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, BufferName[buffer::ATOMIC_COUNTER]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
-
-	// Make sure the uniform buffer is uploaded
-	//glUnmapBuffer(GL_UNIFORM_BUFFER);
-	//glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);

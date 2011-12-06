@@ -101,19 +101,23 @@ bool initProgram()
 	return Validated;
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
+	glGenBuffers(buffer::MAX, BufferName);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::VERTEX]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -129,18 +133,6 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
-
-	return Validated;
-}
-
-bool initUniformBuffer()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -169,11 +161,9 @@ bool begin()
 	if(Validated)
 		Validated = Validated && initProgram();
 	if(Validated)
-		Validated = Validated && initArrayBuffer();
+		Validated = Validated && initBuffer();
 	if(Validated)
 		Validated = Validated && initVertexArray();
-	if(Validated)
-		Validated = Validated && initUniformBuffer();
 
 	return Validated;
 }

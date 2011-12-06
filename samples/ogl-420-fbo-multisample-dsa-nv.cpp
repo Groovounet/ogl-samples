@@ -127,12 +127,6 @@ bool initProgram()
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
 
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName[program::VERTEX], "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName[program::FRAGMENT], "Diffuse");
-	}
-
 	return glf::checkError("initProgram");
 }
 
