@@ -67,6 +67,17 @@ namespace
 	GLint UniformDiffuse = 0;	
 }//namespace
 
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
+
 bool initProgram()
 {
 	bool Validated = true;
@@ -212,6 +223,8 @@ bool begin()
 	//glEnable(GL_SAMPLE_MASK);
 	//glSampleMaski(0, 0xFF);
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

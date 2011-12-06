@@ -69,7 +69,6 @@ namespace
 
 	GLint UniformMVP = 0;
 	GLint UniformDiffuse = 0;
-
 }//namespace
 
 bool initDebugOutput()
