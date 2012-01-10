@@ -146,13 +146,10 @@ bool initBuffer()
 
 bool initTexture()
 {
-	glGenTextures(texture::MAX, TextureName);
-
 	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D, 0);
-	//glTextureImage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, 0, GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(texture::MAX, TextureName);
+
 	glTextureStorage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
@@ -186,8 +183,6 @@ bool initFramebuffer()
 	bool Validated(true);
 
 	glGenFramebuffers(1, &FramebufferName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glNamedFramebufferTextureEXT(FramebufferName, GL_DEPTH_ATTACHMENT, TextureName[texture::DEPTH], 0);
 	glNamedFramebufferTextureEXT(FramebufferName, GL_COLOR_ATTACHMENT0, TextureName[texture::MULTISAMPLE], 0);
 	Validated = Validated && (glCheckNamedFramebufferStatusEXT(FramebufferName, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
@@ -198,8 +193,6 @@ bool initFramebuffer()
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
-	glBindVertexArray(VertexArrayName);
-	glBindVertexArray(0);
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
 		glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
 	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
