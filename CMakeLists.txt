@@ -40,7 +40,7 @@ if(MSVC)
     addExternalPackageGTC("GLEW" "glew-1.7.0")
     addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
 endif(MSVC)
-addExternalPackageGTC("GLM" "glm-0.9.3-beta")
+addExternalPackageGTC("GLM" "glm-0.9.3.0")
 addExternalPackageGTC("GLI" "gli-0.3.1.0")
 
 ################################
