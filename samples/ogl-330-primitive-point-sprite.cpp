@@ -44,8 +44,18 @@ namespace
 	GLint UniformMVP(0);
 	GLint UniformMV(0);
 	GLint UniformDiffuse(0);
-
 }//namespace
+
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
 
 bool initProgram()
 {
@@ -159,6 +169,8 @@ bool begin()
 	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
 	//glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_UPPER_LEFT);
 	
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)

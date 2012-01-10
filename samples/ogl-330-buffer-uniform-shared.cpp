@@ -51,8 +51,16 @@ namespace
 	GLint UniformBufferOffset = 0;
 	GLint UniformBlockSizeTransform = 0;
 	GLint UniformBlockSizeMaterial = 0;
-
 }//namespace
+
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
 
 bool initProgram()
 {
@@ -132,7 +140,7 @@ bool initUniformBuffer()
 	UniformBlockSizeMaterial = ((UniformBlockSizeMaterial / UniformBufferOffset) + 1) * UniformBufferOffset;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, UniformBufferName);
-	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_READ);
+	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSizeTransform + UniformBlockSizeMaterial, NULL, GL_DYNAMIC_DRAW);
 
 	// Attach the buffer to UBO binding point glf::semantic::uniform::TRANSFORM0
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, UniformBufferName, 0, UniformBlockSizeTransform);
@@ -153,6 +161,8 @@ bool begin()
 		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
 		&UniformBufferOffset);
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

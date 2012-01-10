@@ -90,9 +90,6 @@ namespace
 
 	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint TextureName(0);
-
-	GLuint UniformMVP(0);
-	GLuint UniformImageSize(0);
 }//namespace
 
 bool initProgram()

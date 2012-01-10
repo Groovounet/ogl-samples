@@ -133,9 +133,6 @@ bool initProgram()
 bool initBuffer()
 {
 	glGenBuffers(buffer::MAX, BufferName);
-	for(int i = 0; i < buffer::MAX; ++i)
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[i]);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glNamedBufferDataEXT(BufferName[buffer::VERTEX], VertexSize, VertexData, GL_STATIC_DRAW);
 	glNamedBufferDataEXT(BufferName[buffer::TRANSFORM], sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);

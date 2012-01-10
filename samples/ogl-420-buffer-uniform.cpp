@@ -117,26 +117,19 @@ bool initVertexArray()
 	return Validated;
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
+	glGenBuffers(buffer::MAX, BufferName);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::VERTEX]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return Validated;
-}
-
-bool initUniformBuffer()
-{
-	bool Validated(true);
 
 	GLint UniformBlockSize(0);
 
@@ -148,7 +141,6 @@ bool initUniformBuffer()
 			&UniformBlockSize);
 		UniformBlockSize = glm::max(UniformBufferOffset, UniformBlockSize) * Instances;
 
-		glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
 		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize * Instances, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -163,7 +155,6 @@ bool initUniformBuffer()
 			GL_UNIFORM_BLOCK_DATA_SIZE,
 			&UniformBlockSize);
 
-		glGenBuffers(1, &BufferName[buffer::MATERIAL]);
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::MATERIAL]);
 		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, &Diffuse[0], GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -196,11 +187,9 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
-	if(Validated)
-		Validated = initUniformBuffer();
 
 	return Validated;
 }

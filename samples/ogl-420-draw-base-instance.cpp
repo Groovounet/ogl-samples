@@ -125,17 +125,16 @@ bool initArrayBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName[buffer::POSITION]);
+	glGenBuffers(buffer::MAX, BufferName);
+
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::COLOR]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
     glBufferData(GL_ARRAY_BUFFER, ColorSize, ColorData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

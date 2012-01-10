@@ -76,8 +76,18 @@ namespace
 	GLint UniformDiffuse(0);
 
 	glm::ivec4 Viewport[TEXTURE_MAX] = {glm::ivec4(0), glm::ivec4(0), glm::ivec4(0), glm::ivec4(0)};
-
 }//namespace
+
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
 
 bool initProgram()
 {
@@ -252,6 +262,8 @@ bool begin()
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_texture_compression_s3tc");
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

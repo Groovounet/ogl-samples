@@ -24,32 +24,17 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	struct vertex
-	{
-		vertex
-		(
-			glm::vec2 const & Position,
-			glm::vec2 const & Texcoord
-		) :
-			Position(Position),
-			Texcoord(Texcoord)
-		{}
-
-		glm::vec2 Position;
-		glm::vec2 Texcoord;
-	};
-
 	// With DDS textures, v texture coordinate are reversed, from top to bottom
-	GLsizei const VertexCount = 6;
-	GLsizeiptr const VertexSize = VertexCount * sizeof(vertex);
-	vertex const VertexData[VertexCount] =
+	GLsizei const VertexCount(6);
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
+	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f)),
-		vertex(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 1.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-		vertex(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-		vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-		vertex(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
 	GLuint VertexArrayName(0);
@@ -62,6 +47,17 @@ namespace
 	GLint UniformDiffuse(0);
 
 }//namespace
+
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
 
 bool initProgram()
 {
@@ -146,8 +142,8 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(0));
-		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -161,6 +157,8 @@ bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTexture2D();
 	if(Validated)

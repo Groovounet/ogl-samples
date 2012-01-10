@@ -83,6 +83,15 @@ namespace
 
 }//namespace
 
+bool initDebugOutput()
+{
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return glf::checkError("initDebugOutput");
+}
+
 GLuint initShader
 (
 	std::string const & Filename, 
@@ -315,6 +324,8 @@ bool begin()
 	Validated = Validated && glf::checkExtension("GL_ARB_viewport_array");
 	Validated = Validated && glf::checkExtension("GL_ARB_separate_shader_objects");
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initBlend();
 	if(Validated)

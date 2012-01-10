@@ -52,6 +52,7 @@ namespace
 			VERTEX,
 			ELEMENT,
 			TRANSFORM,
+			ATOMIC_COUNTER,
 			MAX
 		};
 	}//namespace buffer
@@ -59,11 +60,7 @@ namespace
 	GLuint PipelineName(0);
 	GLuint VertexArrayName(0);
 	GLuint ProgramName(0);
-	GLuint BufferName[buffer::MAX] = {0, 0, 0};
-	GLuint TextureName(0);
-	GLuint AtomicCounter(0);
-
-	GLint UniformMVP(0);
+	GLuint BufferName[buffer::MAX] = {0, 0, 0, 0};
 }//namespace
 
 bool initProgram()
@@ -90,11 +87,6 @@ bool initProgram()
 	}
 
 	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-	}
-
-	if(Validated)
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 
 	glBindProgramPipeline(0);
@@ -102,57 +94,27 @@ bool initProgram()
 	return Validated;
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	bool Validated(true);
 
-	glGenBuffers(1, &BufferName[buffer::ELEMENT]);
+	glGenBuffers(buffer::MAX, BufferName);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &BufferName[buffer::VERTEX]);
     glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return Validated;
-}
-
-bool initTexture2D()
-{
-	bool Validated(true);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glGenTextures(1, &TextureName);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
-
-	gli::texture2D Image = gli::load(TEXTURE_DIFFUSE);
-	for(std::size_t Level = 0; Level < Image.levels(); ++Level)
-	{
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGBA8, 
-			GLsizei(Image[Level].dimensions().x), 
-			GLsizei(Image[Level].dimensions().y), 
-			0,  
-			GL_BGRA, 
-			GL_UNSIGNED_BYTE, 
-			Image[Level].data());
-	}
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
 	return Validated;
 }
@@ -171,30 +133,6 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 	glBindVertexArray(0);
-
-	return Validated;
-}
-
-bool initAtomicCounter()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &AtomicCounter);
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
-	return Validated;
-}
-
-bool initUniformBuffer()
-{
-	bool Validated(true);
-
-	glGenBuffers(1, &BufferName[buffer::TRANSFORM]);
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return Validated;
 }
@@ -218,17 +156,11 @@ bool begin()
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
-		Validated = initAtomicCounter();
-	if(Validated)
-		Validated = initTexture2D();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
-	if(Validated)
 		Validated = initVertexArray();
-	if(Validated)
-		Validated = initUniformBuffer();
 
 	return Validated;
 }
@@ -239,7 +171,6 @@ bool end()
 
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
-	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
 	return Validated;
@@ -257,7 +188,7 @@ void display()
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
 		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(
 			GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
 		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
@@ -272,10 +203,10 @@ void display()
 	}
 
 	{
-		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, AtomicCounter);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
 		glm::uint32* Pointer = (glm::uint32*)glMapBufferRange(
 			GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(glm::uint32),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
 		*Pointer = 0;
 
@@ -286,16 +217,10 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glBindProgramPipeline(PipelineName);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, AtomicCounter);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, BufferName[buffer::ATOMIC_COUNTER]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
-
-	// Make sure the uniform buffer is uploaded
-	//glUnmapBuffer(GL_UNIFORM_BUFFER);
-	//glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);

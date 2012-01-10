@@ -67,6 +67,17 @@ namespace
 	
 }//namespace
 
+bool initDebugOutput()
+{
+	bool Validated(true);
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+
+	return Validated;
+}
+
 bool initTest()
 {
 	bool Validated = true;
@@ -182,6 +193,8 @@ bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
+		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initTest();
 	if(Validated)
