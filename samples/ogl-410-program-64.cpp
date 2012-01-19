@@ -24,13 +24,13 @@ namespace
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const VertexCount(4);
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::dvec2);
-	glm::dvec2 const PositionData[VertexCount] =
+	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::dvec3);
+	glm::dvec3 const PositionData[VertexCount] =
 	{
-		glm::dvec2(-1.0f,-1.0f),
-		glm::dvec2( 1.0f,-1.0f),
-		glm::dvec2( 1.0f, 1.0f),
-		glm::dvec2(-1.0f, 1.0f)
+		glm::dvec3(-1.0f,-1.0f, 0.0f),
+		glm::dvec3( 1.0f,-1.0f, 0.0f),
+		glm::dvec3( 1.0f, 1.0f, 0.0f),
+		glm::dvec3(-1.0f, 1.0f, 0.0f)
 	};
 
 	GLsizei const ElementCount(6);
@@ -148,7 +148,7 @@ bool initVertexArray()
 
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::F64]);
-		glVertexAttribLPointer(glf::semantic::attr::POSITION, 2, GL_DOUBLE, sizeof(glm::dvec2), GLF_BUFFER_OFFSET(0));
+		glVertexAttribLPointer(glf::semantic::attr::POSITION, 3, GL_DOUBLE, sizeof(glm::dvec3), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);

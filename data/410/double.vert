@@ -7,7 +7,7 @@
 
 uniform dmat4 MVP;
 
-layout(location = POSITION) in dvec2 Position;
+layout(location = POSITION) in dvec3 Position;
 
 out gl_PerVertex
 {
@@ -18,6 +18,6 @@ out gl_PerVertex
 
 void main()
 {	
-	gl_Position = vec4(MVP * dvec4(Position, 0.0, 1.0));
+	gl_Position = vec4(MVP * dvec4(Position, 1.0));
 }
 
