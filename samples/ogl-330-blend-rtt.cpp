@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Render to texture blending");
-	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.vert");
-	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "330/mrt.frag");
-	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-330/mrt.vert");
+	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-330/mrt.frag");
+	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-330/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(640, 480);
 	int const SAMPLE_SIZE_WIDTH(640);

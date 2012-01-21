@@ -14,9 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Object";
-	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "400/transform.vert");
-	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback.vert");
-	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "400/feedback.frag");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "ogl-400/transform.vert");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "ogl-400/feedback.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "ogl-400/feedback.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

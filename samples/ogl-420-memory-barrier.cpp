@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Memory barrier";
-	std::string const SHADER_VERT_SOURCE_UPDATE(glf::DATA_DIRECTORY + "420/memory-barrier-update.vert");
-	std::string const SHADER_FRAG_SOURCE_UPDATE(glf::DATA_DIRECTORY + "420/memory-barrier-update.frag");
-	std::string const SHADER_VERT_SOURCE_BLIT(glf::DATA_DIRECTORY + "420/memory-barrier-blit.vert");
-	std::string const SHADER_FRAG_SOURCE_BLIT(glf::DATA_DIRECTORY + "420/memory-barrier-blit.frag");
+	std::string const SHADER_VERT_SOURCE_UPDATE(glf::DATA_DIRECTORY + "ogl-420/memory-barrier-update.vert");
+	std::string const SHADER_FRAG_SOURCE_UPDATE(glf::DATA_DIRECTORY + "ogl-420/memory-barrier-update.frag");
+	std::string const SHADER_VERT_SOURCE_BLIT(glf::DATA_DIRECTORY + "ogl-420/memory-barrier-blit.vert");
+	std::string const SHADER_FRAG_SOURCE_BLIT(glf::DATA_DIRECTORY + "ogl-420/memory-barrier-blit.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken640-rgb8.dds");
 	glm::ivec2 FRAMEBUFFER_SIZE(0);
 	int const SAMPLE_SIZE_WIDTH(640);

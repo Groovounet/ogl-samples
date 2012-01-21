@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -45,6 +45,16 @@ namespace
 		2, 3, 0
 	};
 
+	namespace program
+	{
+		enum type
+		{
+			VERTEX,
+			FRAGMENT,
+			MAX
+		};
+	}//namespace program
+
 	namespace buffer
 	{
 		enum type
@@ -55,9 +65,9 @@ namespace
 			MAX
 		};
 	}//namespace buffer
-
+	 
 	GLuint PipelineName(0);
-	GLuint ProgramName(0);
+	GLuint ProgramName[program::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
 	GLuint TextureName(0);
@@ -75,19 +85,26 @@ bool initProgram()
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
-		ProgramName = glCreateProgram();
-		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName, VertShaderName);
-		glAttachShader(ProgramName, FragShaderName);
+		ProgramName[program::VERTEX] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::VERTEX], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::VERTEX], VertShaderName);
+		glLinkProgram(ProgramName[program::VERTEX]);
 		glDeleteShader(VertShaderName);
-		glDeleteShader(FragShaderName);
+		Validated = Validated && glf::checkProgram(ProgramName[program::VERTEX]);
 
-		glLinkProgram(ProgramName);
-		Validated = glf::checkProgram(ProgramName);
+		ProgramName[program::FRAGMENT] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::FRAGMENT], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::FRAGMENT], FragShaderName);
+		glLinkProgram(ProgramName[program::FRAGMENT]);
+		glDeleteShader(FragShaderName);
+		Validated = Validated && glf::checkProgram(ProgramName[program::FRAGMENT]);
 	}
 
 	if(Validated)
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
+	{
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
+		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
+	}
 
 	glBindProgramPipeline(0);
 
@@ -206,6 +223,11 @@ bool begin()
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
+	GLint MaxVaryingOutputComp(0);
+	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
+	GLint MaxVaryingOutputVec(0);
+	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
+
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
@@ -227,7 +249,8 @@ bool end()
 	bool Validated(true);
 
 	glDeleteProgramPipelines(1, &PipelineName);
-	glDeleteProgram(ProgramName);
+	glDeleteProgram(ProgramName[program::FRAGMENT]);
+	glDeleteProgram(ProgramName[program::VERTEX]);
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);

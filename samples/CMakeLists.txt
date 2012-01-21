@@ -1,13 +1,13 @@
 function(glCreateSampleGTC NAME)
-	set(SAMPLE_NAME ogl-${GL_VERSION_GTC}-${NAME})
-	set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../data/${GL_VERSION_GTC})
+	set(SAMPLE_NAME ${GL_PROFILE_GTC}-${GL_VERSION_GTC}-${NAME})
+	set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../data/${GL_PROFILE_GTC}-${GL_VERSION_GTC})
 
 	foreach(FILE ${GL_SHADER_GTC})
  		set(SHADER_PATH ${SHADER_PATH} ${SHADER_DIR}/${FILE})
 	endforeach(FILE)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
-	add_executable(${SAMPLE_NAME} ogl-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
+	add_executable(${SAMPLE_NAME} ${GL_PROFILE_GTC}-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
 	add_test(NAME ${SAMPLE_NAME} COMMAND $<TARGET_FILE:${SAMPLE_NAME}>)
 	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
 if(MSVC)
@@ -20,7 +20,13 @@ endfunction(glCreateSampleGTC)
 #add_subdirectory(ogl-alpha-to-coverage)
 #add_subdirectory(ogl-buffer-render)
 
+# OpenGL ES 2.0 samples
+set(GL_PROFILE_GTC oes)
+set(GL_VERSION_GTC 200)
+glCreateSampleGTC(draw-elements)
+
 # OpenGL 3.0 samples
+set(GL_PROFILE_GTC ogl)
 set(GL_VERSION_GTC 300)
 
 set(GL_SHADER_GTC image-2d.vert image-2d.frag)

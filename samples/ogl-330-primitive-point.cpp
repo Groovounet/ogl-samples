@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Point";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/point.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/point.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/point.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/point.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);

@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Draw base instance";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/draw-base-instance.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/draw-base-instance.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/draw-base-instance.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

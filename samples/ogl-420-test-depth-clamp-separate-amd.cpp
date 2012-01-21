@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "Test Depth Clamp Separate";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-clamp-separate.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-clamp-separate.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/test-depth-clamp-separate.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/test-depth-clamp-separate.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

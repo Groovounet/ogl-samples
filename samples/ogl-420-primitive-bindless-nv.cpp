@@ -16,8 +16,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Bindless";
-	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.vert");
-	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "420/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-bc1-saved.dds");
 	int const SAMPLE_SIZE_WIDTH(640);

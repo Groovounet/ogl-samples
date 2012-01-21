@@ -68,12 +68,12 @@ namespace
 		};
 	}//namespace buffer
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/instanced-image-2d.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/instanced-image-2d.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "420/instanced-image-2d.frag",
-		glf::DATA_DIRECTORY + "420/multisample-box.frag",
-		glf::DATA_DIRECTORY + "420/multisample-near.frag",
+		glf::DATA_DIRECTORY + "ogl-420/instanced-image-2d.frag",
+		glf::DATA_DIRECTORY + "ogl-420/multisample-box.frag",
+		glf::DATA_DIRECTORY + "ogl-420/multisample-near.frag",
 	};
 
 	GLuint PipelineName[program::MAX] = {0, 0, 0};
@@ -217,6 +217,35 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
+
+	GLint MaxVertexAttribs(0);
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttribs);
+	//GL_MAX_DRAW_BUFFERS 8
+	//GL_MAX_COLOR_ATTACHMENTS 8
+
+	GLint MaxVaryingOutputComp(0);
+	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
+	GLint MaxVaryingOutputVec(0);
+	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
+
+	GLint MaxVertexOutput(0);
+	glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &MaxVertexOutput);
+	GLint MaxControlInput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_INPUT_COMPONENTS, &MaxControlInput);
+	GLint MaxControlOutput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS, &MaxControlOutput);
+	GLint MaxControlTotalOutput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS, &MaxControlTotalOutput);
+	GLint MaxEvaluationInput(0);
+	glGetIntegerv(GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, &MaxEvaluationInput);
+	GLint MaxEvaluationOutput(0);
+	glGetIntegerv(GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, &MaxEvaluationOutput);
+	GLint MaxGeometryInput(0);
+	glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS, &MaxGeometryInput);	
+	GLint MaxGeometryOutput(0);
+	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, &MaxGeometryOutput);	
+	GLint MaxFragmentInput(0);
+	glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &MaxFragmentInput);	
 
 	if(Validated)
 		Validated = initDebugOutput();

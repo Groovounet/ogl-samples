@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Sampler Object";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -268,6 +268,22 @@ void display()
 	glBindSampler(1, SamplerBName);
 
 	glBindVertexArray(VertexArrayName);
+
+	{
+		fprintf(stdout, "Validate\n");
+
+		glValidateProgram(ProgramName);
+
+		GLint Result = GL_FALSE;
+		glGetProgramiv(ProgramName, GL_VALIDATE_STATUS, &Result);
+
+		int InfoLogLength;
+		glGetProgramiv(ProgramName, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		std::vector<char> Buffer(std::max(InfoLogLength, int(1)));
+		glGetProgramInfoLog(ProgramName, InfoLogLength, NULL, &Buffer[0]);
+		fprintf(stdout, "%s\n", &Buffer[0]);
+	}
+
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
 
 	glf::checkError("display");

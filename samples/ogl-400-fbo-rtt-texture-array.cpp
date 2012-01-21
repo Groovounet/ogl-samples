@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL FBO texture array");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "400/rtt-array.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/rtt-array.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/rtt-array.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -120,8 +120,10 @@ bool initFramebuffer()
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName, 0, GLint(0));
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TextureName, 0, GLint(1));
 	glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, TextureName, 0, GLint(2));
+	
 	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
+	assert(glGetError() == GL_NO_ERROR);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;

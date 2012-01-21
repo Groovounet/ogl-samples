@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Image Rectangle";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/texture-rect.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-rect.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-rect.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

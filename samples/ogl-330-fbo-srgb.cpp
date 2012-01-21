@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer sRGB";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/image-2d.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken-color-rgb.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(512, 512);
 	int const SAMPLE_SIZE_WIDTH(640);

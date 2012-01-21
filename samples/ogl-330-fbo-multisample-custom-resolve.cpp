@@ -62,12 +62,12 @@ namespace
 		};
 	}//namespace program
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "330/instanced-image-2d.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/instanced-image-2d.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "330/instanced-image-2d.frag",
-		glf::DATA_DIRECTORY + "330/multisample-box.frag",
-		glf::DATA_DIRECTORY + "330/multisample-near.frag",
+		glf::DATA_DIRECTORY + "ogl-330/instanced-image-2d.frag",
+		glf::DATA_DIRECTORY + "ogl-330/multisample-box.frag",
+		glf::DATA_DIRECTORY + "ogl-330/multisample-near.frag",
 	};
 
 	GLuint VertexArrayName = 0;

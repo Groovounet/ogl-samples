@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "Test Depth Conservative";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-conservative.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "420/test-depth-conservative.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/test-depth-conservative.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/test-depth-conservative.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

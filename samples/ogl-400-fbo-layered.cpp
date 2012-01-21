@@ -14,11 +14,11 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Layered rendering";
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.vert");
-	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.geom");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "400/layer.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.vert");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "400/rtt-array.frag");
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-400/layer.vert");
+	std::string const GEOM_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-400/layer.geom");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-400/layer.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-400/rtt-array.vert");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-400/rtt-array.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
