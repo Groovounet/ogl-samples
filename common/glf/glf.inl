@@ -461,6 +461,7 @@ namespace glf
 	(
 		int argc, char* argv[], 
 		glm::ivec2 const & Size, 
+		int Profile,
 		int Major, int Minor
 	)
 	{
@@ -477,17 +478,11 @@ namespace glf
 
 #if !defined(__APPLE__)
 		glutInitContextVersion(Major, Minor);
+		glutInitContextProfile(Profile); // GLUT_COMPATIBILITY_PROFILE GLUT_CORE_PROFILE
 		if(glf::version(Major, Minor) >= 320)
-		{
-#if defined(WIN32)
-			glutInitContextProfile(GLUT_CORE_PROFILE); // GLUT_COMPATIBILITY_PROFILE
-#else
-			glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE); // GLUT_COMPATIBILITY_PROFILE
-#endif
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
-		}
 #endif//__APPLE__
-
+		
 		glutCreateWindow(argv[0]);
 		init();
 
