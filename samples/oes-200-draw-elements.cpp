@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Draw Elements";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "210/flat-color.frag");
-	int const SAMPLE_SIZE_WIDTH = 640;
-	int const SAMPLE_SIZE_HEIGHT = 480;
-	int const SAMPLE_MAJOR_VERSION = 2;
-	int const SAMPLE_MINOR_VERSION = 1;
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "oes-200/flat-color.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "oes-200/flat-color.frag");
+	int const SAMPLE_SIZE_WIDTH(640);
+	int const SAMPLE_SIZE_HEIGHT(480);
+	int const SAMPLE_MAJOR_VERSION(2);
+	int const SAMPLE_MINOR_VERSION(0);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -110,7 +110,7 @@ bool initArrayBuffer()
 
 bool begin()
 {
-	bool Validated = true;
+	bool Validated(true);
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
@@ -175,6 +175,7 @@ int main(int argc, char* argv[])
 	if(glf::run(
 		argc, argv,
 		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
+		WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
 		::SAMPLE_MAJOR_VERSION, 
 		::SAMPLE_MINOR_VERSION))
 		return 0;
