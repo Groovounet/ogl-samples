@@ -1,6 +1,6 @@
 //**********************************
-// OpenGL Texture 2D
-// 27/08/2009 - 11/03/2011
+// OpenGL Texture Format
+// 23/01/2012 - 23/01/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,9 +13,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Texture 2D";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/image-2d.frag");
+	std::string const SAMPLE_NAME = "OpenGL Texture Format";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-format.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-format.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
