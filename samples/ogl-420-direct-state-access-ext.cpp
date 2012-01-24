@@ -216,7 +216,6 @@ bool begin()
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
-	Validated = Validated && glf::checkExtension("GL_ARB_debug_output");
 
 	GLint MaxVertexAttribs(0);
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttribs);
@@ -247,7 +246,7 @@ bool begin()
 	GLint MaxFragmentInput(0);
 	glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &MaxFragmentInput);	
 
-	if(Validated)
+	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
 		Validated = initProgram();
