@@ -104,8 +104,6 @@ bool initProgram()
 	GLint Success = 0;
 
 	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
-	glBindProgramPipeline(0);
 
 	ProgramName[program::VERT] = glCreateProgram();
 	glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
@@ -207,7 +205,7 @@ bool initTexture2D()
 	return glf::checkError("initTexture2D");
 }
 
-bool initVertexBuffer()
+bool initBuffer()
 {
 	// Generate a buffer object
 	glGenBuffers(buffer::MAX, BufferName);
@@ -249,7 +247,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initVertexBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -309,6 +307,7 @@ int main(int argc, char* argv[])
 	return glf::run(
 		argc, argv,
 		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
-		WGL_CONTEXT_CORE_PROFILE_BIT_ARB, ::SAMPLE_MAJOR_VERSION, 
+		WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 
+		::SAMPLE_MAJOR_VERSION, 
 		::SAMPLE_MINOR_VERSION);
 }

@@ -24,7 +24,7 @@ endfunction(glCreateSampleGTC)
 set(GL_PROFILE_GTC oes)
 set(GL_VERSION_GTC 200)
 set(GL_SHADER_GTC flat-color.vert flat-color.frag)
-glCreateSampleGTC(draw-elements)
+#glCreateSampleGTC(draw-elements)
 
 # OpenGL 3.0 samples
 set(GL_PROFILE_GTC ogl)
