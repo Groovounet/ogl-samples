@@ -221,7 +221,7 @@ bool end()
 	return glf::checkError("end");
 }
 
-void renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Texture2DName)
+void renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint const & TextureName)
 {
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 	glProgramUniform1i(ProgramName, UniformDiffuse, 0);
@@ -229,7 +229,7 @@ void renderScene(glm::vec4 const & ClearColor, glm::mat4 const & MVP, GLuint Tex
 	glUseProgram(ProgramName);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture2DName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindSampler(0, SamplerName);
 
 	glBindVertexArray(VertexArrayName);
@@ -272,12 +272,16 @@ void display()
 		// Correct display
 		glScissorIndexed(0, 0, Window.Size.y / 2 - 1, Window.Size.x, Window.Size.y / 2);
 		glEnable(GL_FRAMEBUFFER_SRGB);
+		glSamplerParameteri(SamplerName, GL_TEXTURE_SRGB_DECODE_EXT, GL_SKIP_DECODE_EXT); // GL_DECODE_EXT 
 		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
 		glDisable(GL_FRAMEBUFFER_SRGB);
 
 		// Incorrected display
 		glScissorIndexed(0, 0, 0, Window.Size.x, Window.Size.y / 2);
+		glEnable(GL_FRAMEBUFFER_SRGB);
+		glSamplerParameteri(SamplerName, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT); // GL_DECODE_EXT 
 		renderScene(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), MVP, ColorbufferName);
+		glDisable(GL_FRAMEBUFFER_SRGB);
 	}
 
 	glf::swapBuffers();
