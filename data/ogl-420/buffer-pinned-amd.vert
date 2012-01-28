@@ -2,18 +2,18 @@
 
 #define POSITION	0
 #define COLOR		3
+#define TEXCOORD	4
+#define FRAG_COLOR	0
 
-#define MATERIAL	0
 #define TRANSFORM0	1
-#define TRANSFORM1	2	
 
 layout(binding = TRANSFORM0) uniform transform
 {
 	mat4 MVP;
 } Transform;
 
-layout(location = POSITION) in vec2 Position;
-layout(location = COLOR) in vec4 Color;
+layout(location = POSITION) in vec3 Position;
+layout(location = TEXCOORD) in vec2 Texcoord;
 
 out gl_PerVertex
 {
@@ -22,11 +22,11 @@ out gl_PerVertex
 
 out block
 {
-	vec4 Color;
+	vec2 Texcoord;
 } Out;
 
 void main()
 {	
-	gl_Position = Transform.MVP * vec4(Position, float(gl_InstanceID) * 0.25 - 0.5, 1.0);
-	Out.Color = Color;
+	Out.Texcoord = Texcoord;
+	gl_Position = Transform.MVP * vec4(Position, 1.0);
 }

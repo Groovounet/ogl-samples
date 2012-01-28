@@ -15,8 +15,10 @@ namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Program binary";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.vert");
+	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.geom");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.frag");
 	std::string const VERT_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.vert.bin");
+	std::string const GEOM_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.vert.bin");
 	std::string const FRAG_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.frag.bin");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -59,13 +61,14 @@ namespace
 		enum type
 		{
 			VERT,
+			GEOM,
 			FRAG,
 			MAX
 		};
 	}//namespace program
 
 	GLuint PipelineName(0);
-	GLuint ProgramName[program::MAX] = {0, 0};
+	GLuint ProgramName[program::MAX] = {0, 0, 0};
 	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
 	GLint UniformMVP(0);
@@ -105,6 +108,7 @@ bool initProgram()
 
 	glGenProgramPipelines(1, &PipelineName);
 
+	// Vertex program
 	ProgramName[program::VERT] = glCreateProgram();
 	glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_SEPARABLE, GL_TRUE);
 	glProgramParameteri(ProgramName[program::VERT], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
@@ -131,6 +135,34 @@ bool initProgram()
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERT]);
 	}
 
+	// Geometry program
+	ProgramName[program::GEOM] = glCreateProgram();
+	glProgramParameteri(ProgramName[program::GEOM], GL_PROGRAM_SEPARABLE, GL_TRUE);
+	glProgramParameteri(ProgramName[program::GEOM], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+
+	{
+		GLenum Format = 0;
+		GLint Size = 0;
+		std::vector<glm::byte> Data;
+		if(glf::loadBinary(VERT_PROGRAM_BINARY, Format, Data, Size))
+		{
+			glProgramBinary(ProgramName[program::GEOM], Format, &Data[0], Size);
+			glGetProgramiv(ProgramName[program::GEOM], GL_LINK_STATUS, &Success);
+		}
+	}
+
+	// Create program
+	if(Validated && !Success)
+	{
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
+
+		glAttachShader(ProgramName[program::GEOM], GeomShaderName);
+		glDeleteShader(GeomShaderName);
+		glLinkProgram(ProgramName[program::GEOM]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::GEOM]);
+	}
+
+	// Fragment program
 	ProgramName[program::FRAG] = glCreateProgram();
 	glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_SEPARABLE, GL_TRUE);
 	glProgramParameteri(ProgramName[program::FRAG], GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
@@ -157,9 +189,11 @@ bool initProgram()
 		Validated = Validated && glf::checkProgram(ProgramName[program::FRAG]);
 	}
 
+	// Pipeline program
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERT]);
+		glUseProgramStages(PipelineName, GL_GEOMETRY_SHADER_BIT, ProgramName[program::GEOM]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAG]);
 		Validated = Validated && glf::checkError("initProgram - stage");
 	}
@@ -174,7 +208,7 @@ bool initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initTexture2D()
+bool initTexture()
 {
 	glGenTextures(1, &Texture2DName);
 
@@ -202,7 +236,7 @@ bool initTexture2D()
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initBuffer()
@@ -251,7 +285,7 @@ bool begin()
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 
 	return Validated && glf::checkError("begin");
 }
