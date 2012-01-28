@@ -237,6 +237,9 @@ namespace
 }//namespace 
 
 #define GLF_BUFFER_OFFSET(i) ((char *)NULL + (i))
+#ifndef GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD
+#define GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD 0x9160
+#endif
 
 #include "glf.inl"
 
