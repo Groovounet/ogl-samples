@@ -7,7 +7,7 @@ ogl-samples@g-truc.net
 ================================================================================
 The MIT License
 --------------------------------------------------------------------------------
-Copyright (c) 2005 - 2011 G-Truc Creation (www.g-truc.net)
+Copyright (c) 2005 - 2012 G-Truc Creation (www.g-truc.net)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,19 @@ Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Download GLEW 1.7.0 (http://glew.sourceforge.net) and install depend packages
 - Run CMake to create a makefile for G++
 - Launch the sample from the build output directory
+
+================================================================================
+OpenGL Samples Pack 4.2.3.0: 2012-01-28
+--------------------------------------------------------------------------------
+- Added 420-blend-op-amd sample
+- Added 420-buffer-pinned-amd sample
+- Added 420-debug-output sample
+- Added 420-fbo-srgb-decode-ext sample
+- Added 420-interface-matching sample
+- Added 330-texture-format sample
+- Added 330-fbo-multisample-explicit-nv sample
+- Updated 410-program-binary sample
+- Refactored code
 
 ================================================================================
 OpenGL Samples Pack 4.2.2.1: 2012-01-24

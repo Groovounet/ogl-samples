@@ -40,7 +40,7 @@ out block
 	vec4 Color;
 } bl_Out; 
 
-out block
+out block2
 {
 	vec4 Color;
 } bl_Pou; 
