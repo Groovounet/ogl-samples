@@ -188,10 +188,13 @@ bool end()
 void display()
 {
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
+	glDrawBuffer(GL_BACK);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.5f, 1.0f, 1.0f)[0]);
 
 	// Renderer to image
 	{
+		glDrawBuffer(GL_NONE);
+
 		glBindProgramPipeline(PipelineName[pipeline::SAVE]);
 		glBindImageTexture(glf::semantic::image::DIFFUSE, TextureName, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 		glBindVertexArray(VertexArrayName);
@@ -203,6 +206,8 @@ void display()
 		GLint Border(8);
 		glEnable(GL_SCISSOR_TEST);
 		glScissorIndexed(0, Border, Border, Window.Size.x - 2 * Border, Window.Size.y - 2 * Border);
+
+		glDrawBuffer(GL_BACK);
 
 		glBindProgramPipeline(PipelineName[pipeline::READ]);
 		glBindImageTexture(glf::semantic::image::DIFFUSE, TextureName, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);

@@ -123,7 +123,7 @@ bool initBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
-	glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_DYNAMIC_COPY);
 	Pointer = (glf::vertex_v4fv2f*)glMapBufferRange(
 			GL_ARRAY_BUFFER, 0,	sizeof(glf::vertex_v4fv2f) * 4,
 			GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
@@ -271,7 +271,7 @@ void display()
 	glBindVertexArray(VertexArrayName);
 
 	// Make sure the array buffer is uploaded
-	glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 1, 0, 0);
