@@ -169,25 +169,32 @@ bool initDebugOutput()
 
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
+	GLuint MessageId(4);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_FALSE);
+	glDebugMessageControlARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageControlARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, GL_DONT_CARE, 1, &MessageId, GL_FALSE);
 	std::string Message1("Message 1");
 	glDebugMessageInsertARB(
 		GL_DEBUG_SOURCE_APPLICATION_ARB, 
 		GL_DEBUG_TYPE_OTHER_ARB, 1, 
 		GL_DEBUG_SEVERITY_MEDIUM_ARB,
-        Message1.size(), Message1.c_str());
-	glDebugMessageControlARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, GL_DONT_CARE, 0, NULL, GL_TRUE);
+        GLsizei(Message1.size()), Message1.c_str());
 	std::string Message2("Message 2");
 	glDebugMessageInsertARB(
-		GL_DEBUG_SOURCE_APPLICATION_ARB, 
+		GL_DEBUG_SOURCE_THIRD_PARTY_ARB, 
 		GL_DEBUG_TYPE_OTHER_ARB, 2, 
 		GL_DEBUG_SEVERITY_MEDIUM_ARB,
-        Message2.size(), Message2.c_str());
+        GLsizei(Message2.size()), Message2.c_str());
 	glDebugMessageInsertARB(
 		GL_DEBUG_SOURCE_APPLICATION_ARB, 
 		GL_DEBUG_TYPE_OTHER_ARB, 2, 
 		GL_DEBUG_SEVERITY_MEDIUM_ARB,
         -1, "Message 3");
+	glDebugMessageInsertARB(
+		GL_DEBUG_SOURCE_APPLICATION_ARB, 
+		GL_DEBUG_TYPE_OTHER_ARB, MessageId, 
+		GL_DEBUG_SEVERITY_MEDIUM_ARB,
+        -1, "Message 4");
 
 	return Validated;
 }
@@ -263,7 +270,7 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
 	glBindProgramPipeline(PipelineName);
-	glBindVertexArray(5);
+	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM], 0, BufferSize);
 	glBindBufferRange(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM1, BufferName[buffer::TRANSFORM], UniformBufferOffset, BufferSize);
