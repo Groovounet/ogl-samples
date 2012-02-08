@@ -4,8 +4,10 @@
 #define COLOR		3
 #define FRAG_COLOR	0
 
-layout(triangle_strip, max_vertices = 3) out;
 precision highp float;
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
 
 in block
 {
@@ -34,4 +36,3 @@ void main()
 	}
 	EndStreamPrimitive(0);
 }
-

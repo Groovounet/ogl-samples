@@ -1,7 +1,9 @@
 #version 330 core
 
-layout(triangle_strip, max_vertices = 4) out;
 precision highp float;
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 4) out;
 
 in block
 {
