@@ -34,6 +34,11 @@ if(NOT OPENGL_FOUND)
 endif(NOT OPENGL_FOUND)
 
 ################################
+# Add OpenCL
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/cl-1.2")
+
+################################
 # Add External package
 
 if(MSVC)
