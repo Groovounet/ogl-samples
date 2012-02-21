@@ -17,7 +17,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 macro(addExternalPackageGTC NAME DIRECTORY)
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY}/util)
 	set(${NAME}_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY})
-
+	
 	find_package(${NAME})
 	if(NOT ${NAME}_FOUND)
 		message("ERROR: ${NAME} not found")
@@ -45,6 +45,7 @@ if(MSVC)
     addExternalPackageGTC("GLEW" "glew-1.7.0")
     addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
 endif(MSVC)
+addExternalPackageGTC("OPENCL" "cl-1.2")
 addExternalPackageGTC("GLM" "glm-0.9.3.0")
 addExternalPackageGTC("GLI" "gli-0.3.1.0")
 
@@ -54,15 +55,17 @@ addExternalPackageGTC("GLI" "gli-0.3.1.0")
 if(APPLE)
 set(BINARY_FILES 
 	${OPENGL_LIBRARY} 
+	${OPENCL_LIBRARY}
 	${GLM_LIBRARY} 
 	${GLI_LIBRARY})
 else(APPLE)
 set(BINARY_FILES 
 	${OPENGL_LIBRARY} 
+	${OPENCL_LIBRARY}
 	${FREEGLUT_LIBRARY} 
 	${GLEW_LIBRARY}
 	${GLM_LIBRARY} 
-        ${GLI_LIBRARY})
+	${GLI_LIBRARY})
 endif(APPLE)
 
 ################################

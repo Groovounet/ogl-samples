@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Immutable Texture 2D
-// 27/06/2011 - 15/08/2011
+// OpenGL Interoperability with OpenCL
+// 20/02/2012 - 21/02/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/heterogeneous.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/heterogeneous.frag");
+	std::string const SAMPLE_NAME = "OpenGL Interoperability with OpenCL";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -71,7 +71,54 @@ namespace
 	GLuint VertexArrayName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
 	GLuint TextureName(0);
+
+	namespace cl
+	{
+		cl_platform_id PlatformId;
+		cl_context Context;
+		cl_device_id* Devices;
+		cl_command_queue CommandQueue;
+	}//namespace cl
+
 }//namespace
+
+bool initCL()
+{
+	bool Validated(true);
+
+    cl_uint numPlatforms;
+    cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
+    if(status != CL_SUCCESS)
+		return false;
+
+    if(numPlatforms > 0)
+    {
+		std::vector<cl_platform_id> Platforms(numPlatforms);
+        status = clGetPlatformIDs(numPlatforms, &Platforms[0], NULL);
+        if(status != CL_SUCCESS)
+        {
+            std::cout << "Error: Getting Platform Ids. (clGetPlatformsIDs)\n";
+            return false;
+        }
+        for(cl_uint i(0); i < numPlatforms; ++i)
+        {
+            char pbuff[100];
+            status = clGetPlatformInfo(Platforms[i], CL_PLATFORM_VENDOR, sizeof(pbuff),	pbuff, NULL);
+            if(status != CL_SUCCESS)
+            {
+                std::cout << "Error: Getting Platform Info.(clGetPlatformInfo)\n";
+                return false;
+            }
+            cl::PlatformId = Platforms[i];
+        }
+    }
+
+    cl_context_properties Properties[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)cl::PlatformId, 0};
+    cl::Context = clCreateContextFromType(Properties, CL_DEVICE_TYPE_CPU, NULL, NULL, &status);
+	Validated = Validated && status != CL_SUCCESS;
+
+	return Validated;
+}
 
 bool initProgram()
 {
@@ -228,6 +275,8 @@ bool begin()
 		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
+	if(Validated)
+		Validated = initCL();
 
 	return Validated;
 }

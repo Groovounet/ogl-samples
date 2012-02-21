@@ -9,6 +9,10 @@
 #	include <windows.h>
 #	include <GL/glew.h>
 #	include <GL/wglew.h>
+#	include <cl/cl.h>
+#	include <cl/cl_ext.h>
+#	include <cl/cl_gl.h>
+#	include <cl/cl_gl_ext.h>
 //#	include <GL/glext.h>
 #elif defined(linux) || defined(__linux)
 #	include <GL/glew.h>
