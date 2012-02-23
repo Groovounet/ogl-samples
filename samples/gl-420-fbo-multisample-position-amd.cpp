@@ -120,8 +120,8 @@ bool initProgram()
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
 
-	GLuint VertShaderName = amd::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-	GLuint FragShaderName = amd::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+	GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+	GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 	ProgramName = glCreateProgram();
 	glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
@@ -130,7 +130,7 @@ bool initProgram()
 	glDeleteShader(VertShaderName);
 	glDeleteShader(FragShaderName);
 	glLinkProgram(ProgramName);
-	Success = amd::checkProgram(ProgramName);
+	Success = glf::checkProgram(ProgramName);
 
 	glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 

@@ -11,14 +11,14 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Multi draw indirect";
-	std::string const VERT_SHADER_SOURCE(amd::DATA_DIRECTORY +"gl-420/multi-draw-indirect.vert");
-	std::string const FRAG_SHADER_SOURCE(amd::DATA_DIRECTORY + "gl-420/multi-draw-indirect.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY +"gl-420/multi-draw-indirect.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/multi-draw-indirect.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
 	int const SAMPLE_MINOR_VERSION(2);
 
-	amd::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
+	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);

@@ -70,7 +70,9 @@ namespace glf
 			RotationOrigin(0), 
 			RotationCurrent(0),
 			MouseButtonFlags(0)
-		{}
+		{
+			memset(KeyPressed, 0, sizeof(KeyPressed));	
+		}
 
 		glm::ivec2 Size;
 		glm::vec2 MouseOrigin;
@@ -80,6 +82,7 @@ namespace glf
 		glm::vec2 RotationOrigin;
 		glm::vec2 RotationCurrent;
 		int MouseButtonFlags;
+		std::size_t KeyPressed[256];
 	};
 
 	std::string loadFile(std::string const & Filename);
