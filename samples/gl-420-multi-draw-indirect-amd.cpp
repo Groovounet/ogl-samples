@@ -117,8 +117,8 @@ bool initProgram()
 	glBindProgramPipeline(PipelineName);
 	glBindProgramPipeline(0);
 
-	GLuint VertShaderName = amd::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-	GLuint FragShaderName = amd::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+	GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+	GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 	ProgramName = glCreateProgram();
 	glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
@@ -127,7 +127,7 @@ bool initProgram()
 	glDeleteShader(VertShaderName);
 	glDeleteShader(FragShaderName);
 	glLinkProgram(ProgramName);
-	Success = amd::checkProgram(ProgramName);
+	Success = glf::checkProgram(ProgramName);
 
 	glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 
@@ -210,16 +210,16 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
-		glVertexAttribPointer(amd::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(amd::semantic::attr::POSITION, 0);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
 		
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
-		glVertexAttribPointer(amd::semantic::attr::COLOR, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(amd::semantic::attr::COLOR, 0);
+		glVertexAttribPointer(glf::semantic::attr::COLOR, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribDivisor(glf::semantic::attr::COLOR, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
-		glEnableVertexAttribArray(amd::semantic::attr::POSITION);
-		glEnableVertexAttribArray(amd::semantic::attr::COLOR);
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]); 
 	glBindVertexArray(0);
@@ -231,7 +231,7 @@ bool initDebugOutput()
 {
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	glDebugMessageCallbackARB(&amd::debugOutput, NULL);
+	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
 	return true;
 }
@@ -241,11 +241,11 @@ bool begin()
 	bool Success(true);
 
 	// Validate OpenGL support
-	Success = Success && amd::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Success = Success && amd::checkExtension("GL_AMD_multi_draw_indirect");
+	Success = Success && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	Success = Success && glf::checkExtension("GL_AMD_multi_draw_indirect");
 
 	// Create and initialize objects
-	if(Success && amd::checkExtension("GL_ARB_debug_output"))
+	if(Success && glf::checkExtension("GL_ARB_debug_output"))
 		Success = initDebugOutput();
 	if(Success)
 		Success = initProgram();
@@ -259,9 +259,9 @@ bool begin()
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
 	glBindProgramPipeline(PipelineName);
 	glBindVertexArray(VertexArrayName);
-	glBindBufferBase(GL_UNIFORM_BUFFER, amd::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
-	return Success && amd::checkError("begin");
+	return Success;
 }
 
 bool end()
@@ -308,12 +308,12 @@ void display()
 	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, DrawCount[IndirectBufferIndex], sizeof(DrawElementsIndirectCommand));
 
 	// Swap framebuffers
-	amd::swapBuffers();
+	glf::swapBuffers();
 }
 
 int main(int argc, char* argv[])
 {
-	return amd::run(
+	return glf::run(
 		argc, argv,
 		glm::ivec2(::SAMPLE_SIZE_WIDTH, ::SAMPLE_SIZE_HEIGHT), 
 		WGL_CONTEXT_CORE_PROFILE_BIT_ARB, ::SAMPLE_MAJOR_VERSION, 
