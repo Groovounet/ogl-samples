@@ -17,6 +17,7 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Interoperability with OpenCL";
+	std::string const COMP_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.comp");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
@@ -29,7 +30,7 @@ namespace
 
 	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
-	glf::vertex_v2fv2f const VertexData[VertexCount] =
+	glf::vertex_v2fv2f VertexData[VertexCount] =
 	{
 		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f)),
 		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 1.0f)),
@@ -72,15 +73,26 @@ namespace
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
 	GLuint TextureName(0);
 
-	namespace cl
-	{
-		cl_platform_id PlatformId;
-		cl_context Context;
-		cl_device_id* Devices;
-		cl_command_queue CommandQueue;
-	}//namespace cl
-
 }//namespace
+
+namespace cl
+{
+	namespace buffer
+	{
+		enum type
+		{
+			INPUT,
+			OUTPUT,
+			MAX
+		};
+	}//namespace buffer
+
+	cl_platform_id PlatformId(NULL);
+	cl_context Context(NULL);
+	std::vector<cl_device_id> Devices;
+	cl_command_queue CommandQueue(NULL);
+	std::vector<cl_mem> Buffer(buffer::MAX);
+}//namespace cl
 
 bool initCL()
 {
@@ -113,11 +125,48 @@ bool initCL()
         }
     }
 
+	// Create context
     cl_context_properties Properties[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)cl::PlatformId, 0};
     cl::Context = clCreateContextFromType(Properties, CL_DEVICE_TYPE_CPU, NULL, NULL, &status);
 	Validated = Validated && status != CL_SUCCESS;
 
+	// 
+	std::size_t DeviceListSize(0);
+    status = clGetContextInfo(cl::Context, CL_CONTEXT_DEVICES, 0, NULL, &DeviceListSize);
+	Validated = Validated && status != CL_SUCCESS;
+
+	cl::Devices.resize(DeviceListSize);
+    status = clGetContextInfo(cl::Context, CL_CONTEXT_DEVICES, DeviceListSize, &cl::Devices[0], NULL);
+	Validated = Validated && status != CL_SUCCESS;
+
+    cl::CommandQueue = clCreateCommandQueue(cl::Context, cl::Devices[0], 0, &status);
+	Validated = Validated && status != CL_SUCCESS;
+
+	// Create assets
+    cl::Buffer[cl::buffer::INPUT] = clCreateBuffer(
+		cl::Context, CL_MEM_HOST_READ_ONLY | CL_MEM_USE_HOST_PTR, VertexSize, VertexData, &status);
+
 	return Validated;
+}
+
+bool endCL()
+{
+	cl_int status(0);
+
+    status = clReleaseCommandQueue(cl::CommandQueue);
+    if(status != CL_SUCCESS)
+    {
+        std::cout << "Error: In clReleaseCommandQueue\n";
+        return false;
+    }
+    status = clReleaseContext(cl::Context);
+    if(status != CL_SUCCESS)
+    {
+        std::cout << "Error: In clReleaseContext\n";
+        return false;
+    }
+
+	return true;
 }
 
 bool initProgram()
@@ -284,6 +333,8 @@ bool begin()
 bool end()
 {
 	bool Validated(true);
+
+	Validated = Validated && endCL();
 
 	glDeleteProgramPipelines(1, &PipelineName);
 	glDeleteProgram(ProgramName[program::FRAGMENT]);
