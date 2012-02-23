@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Buffer Texture RGB";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/texture-buffer.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/texture-buffer.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/texture-buffer.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/texture-buffer.frag");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 4;

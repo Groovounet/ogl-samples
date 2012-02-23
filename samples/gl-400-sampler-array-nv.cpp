@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Sampler Array";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/sampler-array-gtc.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/sampler-array-gtc.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/sampler-array-gtc.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/sampler-array-gtc.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-dxt1.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;

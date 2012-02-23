@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Render to texture";
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/fbo-rtt.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/fbo-rtt.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/fbo-rtt.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/fbo-rtt.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

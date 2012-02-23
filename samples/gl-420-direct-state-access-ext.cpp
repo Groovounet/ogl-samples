@@ -68,12 +68,12 @@ namespace
 		};
 	}//namespace buffer
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/instanced-image-2d.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/instanced-image-2d.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "ogl-420/instanced-image-2d.frag",
-		glf::DATA_DIRECTORY + "ogl-420/multisample-box.frag",
-		glf::DATA_DIRECTORY + "ogl-420/multisample-near.frag",
+		glf::DATA_DIRECTORY + "gl-420/instanced-image-2d.frag",
+		glf::DATA_DIRECTORY + "gl-420/multisample-box.frag",
+		glf::DATA_DIRECTORY + "gl-420/multisample-near.frag",
 	};
 
 	GLuint PipelineName[program::MAX] = {0, 0, 0};

@@ -18,8 +18,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
 
 	int const SAMPLE_SIZE_WIDTH(640);

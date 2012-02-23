@@ -17,8 +17,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Buffer Barrier";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/buffer-barrier.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/buffer-barrier.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/buffer-barrier.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/buffer-barrier.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

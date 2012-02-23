@@ -14,10 +14,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Blending Operation");
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-420/blend-op-amd.vert");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-420/blend-op-amd.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-420/blend-texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-420/blend-texture-2d.frag");
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-420/blend-op-amd.vert");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-420/blend-op-amd.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-420/blend-texture-2d.vert");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-420/blend-texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(640, 480);
 	int const SAMPLE_SIZE_WIDTH(640);

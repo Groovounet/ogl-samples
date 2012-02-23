@@ -17,10 +17,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Image Store");
-	std::string const VERT_SHADER_SOURCE_SAVE(glf::DATA_DIRECTORY + "ogl-420/image-store-write.vert");
-	std::string const FRAG_SHADER_SOURCE_SAVE(glf::DATA_DIRECTORY + "ogl-420/image-store-write.frag");
-	std::string const VERT_SHADER_SOURCE_READ(glf::DATA_DIRECTORY + "ogl-420/image-store-read.vert");
-	std::string const FRAG_SHADER_SOURCE_READ(glf::DATA_DIRECTORY + "ogl-420/image-store-read.frag");
+	std::string const VERT_SHADER_SOURCE_SAVE(glf::DATA_DIRECTORY + "gl-420/image-store-write.vert");
+	std::string const FRAG_SHADER_SOURCE_SAVE(glf::DATA_DIRECTORY + "gl-420/image-store-write.frag");
+	std::string const VERT_SHADER_SOURCE_READ(glf::DATA_DIRECTORY + "gl-420/image-store-read.vert");
+	std::string const FRAG_SHADER_SOURCE_READ(glf::DATA_DIRECTORY + "gl-420/image-store-read.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

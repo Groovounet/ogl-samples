@@ -14,9 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Programmable trilinear filtering";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/sampler-fetch.vert");
-	std::string const FRAG_SHADER_LIBRARY(glf::DATA_DIRECTORY + "ogl-420/sampler-library.frag");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/sampler-fetch.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/sampler-fetch.vert");
+	std::string const FRAG_SHADER_LIBRARY(glf::DATA_DIRECTORY + "gl-420/sampler-library.frag");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/sampler-fetch.frag");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

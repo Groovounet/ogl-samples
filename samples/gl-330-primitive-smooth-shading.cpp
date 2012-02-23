@@ -14,11 +14,11 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Primitive smooth shading";	
-	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-330/smooth-shading.vert");
-	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "ogl-330/smooth-shading.frag");
-	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-330/smooth-shading-geom.vert");
-	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-330/smooth-shading-geom.geom");
-	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "ogl-330/smooth-shading-geom.frag");
+	std::string const VERT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-330/smooth-shading.vert");
+	std::string const FRAG_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-330/smooth-shading.frag");
+	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/smooth-shading-geom.vert");
+	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/smooth-shading-geom.geom");
+	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/smooth-shading-geom.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);

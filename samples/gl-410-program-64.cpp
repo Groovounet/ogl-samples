@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Double";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/double.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/double.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-410/double.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-410/double.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

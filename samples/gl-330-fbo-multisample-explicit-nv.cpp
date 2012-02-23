@@ -67,12 +67,12 @@ namespace
 		};
 	}//namespace texture
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/multisample-explicit-texture-nv.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/multisample-explicit-texture-nv.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "ogl-330/multisample-explicit-texture-nv.frag",
-		glf::DATA_DIRECTORY + "ogl-330/multisample-explicit-box-nv.frag",
-		glf::DATA_DIRECTORY + "ogl-330/multisample-explicit-near-nv.frag",
+		glf::DATA_DIRECTORY + "gl-330/multisample-explicit-texture-nv.frag",
+		glf::DATA_DIRECTORY + "gl-330/multisample-explicit-box-nv.frag",
+		glf::DATA_DIRECTORY + "gl-330/multisample-explicit-near-nv.frag",
 	};
 
 	GLuint VertexArrayName(0);

@@ -58,12 +58,12 @@ namespace
 		};
 	}//namespace program
 
-	std::string const SHADER_VERT(glf::DATA_DIRECTORY + "ogl-330/sampler.vert");
+	std::string const SHADER_VERT(glf::DATA_DIRECTORY + "gl-330/sampler.vert");
 
 	std::string const SHADER_FRAG[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "ogl-330/sampler-offset.frag",
-		glf::DATA_DIRECTORY + "ogl-330/sampler-bicubic.frag",
+		glf::DATA_DIRECTORY + "gl-330/sampler-offset.frag",
+		glf::DATA_DIRECTORY + "gl-330/sampler-bicubic.frag",
 	};
 
 	GLuint VertexArrayName(0);

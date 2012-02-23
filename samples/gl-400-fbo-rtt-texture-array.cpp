@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL FBO texture array");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/rtt-array.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/rtt-array.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/rtt-array.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/rtt-array.frag");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

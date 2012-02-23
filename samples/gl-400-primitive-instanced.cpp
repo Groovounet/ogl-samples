@@ -14,9 +14,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Primitive instancing";	
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/primitive-instancing.vert");
-	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/primitive-instancing.geom");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/primitive-instancing.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/primitive-instancing.vert");
+	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/primitive-instancing.geom");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/primitive-instancing.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

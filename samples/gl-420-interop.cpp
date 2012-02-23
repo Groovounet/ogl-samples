@@ -17,9 +17,9 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Interoperability with OpenCL";
-	std::string const COMP_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.comp");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-420/interop.frag");
+	std::string const COMP_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/interop.comp");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/interop.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/interop.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

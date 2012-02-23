@@ -17,10 +17,10 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Instanced";
-	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "ogl-420/transform-stream.vert");
-	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "ogl-420/transform-stream.geom");
-	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "ogl-420/feedback-stream.vert");
-	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "ogl-420/feedback-stream.frag");
+	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "gl-420/transform-stream.vert");
+	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "gl-420/transform-stream.geom");
+	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "gl-420/feedback-stream.vert");
+	std::string const FRAG_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "gl-420/feedback-stream.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

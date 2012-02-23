@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";
-	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.vert");
-	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "ogl-420/texture-2d.frag");
+	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
+	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);

@@ -14,11 +14,11 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Tessellation";	
-	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "ogl-400/tess.vert");
-	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "ogl-400/tess.cont");
-	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "ogl-400/tess.eval");
-	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "ogl-400/tess.geom");
-	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "ogl-400/tess.frag");
+	std::string const SAMPLE_VERTEX_SHADER(glf::DATA_DIRECTORY + "gl-400/tess.vert");
+	std::string const SAMPLE_CONTROL_SHADER(glf::DATA_DIRECTORY + "gl-400/tess.cont");
+	std::string const SAMPLE_EVALUATION_SHADER(glf::DATA_DIRECTORY + "gl-400/tess.eval");
+	std::string const SAMPLE_GEOMETRY_SHADER(glf::DATA_DIRECTORY + "gl-400/tess.geom");
+	std::string const SAMPLE_FRAGMENT_SHADER(glf::DATA_DIRECTORY + "gl-400/tess.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Cube map";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-cube.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-cube.frag");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/texture-cube.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/texture-cube.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "cube.dds");
 	std::string const TEXTURE_DIFFUSE_POSX(glf::DATA_DIRECTORY + "posx.dds");
 	std::string const TEXTURE_DIFFUSE_POSY(glf::DATA_DIRECTORY + "posy.dds");

@@ -14,8 +14,8 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Subroutine";	
-	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/subroutine.vert");
-	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-400/subroutine.frag");
+	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/subroutine.vert");
+	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-400/subroutine.frag");
 	std::string const TEXTURE_DIFFUSE_RGB8(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	std::string const TEXTURE_DIFFUSE_DXT1(glf::DATA_DIRECTORY + "kueken256-dxt1.dds");
 	int const SAMPLE_SIZE_WIDTH = 640;

@@ -14,11 +14,11 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Tessellation Pipeline";	
-	std::string const SAMPLE_VERT_SHADER(glf::DATA_DIRECTORY + "ogl-410/tess.vert");
-	std::string const SAMPLE_CONT_SHADER(glf::DATA_DIRECTORY + "ogl-410/tess.cont");
-	std::string const SAMPLE_EVAL_SHADER(glf::DATA_DIRECTORY + "ogl-410/tess.eval");
-	std::string const SAMPLE_GEOM_SHADER(glf::DATA_DIRECTORY + "ogl-410/tess.geom");
-	std::string const SAMPLE_FRAG_SHADER(glf::DATA_DIRECTORY + "ogl-410/tess.frag");
+	std::string const SAMPLE_VERT_SHADER(glf::DATA_DIRECTORY + "gl-410/tess.vert");
+	std::string const SAMPLE_CONT_SHADER(glf::DATA_DIRECTORY + "gl-410/tess.cont");
+	std::string const SAMPLE_EVAL_SHADER(glf::DATA_DIRECTORY + "gl-410/tess.eval");
+	std::string const SAMPLE_GEOM_SHADER(glf::DATA_DIRECTORY + "gl-410/tess.geom");
+	std::string const SAMPLE_FRAG_SHADER(glf::DATA_DIRECTORY + "gl-410/tess.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

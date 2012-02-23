@@ -14,11 +14,11 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Texture Format";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-330/texture-format.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/texture-format.vert");
 	std::string const FRAG_SHADER_SOURCE[3] = 
 	{
-		glf::DATA_DIRECTORY + "ogl-330/texture-format-normalized.frag", 
-		glf::DATA_DIRECTORY + "ogl-330/texture-format-uint.frag"
+		glf::DATA_DIRECTORY + "gl-330/texture-format-normalized.frag", 
+		glf::DATA_DIRECTORY + "gl-330/texture-format-uint.frag"
 	};
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);

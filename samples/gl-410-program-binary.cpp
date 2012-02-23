@@ -14,12 +14,12 @@
 namespace
 {
 	std::string const SAMPLE_NAME = "OpenGL Program binary";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.vert");
-	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.geom");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "ogl-410/binary.frag");
-	std::string const VERT_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.vert.bin");
-	std::string const GEOM_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.vert.bin");
-	std::string const FRAG_PROGRAM_BINARY(glf::DATA_DIRECTORY + "ogl-410/binary.frag.bin");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-410/binary.vert");
+	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-410/binary.geom");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-410/binary.frag");
+	std::string const VERT_PROGRAM_BINARY(glf::DATA_DIRECTORY + "gl-410/binary.vert.bin");
+	std::string const GEOM_PROGRAM_BINARY(glf::DATA_DIRECTORY + "gl-410/binary.vert.bin");
+	std::string const FRAG_PROGRAM_BINARY(glf::DATA_DIRECTORY + "gl-410/binary.frag.bin");
 	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
