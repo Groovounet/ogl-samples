@@ -46,6 +46,8 @@ if(MSVC)
     addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
 endif(MSVC)
 addExternalPackageGTC("OPENCL" "cl-1.2")
+addExternalPackageGTC("GLES2" "gles-2.0")
+addExternalPackageGTC("EGL" "egl-1.4")
 addExternalPackageGTC("GLM" "glm-0.9.3.0")
 addExternalPackageGTC("GLI" "gli-0.3.1.0")
 
