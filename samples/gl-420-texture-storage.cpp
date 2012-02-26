@@ -78,7 +78,6 @@ bool initProgram()
 	bool Validated(true);
 	
 	glGenProgramPipelines(1, &PipelineName);
-	glBindProgramPipeline(PipelineName);
 
 	if(Validated)
 	{
@@ -105,8 +104,6 @@ bool initProgram()
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 	}
-
-	glBindProgramPipeline(0);
 
 	return Validated;
 }
@@ -192,6 +189,8 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
 	glBindVertexArray(0);
 
 	return Validated;
@@ -248,12 +247,12 @@ bool end()
 
 void display()
 {
-	// Asynchrone update of the uniform buffer
+	// Update of the uniform buffer
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
 		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(
 			GL_UNIFORM_BUFFER, 0,	sizeof(glm::mat4),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
 		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
@@ -262,6 +261,9 @@ void display()
 		glm::mat4 Model = glm::mat4(1.0f);
 		
 		*Pointer = Projection * View * Model;
+
+		// Make sure the uniform buffer is uploaded
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
 	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
@@ -271,12 +273,7 @@ void display()
 	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindVertexArray(VertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
-
-	// Make sure the uniform buffer is uploaded
-	glUnmapBuffer(GL_UNIFORM_BUFFER);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 1, 0, 0);
