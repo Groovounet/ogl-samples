@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Immutable Texture 2D
-// 27/06/2011 - 15/08/2011
+// OpenGL Clipping
+// 02/03/2012 - 02/03/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,14 +16,14 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
+	std::string const SAMPLE_NAME = "OpenGL Clip";
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clip.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clip.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
-	int const SAMPLE_MAJOR_VERSION(2);
-	int const SAMPLE_MINOR_VERSION(0);
+	int const SAMPLE_MAJOR_VERSION(4);
+	int const SAMPLE_MINOR_VERSION(2);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -270,6 +270,7 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind rendering objects
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
