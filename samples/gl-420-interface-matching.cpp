@@ -132,7 +132,7 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	// Generate a buffer object
 	glGenBuffers(1, &ArrayBufferName);
@@ -140,7 +140,7 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initBuffer");
 }
 
 bool begin()
@@ -152,7 +152,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
