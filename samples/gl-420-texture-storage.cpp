@@ -16,7 +16,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Immutable Texture 2D";
+	std::string const SAMPLE_NAME("OpenGL Immutable Texture 2D");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");

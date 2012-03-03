@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Texture Conversion";
+	std::string const SAMPLE_NAME("OpenGL Texture Conversion");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-conversion.vert");
 	std::string const FRAG_SHADER_SOURCE[2] = 
 	{
@@ -249,7 +249,7 @@ bool initVertexArray()
 
 bool begin()
 {
-	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
+	bool Validated(glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION));
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
@@ -267,13 +267,15 @@ bool begin()
 
 bool end()
 {
+	bool Validated(true);
+
 	glDeleteBuffers(buffer::MAX, BufferName);
 	for(std::size_t i = 0; i < program::MAX; ++i)
 		glDeleteProgram(ProgramName[i]);
 	glDeleteTextures(texture::MAX, TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
-	return true;
+	return Validated;
 }
 
 void display()

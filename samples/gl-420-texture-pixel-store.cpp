@@ -126,14 +126,14 @@ bool initBuffer()
 	return Validated;
 }
 
-bool initTexture2D()
+bool initTexture()
 {
 	bool Validated(true);
 
-	GLint DXT1BlockWidth = 4;
-	GLint DXT1BlockHeight = 4;
-	GLint DXT1BlockDepth = 1;
-	GLint DXT1BlockSize = 8;
+	GLint DXT1BlockWidth(4);
+	GLint DXT1BlockHeight(4);
+	GLint DXT1BlockDepth(1);
+	GLint DXT1BlockSize(8);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, DXT1BlockWidth);

@@ -284,6 +284,8 @@ namespace glf
 		//if(f)
 		{
 			char debSource[32], debType[32], debSev[32];
+			bool Error(false);
+
 			if(source == GL_DEBUG_SOURCE_API_ARB)
 				strcpy(debSource, "OpenGL");
 			else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)
@@ -311,13 +313,17 @@ namespace glf
 				strcpy(debType, "message");
  
 			if(severity == GL_DEBUG_SEVERITY_HIGH_ARB)
+			{
 				strcpy(debSev, "high");
+				Error = true;
+			}
 			else if(severity == GL_DEBUG_SEVERITY_MEDIUM_ARB)
 				strcpy(debSev, "medium");
 			else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)
 				strcpy(debSev, "low");
 
 			 fprintf(stderr,"%s: %s(%s) %d: %s\n", debSource, debType, debSev, id, message);
+			 assert(!Error);
 			 //fclose(f);
 		}
 	}

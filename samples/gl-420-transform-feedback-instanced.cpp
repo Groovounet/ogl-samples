@@ -16,7 +16,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Transform Feedback Instanced";
+	std::string const SAMPLE_NAME("OpenGL Transform Feedback Instanced");
 	std::string const VERT_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "gl-420/transform-stream.vert");
 	std::string const GEOM_SHADER_SOURCE_TRANSFORM(glf::DATA_DIRECTORY + "gl-420/transform-stream.geom");
 	std::string const VERT_SHADER_SOURCE_FEEDBACK(glf::DATA_DIRECTORY + "gl-420/feedback-stream.vert");
@@ -58,16 +58,15 @@ namespace
 
 	GLuint PipelineName[pipeline::MAX] = {0, 0};
 	GLuint ProgramName[pipeline::MAX] = {0, 0};
+	GLuint VertexArrayName[pipeline::MAX] = {0, 0};
 
 	GLuint FeedbackName(0);
 
 	GLuint TransformArrayBufferName(0);
 	GLuint TransformElementBufferName(0);
-	GLuint TransformVertexArrayName(0);
 	GLint TransformUniformMVP(0);
 
 	GLuint FeedbackArrayBufferName(0);
-	GLuint FeedbackVertexArrayName(0);
 	GLint FeedbackUniformMVP(0);
 
 	GLuint Query(0);
@@ -161,6 +160,8 @@ bool initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
 	glBindVertexArray(0);
 
 	// Build a vertex array object
@@ -173,6 +174,8 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	return Validated;
@@ -187,11 +190,11 @@ bool initFeedback()
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, FeedbackArrayBufferName); 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-
+		
 	return Validated;
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	bool Validated(true);
 
@@ -247,7 +250,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -302,7 +305,6 @@ void display()
 	glBindProgramPipeline(PipelineName[pipeline::TRANSFORM]);
 
 	glBindVertexArray(TransformVertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBeginTransformFeedback(GL_TRIANGLES);
@@ -316,7 +318,6 @@ void display()
 	glBindProgramPipeline(PipelineName[pipeline::FEEDBACK]);
 
 	glBindVertexArray(FeedbackVertexArrayName);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glDrawTransformFeedbackStreamInstanced(GL_TRIANGLE_STRIP, FeedbackName, 0, 5);
 
 	glf::swapBuffers();
