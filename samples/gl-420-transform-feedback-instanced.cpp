@@ -152,9 +152,10 @@ bool initVertexArray()
 {
 	bool Validated(true);
 
-	// Build a vertex array object
-	glGenVertexArrays(1, &TransformVertexArrayName);
-    glBindVertexArray(TransformVertexArrayName);
+	// Build a vertex array objects
+	glGenVertexArrays(pipeline::MAX, VertexArrayName);
+
+    glBindVertexArray(VertexArrayName[pipeline::TRANSFORM]);
 		glBindBuffer(GL_ARRAY_BUFFER, TransformArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -164,9 +165,7 @@ bool initVertexArray()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TransformElementBufferName);
 	glBindVertexArray(0);
 
-	// Build a vertex array object
-	glGenVertexArrays(1, &FeedbackVertexArrayName);
-    glBindVertexArray(FeedbackVertexArrayName);
+    glBindVertexArray(VertexArrayName[pipeline::FEEDBACK]);
 		glBindBuffer(GL_ARRAY_BUFFER, FeedbackArrayBufferName);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), 0);
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v4fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec4)));
@@ -264,12 +263,11 @@ bool end()
 	bool Validated(true);
 
 	glDeleteProgramPipelines(pipeline::MAX, PipelineName);
+	glDeleteVertexArrays(pipeline::MAX, VertexArrayName);
 
-	glDeleteVertexArrays(1, &TransformVertexArrayName);
 	glDeleteBuffers(1, &TransformArrayBufferName);
 	glDeleteProgram(ProgramName[pipeline::TRANSFORM]);
 
-	glDeleteVertexArrays(1, &FeedbackVertexArrayName);
 	glDeleteBuffers(1, &FeedbackArrayBufferName);
 	glDeleteProgram(ProgramName[pipeline::FEEDBACK]);
 
@@ -303,21 +301,19 @@ void display()
 	glEnable(GL_RASTERIZER_DISCARD);
 
 	glBindProgramPipeline(PipelineName[pipeline::TRANSFORM]);
-
-	glBindVertexArray(TransformVertexArrayName);
+	glBindVertexArray(VertexArrayName[pipeline::TRANSFORM]);
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, FeedbackName);
 	glBeginTransformFeedback(GL_TRIANGLES);
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, NULL, 1, 0);
 	glEndTransformFeedback();
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
 	glDisable(GL_RASTERIZER_DISCARD);
 
 	// Second draw, reuse the captured attributes
 	glBindProgramPipeline(PipelineName[pipeline::FEEDBACK]);
+	glBindVertexArray(VertexArrayName[pipeline::FEEDBACK]);
 
-	glBindVertexArray(FeedbackVertexArrayName);
 	glDrawTransformFeedbackStreamInstanced(GL_TRIANGLE_STRIP, FeedbackName, 0, 5);
 
 	glf::swapBuffers();
