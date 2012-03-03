@@ -34,5 +34,5 @@ void main()
 	Out.Position = Position;
 	Out.Texcoord = Texcoord;
 	gl_Position = Position;
-	gl_ClipDistance[0] = mix(-1.0, 1.0, Position.z > 8);
+	gl_ClipDistance[0] = mix(-1.0, 1.0, Position.z > 2);
 }

@@ -3,7 +3,7 @@
 // ogl-samples.g-truc.net
 //**********************************
 // OpenGL Clipping
-// 02/03/2012 - 02/03/2012
+// 02/03/2012 - 02/03/2012 
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,9 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Clip";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clip.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clip.frag");
+	std::string const SAMPLE_NAME("OpenGL Clipping");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clipping.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/clipping.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -216,6 +216,8 @@ bool begin()
 	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
 	GLint MaxVaryingOutputVec(0);
 	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
+
+	glEnable(GL_CLIP_DISTANCE0);
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
