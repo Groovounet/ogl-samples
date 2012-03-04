@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Layered rendering
-// 19/08/2010 - 23/08/2010
+// 19/08/2010 - 04/03/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -20,7 +20,7 @@ namespace
 	std::string const VERT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-410/viewport.vert");
 	std::string const GEOM_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-410/viewport.geom");
 	std::string const FRAG_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-410/viewport.frag");
-	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
+	glm::ivec2 const FRAMEBUFFER_SIZE(640, 480);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -28,7 +28,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
 	glf::vertex_v2fv2f const VertexData[VertexCount] =
 	{
@@ -38,7 +38,7 @@ namespace
 		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f))
 	};
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(GLushort);
 	GLushort const ElementData[ElementCount] =
 	{
@@ -133,7 +133,7 @@ bool initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initVertexBuffer()
+bool initBuffer()
 {
 	glGenBuffers(BUFFER_MAX, BufferName);
 
@@ -145,7 +145,7 @@ bool initVertexBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initBuffer");
 }
 
 bool initTexture()
@@ -220,6 +220,8 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
     glBindVertexArray(VertexArrayName[LAYERING]);
@@ -228,6 +230,8 @@ bool initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -242,7 +246,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initVertexBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -282,12 +286,12 @@ void display()
 	// Pass 1
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewportIndexedfv(0, &glm::vec4(0, 0, FRAMEBUFFER_SIZE)[0]);
 
 		glUseProgram(ProgramName[LAYERING]);
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
@@ -308,7 +312,6 @@ void display()
 		glBindSampler(0, SamplerName);
 
 		glBindVertexArray(VertexArrayName[VIEWPORT]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 

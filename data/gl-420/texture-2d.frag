@@ -1,4 +1,4 @@
-#version 420 core
+#version 420 compatibility
 
 #define POSITION	0
 #define COLOR		3
