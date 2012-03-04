@@ -77,7 +77,7 @@ bool initProgram()
 }
 
 // Buffer update using glBufferSubData
-bool initArrayBuffer()
+bool initBuffer()
 {
 	// Generate a buffer object
 	glGenBuffers(1, &BufferName);
@@ -92,7 +92,7 @@ bool initArrayBuffer()
 		GL_ARRAY_BUFFER, 
 		0,				// Offset
 		GLsizeiptr(VertexCount * sizeof(glf::vertex_v4fc4f)),	// Size,
-		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
+		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
 	for(std::size_t i = 0; i < VertexCount; ++i)
 	{
@@ -147,7 +147,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 

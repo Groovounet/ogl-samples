@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Direct State Access";	
+	std::string const SAMPLE_NAME("OpenGL Direct State Access");	
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
 	glm::ivec2 const FRAMEBUFFER_SIZE(160, 120);
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -107,6 +107,8 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	glf::checkError("initProgram 0");
+
 	glGenProgramPipelines(program::MAX, PipelineName);
 
 	for(int i = 0; i < program::MAX; ++i)
@@ -147,6 +149,7 @@ bool initTexture()
 
 	glGenTextures(texture::MAX, TextureName);
 
+	//glTextureImage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, 0, GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glTextureStorage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
@@ -217,35 +220,6 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 
-	GLint MaxVertexAttribs(0);
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttribs);
-	//GL_MAX_DRAW_BUFFERS 8
-	//GL_MAX_COLOR_ATTACHMENTS 8
-
-	GLint MaxVaryingOutputComp(0);
-	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
-	GLint MaxVaryingOutputVec(0);
-	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
-
-	GLint MaxVertexOutput(0);
-	glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &MaxVertexOutput);
-	GLint MaxControlInput(0);
-	glGetIntegerv(GL_MAX_TESS_CONTROL_INPUT_COMPONENTS, &MaxControlInput);
-	GLint MaxControlOutput(0);
-	glGetIntegerv(GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS, &MaxControlOutput);
-	GLint MaxControlTotalOutput(0);
-	glGetIntegerv(GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS, &MaxControlTotalOutput);
-	GLint MaxEvaluationInput(0);
-	glGetIntegerv(GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, &MaxEvaluationInput);
-	GLint MaxEvaluationOutput(0);
-	glGetIntegerv(GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, &MaxEvaluationOutput);
-	GLint MaxGeometryInput(0);
-	glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS, &MaxGeometryInput);	
-	GLint MaxGeometryOutput(0);
-	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, &MaxGeometryOutput);	
-	GLint MaxFragmentInput(0);
-	glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &MaxFragmentInput);	
-
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
@@ -283,7 +257,7 @@ void renderFBO()
 	{
 		glm::mat4* Pointer = (glm::mat4*)glMapNamedBufferRangeEXT(
 			BufferName[buffer::TRANSFORM], 0, sizeof(glm::mat4),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
 		glm::mat4 Perspective = glm::perspective(45.0f, float(FRAMEBUFFER_SIZE.x) / FRAMEBUFFER_SIZE.y, 0.1f, 100.0f);
 		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y * 2.0 - 4.0));

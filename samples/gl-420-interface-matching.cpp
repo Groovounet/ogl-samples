@@ -121,11 +121,13 @@ bool initVertexArray()
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
 		glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::POSITION + 0, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::POSITION + 1, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fc4f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION + 0);
+		glEnableVertexAttribArray(glf::semantic::attr::POSITION + 1);
 		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
 	glBindVertexArray(0);
 
@@ -143,12 +145,42 @@ bool initBuffer()
 	return glf::checkError("initBuffer");
 }
 
+bool initMax()
+{
+	GLint MaxVertexAttribs(0);
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttribs);
+	//GL_MAX_DRAW_BUFFERS 8
+	//GL_MAX_COLOR_ATTACHMENTS 8
+	GLint MaxVertexOutput(0);
+	glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &MaxVertexOutput);
+	GLint MaxControlInput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_INPUT_COMPONENTS, &MaxControlInput);
+	GLint MaxControlOutput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS, &MaxControlOutput);
+	GLint MaxControlTotalOutput(0);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS, &MaxControlTotalOutput);
+	GLint MaxEvaluationInput(0);
+	glGetIntegerv(GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, &MaxEvaluationInput);
+	GLint MaxEvaluationOutput(0);
+	glGetIntegerv(GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, &MaxEvaluationOutput);
+	GLint MaxGeometryInput(0);
+	glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS, &MaxGeometryInput);	
+	GLint MaxGeometryOutput(0);
+	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, &MaxGeometryOutput);	
+	GLint MaxFragmentInput(0);
+	glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &MaxFragmentInput);
+
+	return true;
+}
+
 bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
+
+	if(Validated)
+		Validated = initMax();;
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)

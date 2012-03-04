@@ -6,12 +6,18 @@
 
 uniform mat4 MVP;
 
-struct vertex
+struct my_vertex
 {
-	vec2 Position[2]
+	vec2 Position[2];
 };
 
-layout(location = POSITION) in vec2 vertex Vertex;
+struct vertex
+{
+	vec4 Color;
+};
+
+layout(location = POSITION) in vec2 Position[2];
+//layout(location = POSITION) in my_vertex Input;
 layout(location = COLOR) in vec4 Color;
 
 out gl_PerVertex
@@ -30,7 +36,8 @@ out block
 
 void main()
 {	
-	gl_Position = MVP * vec4(Vertex.Position[0] + Vertex.Position[1], 0.0, 1.0);
+	//gl_Position = MVP * vec4((Input.Position[0] + Input.Position[1]) * 0.5, 0.0, 1.0);
+	gl_Position = MVP * vec4((Position[0] + Position[1]) * 0.5, 0.0, 1.0);
 	st_Out.Color = Color * 0.75;
 	bl_Out.Color = Color * 0.25;
 }
