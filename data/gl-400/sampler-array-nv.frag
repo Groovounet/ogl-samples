@@ -1,4 +1,5 @@
 #version 400 core
+#extension GL_NV_gpu_shader5 : require
 
 #define POSITION	0
 #define COLOR		3
