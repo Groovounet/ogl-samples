@@ -11,6 +11,11 @@ precision highp int;
 layout(triangles, invocations = 4) in;
 layout(triangle_strip, max_vertices = 3) out;
 
+in gl_PerVertex
+{
+    vec4 gl_Position;
+} gl_in[];
+
 out block
 {
 	flat int Instance;
