@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Immutable Texture 2D
-// 27/06/2011 - 15/08/2011
+// OpenGL Picking
+// 27/06/2012 - 15/08/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,10 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME("OpenGL Immutable Texture 2D");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
+	std::string const SAMPLE_NAME("OpenGL Picking");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/picking.vert");
+	std::string const GEOM_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/picking.geom");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/picking.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -50,6 +51,7 @@ namespace
 		enum type
 		{
 			VERTEX,
+			GEOMETRY,
 			FRAGMENT,
 			MAX
 		};
@@ -82,6 +84,7 @@ bool initProgram()
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
+		GLuint GeomShaderName = glf::createShader(GL_GEOMETRY_SHADER, GEOM_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName[program::VERTEX] = glCreateProgram();
@@ -90,6 +93,13 @@ bool initProgram()
 		glLinkProgram(ProgramName[program::VERTEX]);
 		glDeleteShader(VertShaderName);
 		Validated = Validated && glf::checkProgram(ProgramName[program::VERTEX]);
+
+		ProgramName[program::GEOMETRY] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::GEOMETRY], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::GEOMETRY], GeomShaderName);
+		glLinkProgram(ProgramName[program::GEOMETRY]);
+		glDeleteShader(GeomShaderName);
+		Validated = Validated && glf::checkProgram(ProgramName[program::GEOMETRY]);
 
 		ProgramName[program::FRAGMENT] = glCreateProgram();
 		glProgramParameteri(ProgramName[program::FRAGMENT], GL_PROGRAM_SEPARABLE, GL_TRUE);
@@ -102,6 +112,7 @@ bool initProgram()
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
+		glUseProgramStages(PipelineName, GL_GEOMETRY_SHADER_BIT, ProgramName[program::GEOMETRY]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 	}
 
@@ -277,7 +288,7 @@ void display()
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
-		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 1, 0, 0);
+		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);
 
 	glf::swapBuffers();
 }
