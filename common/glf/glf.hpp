@@ -110,7 +110,8 @@ namespace glf
 		{
 			enum type
 			{
-				DIFFUSE = 0
+				DIFFUSE = 0,
+				PICKING = 1
 			};
 		}//namesapce image
 

@@ -64,15 +64,26 @@ namespace
 			VERTEX,
 			ELEMENT,
 			TRANSFORM,
+			PICKING,
 			MAX
 		};
 	}//namespace buffer
-	 
+
+	namespace texture
+	{
+		enum type
+		{
+			DIFFUSE,
+			PICKING,
+			MAX
+		};
+	}//namespace texture
+
 	GLuint PipelineName(0);
 	GLuint ProgramName[program::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
 	GLuint BufferName[buffer::MAX] = {0, 0, 0};
-	GLuint TextureName(0);
+	GLuint TextureName[texture::MAX] = {0, 0};
 }//namespace
 
 bool initProgram()
@@ -112,7 +123,7 @@ bool initProgram()
 	if(Validated)
 	{
 		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
-		glUseProgramStages(PipelineName, GL_GEOMETRY_SHADER_BIT, ProgramName[program::GEOMETRY]);
+		//glUseProgramStages(PipelineName, GL_GEOMETRY_SHADER_BIT, ProgramName[program::GEOMETRY]);
 		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
 	}
 
@@ -145,6 +156,10 @@ bool initBuffer()
 	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	glBindBuffer(GL_TEXTURE_BUFFER, BufferName[buffer::PICKING]);
+	glBufferData(GL_TEXTURE_BUFFER, sizeof(float), NULL, GL_DYNAMIC_READ);
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
 	return Validated;
 }
 
@@ -154,35 +169,46 @@ bool initTexture()
 
 	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(texture::MAX, TextureName);
 
-	glGenTextures(1, &TextureName);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-
-	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+	// Diffuse
 	{
-		glTexSubImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			0, 0, 
-			GLsizei(Texture[Level].dimensions().x), 
-			GLsizei(Texture[Level].dimensions().y), 
-			GL_BGR, GL_UNSIGNED_BYTE, 
-			Texture[Level].data());
-	}
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+
+		for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+		{
+			glTexSubImage2D(
+				GL_TEXTURE_2D, 
+				GLint(Level), 
+				0, 0, 
+				GLsizei(Texture[Level].dimensions().x), 
+				GLsizei(Texture[Level].dimensions().y), 
+				GL_BGR, GL_UNSIGNED_BYTE, 
+				Texture[Level].data());
+		}
 	
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	}
+
+	// Piking
+	{
+		glBindTexture(GL_TEXTURE_BUFFER, TextureName[texture::PICKING]);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, BufferName[buffer::PICKING]);
+		glBindTexture(GL_TEXTURE_BUFFER, 0);
+	}
 
 	return Validated;
 }
@@ -207,12 +233,20 @@ bool initVertexArray()
 	return Validated;
 }
 
+bool initTest()
+{
+	bool Validated = true;
+	glEnable(GL_DEPTH_TEST);
+
+	return Validated && glf::checkError("initTest");
+}
+
 bool initDebugOutput()
 {
 	bool Validated(true);
 
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_FALSE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
 	return Validated;
@@ -223,19 +257,16 @@ bool begin()
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
-	GLint MaxVaryingOutputComp(0);
-	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
-	GLint MaxVaryingOutputVec(0);
-	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
-
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
+	if(Validated)
+		Validated = initTest();
+	if(Validated)
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initTexture();
 	if(Validated)
 		Validated = initProgram();
-	if(Validated)
-		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 
@@ -250,7 +281,7 @@ bool end()
 	glDeleteProgram(ProgramName[program::FRAGMENT]);
 	glDeleteProgram(ProgramName[program::VERTEX]);
 	glDeleteBuffers(buffer::MAX, BufferName);
-	glDeleteTextures(1, &TextureName);
+	glDeleteTextures(texture::MAX, TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
 
 	return Validated;
@@ -278,19 +309,32 @@ void display()
 	}
 
 	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
+
+	float DepthValue(1.0f);
+	glClearBufferfv(GL_DEPTH, 0, &DepthValue);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	// Bind rendering objects
 	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
+	glBindImageTexture(glf::semantic::image::PICKING, TextureName[texture::PICKING], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
 	glBindVertexArray(VertexArrayName);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 5, 0, 0);
 
+	glMemoryBarrier(GL_ALL_BARRIER_BITS );
+
 	glf::swapBuffers();
+
+	glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::PICKING]);
+	float* Pointer = (float*)glMapBufferRange(GL_ARRAY_BUFFER, 0,	sizeof(float), GL_MAP_READ_BIT);
+	float Depth = *Pointer;
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	printf("Depth: %2.3f\n", Depth);
 }
 
 int main(int argc, char* argv[])
