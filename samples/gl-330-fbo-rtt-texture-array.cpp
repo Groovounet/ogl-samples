@@ -18,7 +18,7 @@ namespace
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-330/multiple-output.frag");
 	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/rtt-array.vert");
 	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/rtt-array.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken3-bgr8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -170,12 +170,12 @@ bool initTexture2D()
 	glTexImage3D(
 		GL_TEXTURE_2D_ARRAY, 
 		0, 
-		GL_RGB, 
+		GL_RGB8, 
 		GLsizei(FRAMEBUFFER_SIZE.x), 
 		GLsizei(FRAMEBUFFER_SIZE.y), 
 		GLsizei(3), //depth
 		0,  
-		GL_RGB, 
+		GL_BGR, 
 		GL_UNSIGNED_BYTE, 
 		NULL);
 

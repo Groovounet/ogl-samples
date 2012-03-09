@@ -19,7 +19,7 @@ namespace
 	std::string const SAMPLE_NAME("OpenGL Image Unpack");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/image-unpack.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/image-unpack.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken2-bgra8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

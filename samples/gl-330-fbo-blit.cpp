@@ -16,7 +16,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Blit";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/image-2d.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgb8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(512, 512);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);

@@ -19,7 +19,6 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Atomic Counter";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/atomic-counter.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/atomic-counter.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);

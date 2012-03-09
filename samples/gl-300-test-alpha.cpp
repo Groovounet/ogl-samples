@@ -18,7 +18,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Alpha test";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-300/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-300/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken2-bgra8.dds");
 
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -105,7 +105,7 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	glGenBuffers(1, &BufferName);
 
@@ -113,10 +113,10 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return glf::checkError("initBuffer");;
 }
 
-bool initTexture2D()
+bool initTexture()
 {
 	glGenTextures(1, &Texture2DName);
 
@@ -133,7 +133,7 @@ bool initTexture2D()
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGBA, 
+			GL_RGBA8, 
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
 			0,  
@@ -142,7 +142,7 @@ bool initTexture2D()
 			Texture[Level].data());
 	}
 
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initVertexArray()
@@ -170,7 +170,7 @@ bool initTest()
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	return glf::checkError("initVertexArray");
+	return glf::checkError("initTest");
 }
 
 bool begin()
@@ -184,11 +184,11 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 
 	return Validated && glf::checkError("begin");
 }

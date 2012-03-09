@@ -19,7 +19,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Point Sprite";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/point-sprite.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/point-sprite.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken2-bgra8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);

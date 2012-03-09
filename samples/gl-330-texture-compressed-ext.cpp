@@ -17,10 +17,10 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
 	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "gl-330/image-2d.vert");
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "gl-330/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken256-bc1.dds");
-	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken256-bc3.dds");
-	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken256-bc4.dds");
-	std::string const TEXTURE_DIFFUSE_BC5(glf::DATA_DIRECTORY + "kueken256-bc5.dds");
+	std::string const TEXTURE_DIFFUSE_BC1(glf::DATA_DIRECTORY + "kueken2-bc1.dds");
+	std::string const TEXTURE_DIFFUSE_BC3(glf::DATA_DIRECTORY + "kueken2-bc3.dds");
+	std::string const TEXTURE_DIFFUSE_BC4(glf::DATA_DIRECTORY + "kueken2-bc4.dds");
+	std::string const TEXTURE_DIFFUSE_BC5(glf::DATA_DIRECTORY + "kueken2-bc5.dds");
 
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;

@@ -18,7 +18,7 @@ namespace
 	std::string const FRAGMENT_SHADER_SOURCE1(glf::DATA_DIRECTORY + "gl-330/multiple-output.frag");
 	std::string const VERTEX_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE2(glf::DATA_DIRECTORY + "gl-330/image-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -138,7 +138,7 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	glGenBuffers(BUFFER_MAX, BufferName);
 
@@ -150,7 +150,7 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initBuffer");
 }
 
 bool initSampler()
@@ -173,7 +173,7 @@ bool initSampler()
 	return glf::checkError("initSampler");
 }
 
-bool initTexture2D()
+bool initTexture()
 {
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(TEXTURE_MAX, Texture2DName);
@@ -193,11 +193,11 @@ bool initTexture2D()
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			0, 
-			GL_RGB,
+			GL_RGB8,
 			GLsizei(FRAMEBUFFER_SIZE.x), 
 			GLsizei(FRAMEBUFFER_SIZE.y), 
 			0,  
-			GL_RGB, 
+			GL_BGR, 
 			GL_UNSIGNED_BYTE, 
 			0);
 	}
@@ -265,11 +265,11 @@ bool begin()
 	if(Validated)
 		Validated = initSampler();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
-		Validated = initTexture2D();
+		Validated = initTexture();
 	if(Validated)
 		Validated = initFramebuffer();
 

@@ -16,7 +16,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Fetch";
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/fetch.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/fetch.frag");
-	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken256-dxt5.dds");
+	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken1-dxt5.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);

@@ -14,7 +14,7 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Direct State Access");	
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken3-bgr8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(160, 120);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -149,7 +149,7 @@ bool initTexture()
 
 	glGenTextures(texture::MAX, TextureName);
 
-	//glTextureImage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, 0, GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	//glTextureImage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, 0, GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 	glTextureStorage2DEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGB8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
@@ -160,7 +160,7 @@ bool initTexture()
 			0, 0, 
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
-			GL_RGB, 
+			GL_BGR, 
 			GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}

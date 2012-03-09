@@ -18,7 +18,7 @@ namespace
 	std::string const SHADER_FRAG_SOURCE_UPDATE(glf::DATA_DIRECTORY + "gl-420/memory-barrier-update.frag");
 	std::string const SHADER_VERT_SOURCE_BLIT(glf::DATA_DIRECTORY + "gl-420/memory-barrier-blit.vert");
 	std::string const SHADER_FRAG_SOURCE_BLIT(glf::DATA_DIRECTORY + "gl-420/memory-barrier-blit.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken640-rgb8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken4-dxt1.dds");
 	glm::ivec2 FRAMEBUFFER_SIZE(0);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -153,18 +153,19 @@ bool initTexture2D()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
+		GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
 
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			GL_RGBA8, 
+		glCompressedTexSubImage2D(
+			GL_TEXTURE_2D,
+			GLint(Level),
+			0, 0,
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
-			0,  
-			GL_BGR, 
-			GL_UNSIGNED_BYTE, 
+			GL_COMPRESSED_RGB_S3TC_DXT1_EXT, 
+			GLsizei(Texture[Level].capacity()), 
 			Texture[Level].data());
 	}
 
@@ -270,7 +271,7 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, FrameIndex ? TextureName[texture::COLORBUFFER] : TextureName[texture::DIFFUSE]);
 
 	glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, VertexCount, 1, 0);
 
 	// Blit to framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

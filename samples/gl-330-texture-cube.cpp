@@ -17,12 +17,6 @@ namespace
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/texture-cube.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/texture-cube.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "cube.dds");
-	std::string const TEXTURE_DIFFUSE_POSX(glf::DATA_DIRECTORY + "posx.dds");
-	std::string const TEXTURE_DIFFUSE_POSY(glf::DATA_DIRECTORY + "posy.dds");
-	std::string const TEXTURE_DIFFUSE_POSZ(glf::DATA_DIRECTORY + "posz.dds");
-	std::string const TEXTURE_DIFFUSE_NEGX(glf::DATA_DIRECTORY + "negx.dds");
-	std::string const TEXTURE_DIFFUSE_NEGY(glf::DATA_DIRECTORY + "negy.dds");
-	std::string const TEXTURE_DIFFUSE_NEGZ(glf::DATA_DIRECTORY + "negz.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -99,7 +93,7 @@ bool initProgram()
 	return Validated &&glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	glGenBuffers(1, &BufferName);
 
@@ -107,7 +101,7 @@ bool initArrayBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");;
+	return glf::checkError("initBuffer");;
 }
 
 bool initSampler()
@@ -178,7 +172,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)

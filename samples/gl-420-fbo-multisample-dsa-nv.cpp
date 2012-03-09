@@ -16,7 +16,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Framebuffer Multisample";
 	std::string const SHADER_VERT_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
 	std::string const SHADER_FRAG_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken320-rgb8.tga");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken3-bgr8.dds");
 	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -174,11 +174,11 @@ bool initTexture2D()
 			TextureName,
 			GL_TEXTURE_2D,
 			GLint(Level),
-			GL_RGB,
+			GL_RGB8,
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0, 
-			GL_RGB,
+			GL_BGR,
 			GL_UNSIGNED_BYTE, 
 			Image[Level].data());
 	}

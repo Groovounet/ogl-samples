@@ -18,7 +18,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL GLSL discard";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/discard.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-330/discard.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken256-rgba8.dds");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken2-bgra8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(3);
@@ -130,7 +130,7 @@ bool initTexture2D()
 		glTexImage2D(
 			GL_TEXTURE_2D, 
 			GLint(Level), 
-			GL_RGBA, 
+			GL_RGBA8, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			0,  
