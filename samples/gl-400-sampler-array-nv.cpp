@@ -218,7 +218,7 @@ bool begin()
 {
 	bool Validated(true);
 	Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_ARB_gpu_shader5");
+	Validated = Validated && glf::checkExtension("GL_NV_gpu_shader5");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
