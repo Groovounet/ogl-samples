@@ -43,7 +43,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/cl-1.2")
 
 if(MSVC)
     addExternalPackageGTC("GLEW" "glew-1.7.0")
-    addExternalPackageGTC("FREEGLUT" "freeglut-2.6.0")
+    addExternalPackageGTC("FREEGLUT" "freeglut-2.8.0")
 endif(MSVC)
 addExternalPackageGTC("OPENCL" "cl-1.2")
 addExternalPackageGTC("GLES2" "gles-2.0")

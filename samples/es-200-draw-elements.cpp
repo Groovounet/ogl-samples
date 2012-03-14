@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Draw Elements
-// 10/05/2010
+// 10/05/2010 - 12/03/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -13,7 +13,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Draw Elements";	
+	std::string const SAMPLE_NAME("OpenGL Draw Elements");	
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "es-200/flat-color.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "es-200/flat-color.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
@@ -23,7 +23,7 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
-	GLsizei const ElementCount = 6;
+	GLsizei const ElementCount(6);
 	GLsizeiptr const ElementSize = ElementCount * sizeof(glm::uint32);
 	glm::uint32 const ElementData[ElementCount] =
 	{
@@ -31,7 +31,7 @@ namespace
 		0, 2, 3
 	};
 
-	GLsizei const VertexCount = 4;
+	GLsizei const VertexCount(4);
 	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec2);
 	glm::vec2 const PositionData[VertexCount] =
 	{
@@ -93,7 +93,7 @@ bool initProgram()
 	return Validated && glf::checkError("initProgram");
 }
 
-bool initArrayBuffer()
+bool initBuffer()
 {
 	glGenBuffers(1, &ArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
@@ -105,16 +105,20 @@ bool initArrayBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initBuffer");
 }
 
 bool begin()
 {
 	bool Validated(true);
+
+	char const * Extensions = (char const *)glGetString(GL_EXTENSIONS);
+	printf(Extensions);
+
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initArrayBuffer();
+		Validated = initBuffer();
 	return Validated && glf::checkError("begin");
 }
 

@@ -486,7 +486,7 @@ namespace glf
 #if !defined(__APPLE__)
 		glutInitContextVersion(Major, Minor);
 		if(Profile == WGL_CONTEXT_ES2_PROFILE_BIT_EXT)
-			glutInitContextProfile(WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
+			glutInitContextProfile(GLUT_ES_PROFILE);
 		else if(glf::version(Major, Minor) >= 320)
 		{
 			glutInitContextProfile(Profile); // GLUT_COMPATIBILITY_PROFILE GLUT_CORE_PROFILE
