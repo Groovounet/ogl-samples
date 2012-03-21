@@ -212,11 +212,6 @@ bool begin()
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 
-	GLint MaxVaryingOutputComp(0);
-	glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &MaxVaryingOutputComp);
-	GLint MaxVaryingOutputVec(0);
-	glGetIntegerv(GL_MAX_VARYING_VECTORS, &MaxVaryingOutputVec);
-
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
 	if(Validated)
