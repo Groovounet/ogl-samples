@@ -241,7 +241,9 @@ void display()
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat4 MVP = Projection * View * Model;
 
-	glProgramUniform4fv(ProgramName, UniformColor, 1, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
+	glm::vec3 const v(1.0f, 0.5f, 0.0f);
+
+	glProgramUniform4fv(ProgramName, UniformColor, 1, &v[0]);
 	glProgramUniformMatrix4fv(ProgramName, UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
