@@ -32,6 +32,7 @@
 #include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/random.hpp>
+#include <glm/gtc/noise.hpp>
 
 #include <gli/gli.hpp>
 #include <gli/gtx/loader.hpp>

@@ -133,7 +133,7 @@ bool initProgram()
 	return glf::checkError("initProgram");
 }
 
-bool initVertexBuffer()
+bool initBuffer()
 {
 	glGenBuffers(BUFFER_MAX, BufferName);
 
@@ -145,7 +145,7 @@ bool initVertexBuffer()
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return glf::checkError("initArrayBuffer");
+	return glf::checkError("initBuffer");
 }
 
 bool initTexture()
@@ -201,6 +201,8 @@ bool initVertexArray()
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
     glBindVertexArray(VertexArrayName[LAYERING]);
@@ -209,6 +211,8 @@ bool initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 	glBindVertexArray(0);
 
 	return glf::checkError("initVertexArray");
@@ -247,7 +251,7 @@ bool begin()
 	if(Validated)
 		Validated = initProgram();
 	if(Validated)
-		Validated = initVertexBuffer();
+		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
 	if(Validated)
@@ -288,7 +292,6 @@ void display()
 		glUniformMatrix4fv(UniformMVP[LAYERING], 1, GL_FALSE, &MVP[0][0]);
 
 		glBindVertexArray(VertexArrayName[LAYERING]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 		glDrawElementsInstancedBaseVertex(GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, NULL, 1, 0);
 	}
 
@@ -305,7 +308,6 @@ void display()
 		glBindSampler(0, SamplerName);
 
 		glBindVertexArray(VertexArrayName[IMAGE_2D]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[BUFFER_ELEMENT]);
 
 		for(int i = 0; i < 4; ++i)
 		{
