@@ -205,6 +205,26 @@ bool validate(GLuint const & ProgramName)
 {
 	bool Error = false;
 
+	// Pipeline object validation
+	{
+		GLint Status(0);
+		GLint LengthMax(0);
+		glValidateProgramPipeline(PipelineName);
+		glGetProgramPipelineiv(PipelineName, GL_VALIDATE_STATUS, &Status);
+		glGetProgramPipelineiv(PipelineName, GL_INFO_LOG_LENGTH, &LengthMax);
+
+		GLsizei LengthQuery(0);
+		std::vector<GLchar> InfoLog(LengthMax + 1, '\0');
+		glGetProgramPipelineInfoLog(PipelineName, GLsizei(InfoLog.size()), &LengthQuery, &InfoLog[0]);
+
+		glDebugMessageInsertARB(
+			GL_DEBUG_SOURCE_APPLICATION_ARB, 
+			GL_DEBUG_TYPE_OTHER_ARB, 76,
+			GL_DEBUG_SEVERITY_LOW_ARB,
+			LengthQuery, 
+			&InfoLog[0]);
+	}
+
 	GLint ActiveAttributeMaxLength(0);
 	GLint ActiveAttribute(0);
 	glGetProgramiv(ProgramName, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveAttributeMaxLength);
