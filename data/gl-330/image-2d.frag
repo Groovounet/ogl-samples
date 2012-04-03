@@ -5,7 +5,8 @@
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-uniform sampler2D Diffuse;
+uniform sampler2D DiffuseA;
+uniform sampler2D DiffuseB;
 
 in block
 {
@@ -16,5 +17,5 @@ layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
 void main()
 {
-	Color = texture(Diffuse, In.Texcoord);
+	Color = (texture(DiffuseA, In.Texcoord) + texture(DiffuseB, In.Texcoord)) * 0.5;
 }
