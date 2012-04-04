@@ -11,6 +11,8 @@
 
 #include <glf/glf.hpp>
 
+#define GL_VERTEX_ATTRIB_ARRAY_LONG                         0x874E
+
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Shader Interface Matching");	
@@ -134,6 +136,163 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+struct vertexattrib
+{
+    vertexattrib() :
+        Enabled(GL_FALSE),
+        Size(4),
+        Stride(0),
+        Type(GL_FLOAT),
+        Normalized(GL_FALSE),
+        Integer(GL_FALSE),
+        Long(GL_FALSE),
+        Divisor(0),
+        Pointer(NULL)
+    {}
+
+    vertexattrib
+    (
+        GLint Enabled,
+        GLint Size,
+        GLint Stride,
+        GLint Type,
+        GLint Normalized,
+        GLint Integer,
+        GLint Long,
+        GLint Divisor,
+        GLint Pointer
+    ) :
+        Enabled(Enabled),
+        Size(Size),
+        Stride(Stride),
+        Type(Type),
+        Normalized(Normalized),
+        Integer(Integer),
+        Long(Long),
+        Divisor(Divisor),
+        Pointer(Pointer)
+    {}
+
+    GLint Enabled;
+    GLint Size;
+    GLint Stride;
+    GLint Type;
+    GLint Normalized;
+    GLint Integer;
+    GLint Long;
+    GLint Divisor;
+    GLint Pointer;
+};
+
+bool operator== (vertexattrib const & A, vertexattrib const & B)
+{
+    return A.Enabled == B.Enabled && 
+        A.Size == B.Size && 
+        A.Stride == B.Stride && 
+        A.Type == B.Type && 
+        A.Normalized == B.Normalized && 
+        A.Integer == B.Integer && 
+        A.Long == B.Long;
+}
+
+bool operator!= (vertexattrib const & A, vertexattrib const & B)
+{
+    return !(A == B);
+}
+
+bool validateVAO(GLuint VertexArrayName, std::vector<vertexattrib> const & Expected)
+{
+    bool Success = true;
+
+    GLint MaxVertexAttrib(0);
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttrib);
+
+    glBindVertexArray(VertexArrayName);
+    for(GLuint AttribLocation = 0; AttribLocation < glm::min(GLuint(MaxVertexAttrib), GLuint(Expected.size())); ++AttribLocation)
+    {
+        vertexattrib VertexAttrib;
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &VertexAttrib.Enabled);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_SIZE, &VertexAttrib.Size);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &VertexAttrib.Stride);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_TYPE, &VertexAttrib.Type);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &VertexAttrib.Normalized);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &VertexAttrib.Integer);
+	    glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttrib.Long);
+        glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &VertexAttrib.Divisor);
+        glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_POINTER, &VertexAttrib.Pointer);
+        Success = Success && (VertexAttrib == Expected[AttribLocation]);
+        assert(Success);
+    }
+    glBindVertexArray(0);
+
+    return Success;
+}
+
+bool test_get_vertex_attrib()
+{
+    bool Success = true;
+
+    std::vector<GLuint> VertexArrayName(16, 0);
+
+    GLint MaxVertexAttrib(0);
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &MaxVertexAttrib);
+
+	glGenVertexArrays(VertexArrayName.size(), &VertexArrayName[0]);
+
+    {
+        glBindVertexArray(VertexArrayName[0]);
+	        glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+	        glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 1, GLF_BUFFER_OFFSET(0));
+	        glVertexAttribLPointer(1, 2, GL_DOUBLE, sizeof(double) * 2, GLF_BUFFER_OFFSET(0));
+            glVertexAttribIPointer(2, 3, GL_INT, sizeof(int) * 3, GLF_BUFFER_OFFSET(0));
+	        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, GLF_BUFFER_OFFSET(0));
+            glVertexAttribPointer(4, 4, GL_FLOAT, GL_TRUE, sizeof(float) * 4, GLF_BUFFER_OFFSET(0));
+	        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	        glEnableVertexAttribArray(0);
+	        glEnableVertexAttribArray(1);
+	        glEnableVertexAttribArray(2);
+            glEnableVertexAttribArray(3);
+            glDisableVertexAttribArray(4);
+        glBindVertexArray(0);
+
+        std::vector<vertexattrib> Valid(16); 
+        Valid[0] = vertexattrib(GL_TRUE, 1, sizeof(float) * 1, GL_FLOAT, GL_FALSE, GL_FALSE, GL_FALSE, 0, NULL);
+        Valid[1] = vertexattrib(GL_TRUE, 2, sizeof(double) * 2, GL_DOUBLE, GL_FALSE, GL_FALSE, GL_TRUE, 0, NULL);
+        Valid[2] = vertexattrib(GL_TRUE, 3, sizeof(int) * 3, GL_INT, GL_FALSE, GL_TRUE, GL_FALSE, 0, NULL);
+        Valid[3] = vertexattrib(GL_TRUE, 4, sizeof(float) * 4, GL_FLOAT, GL_FALSE, GL_FALSE, GL_FALSE, 0, NULL);
+        Valid[4] = vertexattrib(GL_FALSE, 4, sizeof(float) * 4, GL_FLOAT, GL_TRUE, GL_FALSE, GL_FALSE, 0, NULL);
+
+        Success = Success && validateVAO(VertexArrayName[0], Valid);
+        assert(Success);
+    }
+
+    {
+        std::vector<vertexattrib> Valid(16);//std::size_t(MaxVertexAttrib)); 
+        //Valid.resize(std::size_t(MaxVertexAttrib));
+
+        glBindVertexArray(VertexArrayName[1]);
+	        glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+            for(GLint AttribLocation = 0; AttribLocation < MaxVertexAttrib; ++AttribLocation)
+            {
+    	        glVertexAttribLPointer(AttribLocation, 2, GL_DOUBLE, sizeof(double) * 2, GLF_BUFFER_OFFSET(0));
+                glEnableVertexAttribArray(AttribLocation);
+                Valid[AttribLocation] = vertexattrib(GL_TRUE, 2, sizeof(double) * 2, GL_DOUBLE, GL_FALSE, GL_FALSE, GL_TRUE, 0, NULL);
+            }
+	        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        Success = Success && validateVAO(VertexArrayName[1], Valid);
+        assert(Success);
+    }
+
+    glBindVertexArray(0);
+
+    glDeleteVertexArrays(VertexArrayName.size(), &VertexArrayName[0]);
+
+    return Success;
+}
+
 bool initBuffer()
 {
 	// Generate a buffer object
@@ -187,6 +346,8 @@ bool begin()
 		Validated = initBuffer();
 	if(Validated)
 		Validated = initVertexArray();
+
+    test_get_vertex_attrib();
 
 	return Validated && glf::checkError("begin");
 }
@@ -267,8 +428,8 @@ bool validate(GLuint const & ProgramName)
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &VertexAttribNormalized);
 		GLint VertexAttribInteger(0);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &VertexAttribInteger);
-		//GLint VertexAttribLong(0);
-		//glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttribLong);
+		GLint VertexAttribLong(0);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttribLong);
 
 		if(GL_VERTEX_ATTRIB_ARRAY_INTEGER == GL_TRUE)
 		{
@@ -295,45 +456,47 @@ bool validate(GLuint const & ProgramName)
 			//if(AttribSize > 1)
 			//GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, and GL_DOUBLE
 		}
-		//else if(GL_VERTEX_ATTRIB_ARRAY_LONG == GL_TRUE) // OpenGL Spec bug 
-		else if(
-			AttribType == GL_DOUBLE || 
-			AttribType == GL_DOUBLE_VEC2 || 
-			AttribType == GL_DOUBLE_VEC3 || 
-			AttribType == GL_DOUBLE_VEC4 || 
-			AttribType == GL_DOUBLE_MAT2 || 
-			AttribType == GL_DOUBLE_MAT3 || 
-			AttribType == GL_DOUBLE_MAT4 || 
-			AttribType == GL_DOUBLE_MAT2x3 || 
-			AttribType == GL_DOUBLE_MAT2x4 || 
-			AttribType == GL_DOUBLE_MAT3x2 ||
-			AttribType == GL_DOUBLE_MAT3x4 || 
-			AttribType == GL_DOUBLE_MAT4x2 || 
-			AttribType == GL_DOUBLE_MAT4x3)
-		{
-			if(VertexAttribType != GL_DOUBLE)
-				return true;
-		}
-		else //if((GL_VERTEX_ATTRIB_ARRAY_NORMALIZED == GL_TRUE) || (GL_VERTEX_ATTRIB_ARRAY_FLOAT == GL_TRUE))
-		{
-			if(!(
-				AttribType == GL_FLOAT ||  
-				AttribType == GL_FLOAT_VEC2 || 
-				AttribType == GL_FLOAT_VEC3 || 
-				AttribType == GL_FLOAT_VEC4 || 
-				AttribType == GL_FLOAT_MAT2 || 
-				AttribType == GL_FLOAT_MAT3 || 
-				AttribType == GL_FLOAT_MAT4 || 
-				AttribType == GL_FLOAT_MAT2x3 || 
-				AttribType == GL_FLOAT_MAT2x4 || 
-				AttribType == GL_FLOAT_MAT3x2 || 
-				AttribType == GL_FLOAT_MAT3x4 || 
-				AttribType == GL_FLOAT_MAT4x2 || 
-				AttribType == GL_FLOAT_MAT4x3))
-				return true;
+		else if(GL_VERTEX_ATTRIB_ARRAY_LONG == GL_TRUE) // OpenGL Spec bug 
+        {
+            if(!(
+			    AttribType == GL_DOUBLE || 
+			    AttribType == GL_DOUBLE_VEC2 || 
+			    AttribType == GL_DOUBLE_VEC3 || 
+			    AttribType == GL_DOUBLE_VEC4 || 
+			    AttribType == GL_DOUBLE_MAT2 || 
+			    AttribType == GL_DOUBLE_MAT3 || 
+			    AttribType == GL_DOUBLE_MAT4 || 
+			    AttribType == GL_DOUBLE_MAT2x3 || 
+			    AttribType == GL_DOUBLE_MAT2x4 || 
+			    AttribType == GL_DOUBLE_MAT3x2 ||
+			    AttribType == GL_DOUBLE_MAT3x4 || 
+			    AttribType == GL_DOUBLE_MAT4x2 || 
+			    AttribType == GL_DOUBLE_MAT4x3))
+		    {
+			    if(VertexAttribType != GL_DOUBLE)
+				    return true;
+		    }
+		    else //if((GL_VERTEX_ATTRIB_ARRAY_NORMALIZED == GL_TRUE) || (GL_VERTEX_ATTRIB_ARRAY_FLOAT == GL_TRUE))
+		    {
+			    if(!(
+				    AttribType == GL_FLOAT ||  
+				    AttribType == GL_FLOAT_VEC2 || 
+				    AttribType == GL_FLOAT_VEC3 || 
+				    AttribType == GL_FLOAT_VEC4 || 
+				    AttribType == GL_FLOAT_MAT2 || 
+				    AttribType == GL_FLOAT_MAT3 || 
+				    AttribType == GL_FLOAT_MAT4 || 
+				    AttribType == GL_FLOAT_MAT2x3 || 
+				    AttribType == GL_FLOAT_MAT2x4 || 
+				    AttribType == GL_FLOAT_MAT3x2 || 
+				    AttribType == GL_FLOAT_MAT3x4 || 
+				    AttribType == GL_FLOAT_MAT4x2 || 
+				    AttribType == GL_FLOAT_MAT4x3))
+				    return true;
 
-			// It could be any vertex array attribute type
-		}
+			    // It could be any vertex array attribute type
+		    }
+        }
 
 		printf("glGetActiveAttrib(\n\t%d, \n\t%d, \n\t%d, \n\t%d, \n\t%d, \n\t%s)\n", 
 			i, AttribLocation, AttribLength, AttribSize, AttribType, NameString.c_str());
