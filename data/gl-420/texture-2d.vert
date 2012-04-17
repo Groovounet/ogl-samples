@@ -9,7 +9,7 @@
 
 layout(binding = TRANSFORM0) uniform transform
 {
-	mat4 MVP;
+	mat4 MVP[1];
 } Transform;
 
 layout(location = POSITION) in vec3 Position;
@@ -28,5 +28,5 @@ out block
 void main()
 {	
 	Out.Texcoord = Texcoord;
-	gl_Position = Transform.MVP * vec4(Position, 1.0);
+	gl_Position = Transform.MVP[0] * vec4(Position, 1.0);
 }
