@@ -203,7 +203,7 @@ namespace glf
 			glGetProgramiv(ProgramName, GL_INFO_LOG_LENGTH, &InfoLogLength);
 			std::vector<char> Buffer(InfoLogLength);
 			glGetProgramInfoLog(ProgramName, InfoLogLength, NULL, &Buffer[0]);
-			fprintf(stdout, "%s\n", &Buffer[0]);
+			//fprintf(stdout, "%s\n", &Buffer[0]);
 		}
 
 		return Result == GL_TRUE;
