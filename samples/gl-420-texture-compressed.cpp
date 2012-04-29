@@ -20,10 +20,10 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Texture 2D Compressed";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
-	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken2-bc3.dds");
+	std::string const TEXTURE_DIFFUSE_DXT5(glf::DATA_DIRECTORY + "kueken2-dxt5.dds");
 	std::string const TEXTURE_DIFFUSE_RGTC(glf::DATA_DIRECTORY + "kueken2-bc4.dds");
 	std::string const TEXTURE_DIFFUSE_BPTC(glf::DATA_DIRECTORY + "kueken2-bc7.dds");
-	std::string const TEXTURE_DIFFUSE_RGB8(glf::DATA_DIRECTORY + "kueken2-bgr8.dds");
+	std::string const TEXTURE_DIFFUSE_RGB8(glf::DATA_DIRECTORY + "kueken2-bgra8.dds");
 
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -241,7 +241,7 @@ bool initTexture2D()
 				0, 0,
 				GLsizei(Texture[Level].dimensions().x), 
 				GLsizei(Texture[Level].dimensions().y), 
-				GL_BGR, 
+				GL_BGRA, 
 				GL_UNSIGNED_BYTE, 
 				Texture[Level].data());
 		}
