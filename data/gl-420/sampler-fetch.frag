@@ -18,6 +18,5 @@ vec4 textureTrilinear(in sampler2D Sampler, in vec2 Texcoord);
 
 void main()
 {
-	Color = texture(Diffuse, In.Texcoord);
-	//Color = textureTrilinear(Diffuse, In.Texcoord);
+	Color = textureTrilinear(Diffuse, In.Texcoord);
 }
