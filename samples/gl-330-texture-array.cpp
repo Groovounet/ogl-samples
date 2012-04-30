@@ -114,6 +114,9 @@ bool initArrayBuffer()
 
 bool initTextureArray2D()
 {
+	GLint MaxTextureArrayLayers(0);
+	glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &MaxTextureArrayLayers);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &Texture2DArrayName);
