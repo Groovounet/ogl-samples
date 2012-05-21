@@ -44,7 +44,10 @@ namespace
 	GLuint TextureName(0);
 
 	GLint UniformMVP(0);
-	GLint UniformDiffuse(0);
+	GLint UniformDiffuseA(0);
+	GLint UniformDiffuseB(0);
+	GLint TexUnitA(1);
+	GLint TexUnitB(2);
 
 }//namespace
 
@@ -81,7 +84,8 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+		UniformDiffuseA = glGetUniformLocation(ProgramName, "DiffuseA");
+		UniformDiffuseB = glGetUniformLocation(ProgramName, "DiffuseB");
 	}
 
 	return glf::checkError("initProgram");
@@ -106,7 +110,6 @@ bool initTexture()
 
 	glGenTextures(1, &TextureName);
 
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
@@ -131,7 +134,8 @@ bool initTexture()
 			Texture[Level].data());
 	}
 	glGenerateMipmap(GL_TEXTURE_2D);
-	
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	return glf::checkError("initTexture");
@@ -195,10 +199,13 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
 	glUseProgram(ProgramName);
-	glUniform1i(UniformDiffuse, 0);
+	glUniform1i(UniformDiffuseA, TexUnitA);
+	glUniform1i(UniformDiffuseB, TexUnitB);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0+TexUnitA);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glActiveTexture(GL_TEXTURE0+TexUnitB);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 
