@@ -35,6 +35,8 @@ out gl_PerVertex
 
 layout(location = 0) out vertex st_Out;
 
+out vec4 ColorGNI;
+
 out block
 {
 	vec4 Color;
@@ -50,6 +52,7 @@ void main()
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
+		ColorGNI = st_In[i].Color;
 		st_Out.Color = st_In[i].Color;
 		bl_Out.Color = bl_In[i].Color;
 		bl_Pou.Color = st_In[i].Color + bl_In[i].Color;

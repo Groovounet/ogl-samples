@@ -73,7 +73,8 @@ namespace
 	GLuint SamplerBName = 0;
 
 	GLint UniformMVP = 0;
-	GLint UniformDiffuse = 0;
+	GLint UniformDiffuseA = 0;
+	GLint UniformDiffuseB = 0;
 
 	glm::ivec4 Viewport[viewport::MAX];
 }//namespace
@@ -111,7 +112,8 @@ bool initProgram()
 	if(Validated)
 	{
 		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformDiffuse = glGetUniformLocation(ProgramName, "Diffuse");
+		UniformDiffuseA = glGetUniformLocation(ProgramName, "DiffuseA");
+		UniformDiffuseB = glGetUniformLocation(ProgramName, "DiffuseB");
 	}
 
 	return glf::checkError("initProgram");
@@ -144,8 +146,8 @@ bool initSampler()
 	glSamplerParameteri(SamplerAName, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
 	glGenSamplers(1, &SamplerBName);
-	glSamplerParameteri(SamplerBName, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glSamplerParameteri(SamplerBName, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glSamplerParameteri(SamplerBName, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(SamplerBName, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -257,15 +259,16 @@ void display()
 	// Bind the program for use
 	glUseProgram(ProgramName);
 	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformDiffuse, 1);
+	glUniform1i(UniformDiffuseA, 0);
+	glUniform1i(UniformDiffuseB, 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glBindSampler(0, SamplerAName);
+	glBindSampler(0, SamplerBName);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glBindSampler(1, SamplerBName);
+	glBindSampler(1, SamplerAName);
 
 	glBindVertexArray(VertexArrayName);
 

@@ -163,10 +163,9 @@ bool end()
 void display()
 {
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
+	glm::mat4 View = glm::lookAt(glm::vec3(0.0f, -Window.TranlationCurrent.y, 0.0f), glm::vec3(0), glm::vec3(0, 0, 1));
+	glm::mat4 ModelRotateX = glm::rotate(glm::mat4(1.0), Window.RotationCurrent.y + 45.f, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 Model = glm::rotate(ModelRotateX, Window.RotationCurrent.x + 45.f, glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 MVP = Projection * View * Model;
 
 	glViewport(0, 0, Window.Size.x, Window.Size.y);
