@@ -97,6 +97,20 @@ bool initBuffer()
 {
 	bool Validated(true);
 
+	GLint MaxVertexAtomicCounterBuffers(0);
+	GLint MaxControlAtomicCounterBuffers(0);
+	GLint MaxEvaluationAtomicCounterBuffers(0);
+	GLint MaxGeometryAtomicCounterBuffers(0);
+	GLint MaxFragmentAtomicCounterBuffers(0);
+	GLint MaxCombinedAtomicCounterBuffers(0);
+
+	glGetIntegerv(GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS, &MaxVertexAtomicCounterBuffers);
+	glGetIntegerv(GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS, &MaxControlAtomicCounterBuffers);
+	glGetIntegerv(GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS, &MaxEvaluationAtomicCounterBuffers);
+	glGetIntegerv(GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS, &MaxGeometryAtomicCounterBuffers);
+	glGetIntegerv(GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS, &MaxFragmentAtomicCounterBuffers);
+	glGetIntegerv(GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS, &MaxCombinedAtomicCounterBuffers);
+
 	glGenBuffers(buffer::MAX, BufferName);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
