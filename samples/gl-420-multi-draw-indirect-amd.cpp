@@ -81,6 +81,7 @@ namespace
 			INDIRECT_A,
 			INDIRECT_B,
 			INDIRECT_C,
+			INDIRECT_D,
 			MAX
 		};
 	}//namespace buffer
@@ -106,6 +107,8 @@ namespace
 	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 	GLuint BufferName[buffer::MAX];
+	GLuint MultiDrawCount(100);
+	GLuint QueryName(0);
 
 }//namespace
 
@@ -202,6 +205,20 @@ bool initBuffer()
     glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(CommandC), CommandC, GL_STATIC_DRAW);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
+	std::vector<DrawElementsIndirectCommand> Commands(MultiDrawCount);
+	for(std::size_t i = 0; i < Commands.size(); ++i)
+	{
+		Commands[i].count = 0;
+		Commands[i].primCount = 0;
+		Commands[i].firstIndex = 0;
+		Commands[i].baseVertex = 0;
+		Commands[i].baseInstance = 0;
+	}
+
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, BufferName[buffer::INDIRECT_D]);
+    glBufferData(GL_DRAW_INDIRECT_BUFFER, Commands.size() * sizeof(DrawElementsIndirectCommand), &Commands[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
 	return true;
 }
 
@@ -254,6 +271,8 @@ bool begin()
 	if(Success)
 		Success = initVertexArray();
 
+	glGenQueries(1, &QueryName);
+
 	// Set initial rendering states
 	glEnable(GL_DEPTH_TEST);
 	glViewportIndexedfv(0, &glm::vec4(0, 0, Window.Size.x, Window.Size.y)[0]);
@@ -303,9 +322,21 @@ void display()
 	*Pointer = MVP;
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	
+	glFinish();
+	glBeginQuery(GL_TIME_ELAPSED, QueryName);
+
 	// Draw
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, BufferName[buffer::INDIRECT_A] + GLuint(IndirectBufferIndex));
-	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, DrawCount[IndirectBufferIndex], sizeof(DrawElementsIndirectCommand));
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, BufferName[buffer::INDIRECT_D]);
+	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, MultiDrawCount, sizeof(DrawElementsIndirectCommand));
+
+	glEndQuery(GL_TIME_ELAPSED);
+	glFinish();
+
+	// Get the count of samples. 
+	// If the result of the query isn't here yet, we wait here...
+	GLuint Time = 0;
+	glGetQueryObjectuiv(QueryName, GL_QUERY_RESULT, &Time);
+	fprintf(stdout, "Time: %f ms   \r", Time / 1000.f / 1000.f);
 
 	// Swap framebuffers
 	glf::swapBuffers();

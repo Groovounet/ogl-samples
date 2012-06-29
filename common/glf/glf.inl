@@ -499,7 +499,11 @@ namespace glf
 		else if(glf::version(Major, Minor) >= 320)
 		{
 			glutInitContextProfile(Profile); // GLUT_COMPATIBILITY_PROFILE GLUT_CORE_PROFILE
+#ifdef _DEBUG
 			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
+#else
+			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+#endif
 		}
 #endif//__APPLE__
 		
