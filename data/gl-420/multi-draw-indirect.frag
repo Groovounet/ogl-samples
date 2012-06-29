@@ -8,10 +8,17 @@
 #define MATERIAL	0
 #define TRANSFORM0	1
 
+in block
+{
+	vec3 Texcoord;
+} In;
+
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
+
+layout(binding = 0) uniform sampler2D Diffuse[3];
 
 void main()
 {
-	Color = vec4(1.0, 0.5, 0.0, 1.0);
+	Color = texture(Diffuse[int(In.Texcoord.p)], In.Texcoord.st);
 }
 
