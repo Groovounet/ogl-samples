@@ -136,6 +136,9 @@ bool initBuffer()
 		glm::u8vec4(  0,   0, 255, 255)
 	};	
 
+    GLint MaxTextureBufferSize(0);
+    glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &MaxTextureBufferSize);
+
     glBindBuffer(GL_TEXTURE_BUFFER, BufferName[buffer::DIFFUSE]);
 	glBufferData(GL_TEXTURE_BUFFER, 500000, NULL, GL_STATIC_DRAW);
     //glBufferData(GL_TEXTURE_BUFFER, sizeof(Diffuse), Diffuse, GL_STATIC_DRAW);
