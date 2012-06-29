@@ -13,6 +13,7 @@ namespace
 	std::string const SAMPLE_NAME = "OpenGL Multi draw indirect";
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY +"gl-420/multi-draw-indirect.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/multi-draw-indirect.frag");
+    std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -29,42 +30,23 @@ namespace
 	};
 
 	GLsizei const VertexCount(12);
-	GLsizeiptr const PositionSize = VertexCount * sizeof(glm::vec3);
-	glm::vec3 const PositionData[VertexCount] =
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v3fv3f);
+	glf::vertex_v3fv3f const VertexData[VertexCount] =
 	{
-		glm::vec3(-1.0f,-1.0f, 0.5f),
-		glm::vec3( 1.0f,-1.0f, 0.5f),
-		glm::vec3( 1.0f, 1.0f, 0.5f),
-		glm::vec3(-1.0f, 1.0f, 0.5f),
+		glf::vertex_v3fv3f(glm::vec3(-1.0f,-1.0f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 1.0f,-1.0f, 0.5f), glm::vec3(1.0f, 1.0f, 0.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 1.0f, 1.0f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f)),
+		glf::vertex_v3fv3f(glm::vec3(-1.0f, 1.0f, 0.5f), glm::vec3(0.0f, 0.0f, 0.0f)),
 
-		glm::vec3(-0.5f,-1.0f, 0.0f),
-		glm::vec3( 1.5f,-1.0f, 0.0f),
-		glm::vec3( 0.5f, 1.0f, 0.0f),
-		glm::vec3(-1.5f, 1.0f, 0.0f),
-
-		glm::vec3(-0.5f,-1.0f,-0.5f),
-		glm::vec3( 0.5f,-1.0f,-0.5f),
-		glm::vec3( 1.5f, 1.0f,-0.5f),
-		glm::vec3(-1.5f, 1.0f,-0.5f)
-	};
-
-	GLsizeiptr const ColorSize = VertexCount * sizeof(glm::vec3);
-	glm::vec3 const ColorData[VertexCount] =
-	{
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f)
+		glf::vertex_v3fv3f(glm::vec3(-0.5f,-1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 1.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 1.5f,-1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 0.5f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f)),
+		glf::vertex_v3fv3f(glm::vec3(-1.5f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        
+		glf::vertex_v3fv3f(glm::vec3(-0.5f,-1.0f,-0.5f), glm::vec3(0.0f, 1.0f, 2.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 0.5f,-1.0f,-0.5f), glm::vec3(1.0f, 1.0f, 2.0f)),
+		glf::vertex_v3fv3f(glm::vec3( 1.5f, 1.0f,-0.5f), glm::vec3(1.0f, 0.0f, 2.0f)),
+		glf::vertex_v3fv3f(glm::vec3(-1.5f, 1.0f,-0.5f), glm::vec3(0.0f, 0.0f, 2.0f))
 	};
 
 	GLsizei const IndirectBufferCount(3);
@@ -74,8 +56,7 @@ namespace
 	{
 		enum type
 		{
-			POSITION,
-			COLOR,
+			VERTEX,
 			ELEMENT,
 			TRANSFORM,
 			INDIRECT_A,
@@ -84,6 +65,17 @@ namespace
 			MAX
 		};
 	}//namespace buffer
+
+	namespace texture
+	{
+		enum type
+		{
+			TEXTURE_A,
+			TEXTURE_B,
+			TEXTURE_C,
+			MAX
+		};
+	}//namespace texture
 
     struct DrawArraysIndirectCommand
 	{
@@ -106,6 +98,7 @@ namespace
 	GLuint PipelineName(0);
 	GLuint ProgramName(0);
 	GLuint BufferName[buffer::MAX];
+    GLuint TextureName[texture::MAX];
 
 }//namespace
 
@@ -138,12 +131,8 @@ bool initBuffer()
 {
 	glGenBuffers(buffer::MAX, BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
-    glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
-    glBufferData(GL_ARRAY_BUFFER, ColorSize, ColorData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
@@ -209,22 +198,112 @@ bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::POSITION]);
-		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::POSITION, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v3fv3f), GLF_BUFFER_OFFSET(0));
+		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 3, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v3fv3f), GLF_BUFFER_OFFSET(sizeof(glm::vec3)));
 		
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::COLOR]);
-		glVertexAttribPointer(glf::semantic::attr::COLOR, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribDivisor(glf::semantic::attr::COLOR, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
-		glEnableVertexAttribArray(glf::semantic::attr::COLOR);
+		glEnableVertexAttribArray(glf::semantic::attr::TEXCOORD);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]); 
 	glBindVertexArray(0);
 
 	return true;
+}
+
+bool initTexture()
+{
+	bool Validated(true);
+
+	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(texture::MAX, TextureName);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_A]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+
+	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+	{
+		glTexSubImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			0, 0, 
+			GLsizei(Texture[Level].dimensions().x), 
+			GLsizei(Texture[Level].dimensions().y), 
+			GL_BGR, GL_UNSIGNED_BYTE, 
+			Texture[Level].data());
+	}
+	
+	///////////////////////////////////////////
+
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_B]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+
+	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+	{
+		glTexSubImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			0, 0, 
+			GLsizei(Texture[Level].dimensions().x), 
+			GLsizei(Texture[Level].dimensions().y), 
+			GL_BGR, GL_UNSIGNED_BYTE, 
+			Texture[Level].data());
+	}
+	
+	
+	///////////////////////////////////////////
+
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_C]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+
+	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+	{
+		glTexSubImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			0, 0, 
+			GLsizei(Texture[Level].dimensions().x), 
+			GLsizei(Texture[Level].dimensions().y), 
+			GL_BGR, GL_UNSIGNED_BYTE, 
+			Texture[Level].data());
+	}
+	
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+	return Validated;
 }
 
 bool initDebugOutput()
@@ -253,6 +332,8 @@ bool begin()
 		Success = initBuffer();
 	if(Success)
 		Success = initVertexArray();
+	if(Success)
+		Success = initTexture();
 
 	// Set initial rendering states
 	glEnable(GL_DEPTH_TEST);
@@ -303,6 +384,13 @@ void display()
 	*Pointer = MVP;
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_A]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_B]);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_C]);
+
 	// Draw
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, BufferName[buffer::INDIRECT_A] + GLuint(IndirectBufferIndex));
 	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, DrawCount[IndirectBufferIndex], sizeof(DrawElementsIndirectCommand));

@@ -191,6 +191,21 @@ namespace glf
 		glm::vec2 Texcoord;
 	};
 
+	struct vertex_v3fv3f
+	{
+		vertex_v3fv3f
+		(
+			glm::vec3 const & Position,
+			glm::vec3 const & Texcoord
+		) :
+			Position(Position),
+			Texcoord(Texcoord)
+		{}
+
+		glm::vec3 Position;
+		glm::vec3 Texcoord;
+	};
+
 	struct vertex_v4fv2f
 	{
 		vertex_v4fv2f
@@ -347,6 +362,30 @@ namespace
 #define GLF_BUFFER_OFFSET(i) ((char *)NULL + (i))
 #ifndef GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD
 #define GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD 0x9160
+#endif
+
+#ifndef WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+#endif
+
+#ifndef WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#endif
+
+#ifndef WGL_CONTEXT_ES2_PROFILE_BIT_EXT
+#define WGL_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
+#endif
+
+#ifndef GLX_CONTEXT_CORE_PROFILE_BIT_ARB
+#define GLX_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+#endif
+
+#ifndef GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB
+#define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#endif
+
+#ifndef WGLX_CONTEXT_ES2_PROFILE_BIT_EXT
+#define WGLX_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
 #endif
 
 #include "glf.inl"
