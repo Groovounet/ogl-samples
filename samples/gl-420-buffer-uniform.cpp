@@ -16,7 +16,7 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Uniform Buffer";
+	std::string const SAMPLE_NAME("OpenGL Uniform Buffer");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/buffer-uniform.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/buffer-uniform.frag");
 	int const SAMPLE_SIZE_WIDTH(640);
