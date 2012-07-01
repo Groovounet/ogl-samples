@@ -132,7 +132,7 @@ bool initTextureArray2D()
 		glTexImage3D(
 			GL_TEXTURE_2D_ARRAY, 
 			GLint(Level), 
-			GL_RGB, 
+			GL_RGBA8, 
 			GLsizei(Image[Level].dimensions().x), 
 			GLsizei(Image[Level].dimensions().y), 
 			GLsizei(2), //depth
