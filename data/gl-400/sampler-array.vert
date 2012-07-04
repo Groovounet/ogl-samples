@@ -14,10 +14,12 @@ layout(location = TEXCOORD) in vec2 Texcoord;
 out block
 {
 	vec2 Texcoord;
+	float Instance;
 } Out;
 
 void main()
 {	
 	Out.Texcoord = Texcoord;
-	gl_Position = MVP * vec4(Position, 0.0, 1.0);
+	Out.Instance = float(gl_InstanceID);
+	gl_Position = MVP * vec4(Position, float(gl_InstanceID) * 0.5, 1.0);
 }

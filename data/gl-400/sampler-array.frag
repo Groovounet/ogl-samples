@@ -12,6 +12,7 @@ uniform uint DiffuseIndex;
 in block
 {
 	vec2 Texcoord;
+	float Instance;
 } In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;

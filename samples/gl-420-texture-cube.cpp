@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Cube map
-// 02/07/2012
+// 02/07/2012 - 04/07/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -37,19 +37,29 @@ namespace
 		glm::vec2(-1.0f,-1.0f)
 	};
 
-	GLuint VertexArrayName = 0;
-	GLuint ProgramName = 0;
+	namespace buffer
+	{
+		enum type
+		{
+			VERTEX,
+			TRANSFORM,
+			MAX
+		};
+	}//namespace buffer
 
-	GLuint BufferName = 0;
-	GLuint TextureName = 0;
-	GLuint SamplerName = 0;
+	struct transform
+	{
+		glm::mat4 MVP;
+		glm::mat4 MV;
+		glm::vec3 Camera;
+	};
 
-	GLint UniformMV = 0;
-	GLint UniformMVP = 0;
-	GLint UniformEnvironment = 0;
-	GLint UniformCamera = 0;
-
-	glm::ivec4 Viewport;
+	GLuint PipelineName(0);
+	GLuint ProgramName(0);
+	GLuint VertexArrayName(0);
+	GLuint TextureName(0);
+	GLuint SamplerName(0);
+	GLuint BufferName[buffer::MAX] = {0, 0};
 }//namespace
 
 bool initDebugOutput()
@@ -67,27 +77,26 @@ bool initProgram()
 {
 	bool Validated = true;
 	
+	glGenProgramPipelines(1, &PipelineName);
+
 	if(Validated)
 	{
 		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
 		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
 
 		ProgramName = glCreateProgram();
+		glProgramParameteri(ProgramName, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glAttachShader(ProgramName, VertShaderName);
 		glAttachShader(ProgramName, FragShaderName);
 		glDeleteShader(VertShaderName);
 		glDeleteShader(FragShaderName);
-
 		glLinkProgram(ProgramName);
 		Validated = glf::checkProgram(ProgramName);
 	}
 
 	if(Validated)
 	{
-		UniformMV = glGetUniformLocation(ProgramName, "MV");
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-		UniformEnvironment = glGetUniformLocation(ProgramName, "Environment");
-		UniformCamera = glGetUniformLocation(ProgramName, "Camera");
+		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 	}
 
 	return Validated &&glf::checkError("initProgram");
@@ -95,11 +104,23 @@ bool initProgram()
 
 bool initBuffer()
 {
-	glGenBuffers(1, &BufferName);
+	glGenBuffers(buffer::MAX, BufferName);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLint UniformBufferOffset(0);
+
+	glGetIntegerv(
+		GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+		&UniformBufferOffset);
+
+	GLint UniformBlockSize = glm::max(GLint(sizeof(transform)), UniformBufferOffset);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+	glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return glf::checkError("initBuffer");;
 }
@@ -138,7 +159,7 @@ bool initTexture()
 	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
 	{
 		glCompressedTexSubImage2D(
-			GL_TEXTURE_CUBE_MAP_POSITIVE_X + Face,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(Face),
 			GLint(Level),
 			0, 0,
 			GLsizei(Texture[gli::textureCube::face_type(Face)][Level].dimensions().x), 
@@ -148,14 +169,14 @@ bool initTexture()
 			Texture[gli::textureCube::face_type(Face)][Level].data());
 	}
 
-	return glf::checkError("initTexture2D");
+	return glf::checkError("initTexture");
 }
 
 bool initVertexArray()
 {
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -187,7 +208,7 @@ bool begin()
 
 bool end()
 {
-	glDeleteBuffers(1, &BufferName);
+	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteProgram(ProgramName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteSamplers(1, &SamplerName);
@@ -198,28 +219,39 @@ bool end()
 
 void display()
 {
-	// Compute the MVP (Model View Projection matrix)
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
-	glm::mat4 MV = View * Model;
+	// Update of the uniform buffer
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		transform* Pointer = (transform*)glMapBufferRange(
+			GL_UNIFORM_BUFFER, 0, sizeof(transform),
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
-	glViewport(0, 0, Window.Size.x, Window.Size.y);
+		// Compute the MVP (Model View Projection matrix)
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
+		glm::mat4 MV = View * Model;
+		glm::vec3 Camera = glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y);
+
+		Pointer->MVP = Projection * View * Model;
+		Pointer->MV = View * Model;
+		Pointer->Camera = glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y);
+
+		// Make sure the uniform buffer is uploaded
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
+
+	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	// Bind the program for use
-	glUseProgram(ProgramName);
-	glUniformMatrix4fv(UniformMV, 1, GL_FALSE, &MV[0][0]);
-	glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(UniformEnvironment, 0);
-	glUniform3fv(UniformCamera, 1, &glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y)[0]);
-
+	glBindProgramPipeline(PipelineName);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureName);
 	glBindSampler(0, SamplerName);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
 	glBindVertexArray(VertexArrayName);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, VertexCount, 1);

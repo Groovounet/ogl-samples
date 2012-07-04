@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 #define POSITION	0
 #define COLOR		3
@@ -6,7 +6,7 @@
 #define REFLECT		6
 #define FRAG_COLOR	0
 
-uniform samplerCube Environment;
+layout(binding = 0) uniform samplerCube Environment;
 
 in block
 {
