@@ -1,6 +1,6 @@
 //**********************************
 // OpenGL Direct State Access
-// 20/02/2011 - 26/09/2011
+// 20/02/2011 - 05/07/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -68,12 +68,12 @@ namespace
 		};
 	}//namespace buffer
 
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/instanced-image-2d.vert");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-430/dsa-pass1.vert");
 	std::string const FRAG_SHADER_SOURCE[program::MAX] = 
 	{
-		glf::DATA_DIRECTORY + "gl-420/instanced-image-2d.frag",
-		glf::DATA_DIRECTORY + "gl-420/multisample-box.frag",
-		glf::DATA_DIRECTORY + "gl-420/multisample-near.frag",
+		glf::DATA_DIRECTORY + "gl-430/dsa-pass1.frag",
+		glf::DATA_DIRECTORY + "gl-430/dsa-pass2-msaa-box.frag",
+		glf::DATA_DIRECTORY + "gl-430/dsa-pass2-msaa-near.frag",
 	};
 
 	GLuint PipelineName[program::MAX] = {0, 0, 0};
@@ -167,13 +167,9 @@ bool initTexture()
 	if(Texture.levels() == 1)
 		glGenerateTextureMipmapEXT(TextureName[texture::DIFFUSE], GL_TEXTURE_2D);
 
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::MULTISAMPLE]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::DEPTH]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
-	glBindMultiTextureEXT(GL_TEXTURE0, GL_TEXTURE_2D_MULTISAMPLE, 0);
+	// From GL_ARB_texture_storage_multisample
+	glTextureStorage2DMultisampleEXT(TextureName[texture::MULTISAMPLE], GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+	glTextureStorage2DMultisampleEXT(TextureName[texture::DEPTH], GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
 	return glf::checkError("initTexture");
 }
@@ -219,6 +215,7 @@ bool begin()
 	bool Validated = true;
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
+	Validated = Validated && glf::checkExtension("GL_ARB_texture_storage_multisample");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
