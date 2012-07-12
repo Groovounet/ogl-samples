@@ -16,11 +16,11 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Atomic Counter";
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/atomic-counter.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/atomic-counter.frag");
-	int const SAMPLE_SIZE_WIDTH(640);
-	int const SAMPLE_SIZE_HEIGHT(480);
+	std::string const SAMPLE_NAME("OpenGL Atomic Counter");
+	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-430/atomic-counter.vert");
+	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-430/atomic-counter.frag");
+	int const SAMPLE_SIZE_WIDTH(1024);
+	int const SAMPLE_SIZE_HEIGHT(768);
 	int const SAMPLE_MAJOR_VERSION(4);
 	int const SAMPLE_MINOR_VERSION(2);
 
@@ -215,6 +215,9 @@ void display()
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
+	glm::uint Data(0);
+	glClearBufferSubData(GL_UNIFORM_BUFFER, GL_R8UI, 0, sizeof(glm::uint), GL_RGBA, GL_UNSIGNED_INT, &Data);
+/*
 	{
 		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
 		glm::uint32* Pointer = (glm::uint32*)glMapBufferRange(
@@ -225,7 +228,7 @@ void display()
 
 		glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	}
-
+*/
 	glViewportIndexedf(0, 0, 0, float(Window.Size.x), float(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)[0]);
 
