@@ -9,6 +9,53 @@ bool begin();
 bool end();
 void display();
 
+#if (defined(WIN32))
+
+// GL_ARB_clear_buffer_object
+typedef void (GLAPIENTRY * PFNGLCLEARBUFFERDATAPROC) (
+	GLenum target, GLenum internalformat, GLenum format, GLenum type, const GLvoid * data);
+typedef void (GLAPIENTRY * PFNGLCLEARBUFFERSUBDATAPROC) (
+	GLenum target, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const GLvoid * data);
+typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERDATAEXTPROC) (
+	GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const GLvoid * data);
+typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC) (
+	GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const GLvoid * data);
+
+PFNGLCLEARBUFFERDATAPROC glClearBufferData(0);
+PFNGLCLEARBUFFERSUBDATAPROC glClearBufferSubData(0);
+PFNGLCLEARNAMEDBUFFERDATAEXTPROC glClearNamedBufferDataEXT(0);
+PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC glClearNamedBufferSubDataEXT(0);
+
+// GL_ARB_multi_draw_indirect
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWARRAYSINDIRECTPROC) (GLenum mode, const void* indirect, GLsizei primcount, GLsizei stride);
+typedef void (GLAPIENTRY * PFNGLMULTIDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum type, const void* indirect, GLsizei primcount, GLsizei stride);
+
+PFNGLMULTIDRAWARRAYSINDIRECTPROC glMultiDrawArraysIndirect(0);
+PFNGLMULTIDRAWELEMENTSINDIRECTPROC glMultiDrawElementsIndirect(0);
+
+// GL_ARB_invalidate_subdata
+
+typedef void (GLAPIENTRY * PFNGLINVALIDATETEXSUBIMAGEPROC) (
+	GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth);
+typedef void (GLAPIENTRY * PFNGLINVALIDATETEXIMAGEPROC) (
+	GLuint texture, GLint level);
+
+PFNGLINVALIDATETEXSUBIMAGEPROC glInvalidateTexSubImage(0);
+PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
+/*
+    void InvalidateBufferSubData(uint buffer, intptr offset, sizeiptr length);
+    void InvalidateBufferData(uint buffer);
+
+    void InvalidateFramebuffer(enum target, 
+                               sizei numAttachments, 
+                               const enum *attachments);
+    void InvalidateSubFramebuffer(enum target, 
+                                  sizei numAttachments, 
+                                  const enum *attachments,
+                                  int x, int y, sizei width, sizei height);
+*/
+#endif // WIN32
+
 namespace glf
 {
 	inline void swapBuffers()
