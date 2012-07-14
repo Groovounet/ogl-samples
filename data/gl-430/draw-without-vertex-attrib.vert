@@ -1,6 +1,11 @@
-#version 330 core
+#version 420 core
 
-uniform mat4 MVP;
+#define TRANSFORM0	1
+
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 const int VertexCount = 6;
 const vec2 Position[VertexCount] = vec2[](
@@ -13,6 +18,6 @@ const vec2 Position[VertexCount] = vec2[](
 
 void main()
 {	
-	gl_Position = MVP * vec4(Position[gl_VertexID], 0.0, 1.0);
+	gl_Position = Transform.MVP * vec4(Position[gl_VertexID], 0.0, 1.0);
 }
 

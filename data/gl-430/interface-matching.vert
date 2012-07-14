@@ -1,10 +1,15 @@
-#version 420 core
+#version 430 core
 
 #define POSITION		0
 #define COLOR			3
 #define FRAG_COLOR		0
 
-uniform mat4 MVP;
+#define TRANSFORM0	1
+
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 struct my_vertex
 {
@@ -27,7 +32,7 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
-layout(location = 0) out vertex st_Out;
+layout(location = 0) out vertex st_Out[2];
 
 out block
 {
@@ -37,7 +42,8 @@ out block
 void main()
 {	
 	//gl_Position = MVP * vec4((Input.Position[0] + Input.Position[1]) * 0.5, 0.0, 1.0);
-	gl_Position = MVP * vec4((Position[0] + Position[1]) * 0.5, 0.0, 1.0);
-	st_Out.Color = Color * 0.75;
+	gl_Position = Transform.MVP * vec4((Position[0] + Position[1]) * 0.5, 0.0, 1.0);
+	st_Out[0].Color = Color * 0.25;
+	st_Out[1].Color = Color * 0.50;
 	bl_Out.Color = Color * 0.25;
 }

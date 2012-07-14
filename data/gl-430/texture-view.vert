@@ -1,4 +1,4 @@
-#version 420 core
+#version 430 core
 
 #define POSITION	0
 #define COLOR		3
@@ -23,10 +23,12 @@ out gl_PerVertex
 out block
 {
 	vec2 Texcoord;
+	mediump int Instance;
 } Out;
 
 void main()
 {	
 	Out.Texcoord = Texcoord;
+	Out.Instance = mediump int(gl_InstanceID);
 	gl_Position = Transform.MVP * vec4(Position, 1.0);
 }
