@@ -1,5 +1,5 @@
 //**********************************
-// OpenGL Draw Without Vertex Data
+// OpenGL Draw Without Vertex Attrib
 // 01/07/2011 - 14/07/2012
 //**********************************
 // Christophe Riccio
@@ -13,9 +13,10 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME("OpenGL Draw Without Vertex Data");
+	std::string const SAMPLE_NAME("OpenGL Draw Without Vertex Attrib");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-430/draw-without-vertex-attrib.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-430/draw-without-vertex-attrib.frag");
+	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -23,20 +24,33 @@ namespace
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
+	GLsizei const VertexCount(6);
+	GLsizeiptr const VertexSize = VertexCount * sizeof(glf::vertex_v2fv2f);
+	glf::vertex_v2fv2f const VertexData[VertexCount] =
+	{
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f,-1.0f), glm::vec2(1.0f, 1.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2( 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
+		glf::vertex_v2fv2f(glm::vec2(-1.0f,-1.0f), glm::vec2(0.0f, 1.0f))
+	};
+
 	namespace buffer
 	{
 		enum type
 		{
 			TRANSFORM,
+			VERTEX,
 			MAX
 		};
 	}//namespace buffer
 
 	GLuint PipelineName(0);
 	GLuint ProgramName(0);
-	GLuint BufferName[buffer::MAX] = {0};
+	GLuint BufferName[buffer::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
-	GLint UniformMVP(0);
+	GLuint TextureName(0);
 }//namespace
 
 bool initDebugOutput()
@@ -53,6 +67,10 @@ bool initBuffer()
 	bool Validated(true);
 
 	glGenBuffers(buffer::MAX, BufferName);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	GLint UniformBufferOffset(0);
 
@@ -94,13 +112,46 @@ bool initProgram()
 
 	glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName);
 
-	// Get variables locations
-	if(Validated)
-	{
-		UniformMVP = glGetUniformLocation(ProgramName, "MVP");
-	}
-
 	return Validated && glf::checkError("initProgram");
+}
+
+bool initTexture()
+{
+	bool Validated(true);
+
+	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, &TextureName);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+
+	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+	{
+		glTexSubImage2D(
+			GL_TEXTURE_2D, 
+			GLint(Level), 
+			0, 0, 
+			GLsizei(Texture[Level].dimensions().x), 
+			GLsizei(Texture[Level].dimensions().y), 
+			GL_BGR, GL_UNSIGNED_BYTE, 
+			Texture[Level].data());
+	}
+	
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+	return Validated;
 }
 
 bool initVertexArray()
@@ -125,6 +176,8 @@ bool begin()
 		Validated = initProgram();
 	if(Validated)
 		Validated = initVertexArray();
+	if(Validated)
+		Validated = initTexture();
 
 	return Validated && glf::checkError("begin");
 }
@@ -167,6 +220,7 @@ void display()
 	glBindProgramPipeline(PipelineName);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 	glBindVertexArray(VertexArrayName);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, BufferName[buffer::VERTEX]);
 
 	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, 6, 1, 0);
 

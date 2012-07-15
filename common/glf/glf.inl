@@ -11,6 +11,21 @@ void display();
 
 #if (defined(WIN32))
 
+// GL_ARB_texture_storage_multisample
+typedef void (GLAPIENTRY * PFNGLTEXSTORAGE2DMULTISAMPLEPROC) (
+	GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+typedef void (GLAPIENTRY * PFNGLTEXSTORAGE3DMULTISAMPLEPROC) (
+	GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
+typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC) (
+	GLuint texture, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC) (
+	GLuint texture, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
+
+PFNGLTEXSTORAGE2DMULTISAMPLEPROC glTexStorage2DMultisample(0);
+PFNGLTEXSTORAGE3DMULTISAMPLEPROC glTexStorage3DMultisample(0);
+PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisampleEXT(0);
+PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC glTextureStorage3DMultisampleEXT(0);
+
 // GL_ARB_clear_buffer_object
 typedef void (GLAPIENTRY * PFNGLCLEARBUFFERDATAPROC) (
 	GLenum target, GLenum internalformat, GLenum format, GLenum type, const GLvoid * data);
@@ -42,6 +57,7 @@ typedef void (GLAPIENTRY * PFNGLINVALIDATETEXIMAGEPROC) (
 
 PFNGLINVALIDATETEXSUBIMAGEPROC glInvalidateTexSubImage(0);
 PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
+
 /*
     void InvalidateBufferSubData(uint buffer, intptr offset, sizeiptr length);
     void InvalidateBufferData(uint buffer);
@@ -54,6 +70,52 @@ PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
                                   const enum *attachments,
                                   int x, int y, sizei width, sizei height);
 */
+
+// GL_ARB_texture_view
+#define GL_TEXTURE_VIEW_MIN_LEVEL                          0x82DB
+#define GL_TEXTURE_VIEW_NUM_LEVELS                         0x82DC
+#define GL_TEXTURE_VIEW_MIN_LAYER                          0x82DD
+#define GL_TEXTURE_VIEW_NUM_LAYERS                         0x82DE
+#define GL_TEXTURE_IMMUTABLE_LEVELS                        0x82DF
+
+typedef void (GLAPIENTRY * PFNGLTEXTUREVIEWPROC) (
+	GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
+
+PFNGLTEXTUREVIEWPROC glTextureView(0);
+
+// GL_ARB_shader_storage_buffer_object
+#define GL_SHADER_STORAGE_BUFFER                           0x90D2
+#define GL_SHADER_STORAGE_BUFFER_BINDING                   0x90D3
+#define GL_SHADER_STORAGE_BUFFER_START                     0x90D4
+#define GL_SHADER_STORAGE_BUFFER_SIZE                      0x90D5
+#define GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS                0x90D6
+#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS              0x90D7
+#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS          0x90D8
+#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS       0x90D9
+#define GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS              0x90DA
+#define GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS               0x90DB
+#define GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS              0x90DC
+#define GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS              0x90DD
+#define GL_MAX_SHADER_STORAGE_BLOCK_SIZE                   0x90DE
+#define GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT          0x90DF
+#define GL_SHADER_STORAGE_BARRIER_BIT                      0x2000        
+#define GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES            0x8F39
+
+// GL_ARB_vertex_attrib_binding
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXBUFFEREXTPROC) (GLuint vaobj, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride);
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXATTRIBFORMATEXTPROC) (GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset);
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXATTRIBIFORMATEXTPROC) (GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset);
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXATTRIBLFORMATEXTPROC) (GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset);
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXATTRIBBINDINGEXTPROC) (GLuint vaobj, GLuint attribindex, GLuint bindingindex);
+typedef void (GLAPIENTRY * PFNGLVERTEXARRAYBINDVERTEXBINDINGDIVISOREXTPROC) (GLuint vaobj, GLuint bindingindex, GLuint divisor);
+
+PFNGLVERTEXARRAYBINDVERTEXBUFFEREXTPROC glVertexArrayBindVertexBufferEXT(0);
+PFNGLVERTEXARRAYBINDVERTEXATTRIBFORMATEXTPROC glVertexArrayVertexAttribFormatEXT(0);
+PFNGLVERTEXARRAYBINDVERTEXATTRIBIFORMATEXTPROC glVertexArrayVertexAttribIFormatEXT(0);
+PFNGLVERTEXARRAYBINDVERTEXATTRIBLFORMATEXTPROC glVertexArrayVertexAttribLFormatEXT(0);
+PFNGLVERTEXARRAYBINDVERTEXATTRIBBINDINGEXTPROC glVertexArrayVertexAttribBindingEXT(0);
+PFNGLVERTEXARRAYBINDVERTEXBINDINGDIVISOREXTPROC glVertexArrayVertexBindingDivisorEXT(0);
+
 #endif // WIN32
 
 namespace glf
@@ -101,6 +163,27 @@ namespace glf
 		glDebugMessageControlARB = (PFNGLDEBUGMESSAGECONTROLARBPROC)glutGetProcAddress("glDebugMessageControlARB");
 		glDebugMessageCallbackARB = (PFNGLDEBUGMESSAGECALLBACKARBPROC)glutGetProcAddress("glDebugMessageCallbackARB");
 		glDebugMessageInsertARB = (PFNGLDEBUGMESSAGEINSERTARBPROC)glutGetProcAddress("glDebugMessageInsertARB");
+
+		// Loading OpenGL 4.3
+		glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)glutGetProcAddress("glTexStorage2DMultisample");
+		glTexStorage3DMultisample = (PFNGLTEXSTORAGE3DMULTISAMPLEPROC)glutGetProcAddress("glTexStorage3DMultisample");
+		glTextureStorage2DMultisampleEXT = (PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC)glutGetProcAddress("glTextureStorage2DMultisampleEXT");
+		glTextureStorage3DMultisampleEXT = (PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC)glutGetProcAddress("glTextureStorage3DMultisampleEXT");
+		glClearBufferData = (PFNGLCLEARBUFFERDATAPROC)glutGetProcAddress("glClearBufferData");
+		glClearBufferSubData = (PFNGLCLEARBUFFERSUBDATAPROC)glutGetProcAddress("glClearBufferSubData");
+		glClearNamedBufferDataEXT = (PFNGLCLEARNAMEDBUFFERDATAEXTPROC)glutGetProcAddress("glClearNamedBufferDataEXT");
+		glClearNamedBufferSubDataEXT = (PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC)glutGetProcAddress("glClearNamedBufferSubDataEXT");
+		glMultiDrawArraysIndirect = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)glutGetProcAddress("glMultiDrawArraysIndirect");
+		glMultiDrawElementsIndirect = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)glutGetProcAddress("glMultiDrawElementsIndirect");
+		glInvalidateTexSubImage = (PFNGLINVALIDATETEXSUBIMAGEPROC)glutGetProcAddress("glInvalidateTexSubImage");
+		glInvalidateTexImage = (PFNGLINVALIDATETEXIMAGEPROC)glutGetProcAddress("glInvalidateTexImage");
+		glTextureView = (PFNGLTEXTUREVIEWPROC)glutGetProcAddress("glTextureView");
+		glVertexArrayBindVertexBufferEXT = (PFNGLVERTEXARRAYBINDVERTEXBUFFEREXTPROC)glutGetProcAddress("glVertexArrayBindVertexBufferEXT");
+		glVertexArrayVertexAttribFormatEXT = (PFNGLVERTEXARRAYBINDVERTEXATTRIBFORMATEXTPROC)glutGetProcAddress("glVertexArrayVertexAttribFormatEXT");
+		glVertexArrayVertexAttribIFormatEXT = (PFNGLVERTEXARRAYBINDVERTEXATTRIBIFORMATEXTPROC)glutGetProcAddress("glVertexArrayVertexAttribIFormatEXT");
+		glVertexArrayVertexAttribLFormatEXT = (PFNGLVERTEXARRAYBINDVERTEXATTRIBLFORMATEXTPROC)glutGetProcAddress("glVertexArrayVertexAttribLFormatEXT");
+		glVertexArrayVertexAttribBindingEXT = (PFNGLVERTEXARRAYBINDVERTEXATTRIBBINDINGEXTPROC)glutGetProcAddress("glVertexArrayVertexAttribBindingEXT");
+		glVertexArrayVertexBindingDivisorEXT = (PFNGLVERTEXARRAYBINDVERTEXBINDINGDIVISOREXTPROC)glutGetProcAddress("glVertexArrayVertexBindingDivisorEXT");
 
 		//assert(glTextureStorage2DEXT);
 #endif

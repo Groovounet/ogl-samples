@@ -1,4 +1,4 @@
-#version 420 core
+#version 430 core
 
 #define TRANSFORM0	1
 
@@ -7,17 +7,31 @@ layout(binding = TRANSFORM0) uniform transform
 	mat4 MVP;
 } Transform;
 
-const int VertexCount = 6;
-const vec2 Position[VertexCount] = vec2[](
-	vec2(-1.0f,-1.0f),
-	vec2( 1.0f,-1.0f),
-	vec2( 1.0f, 1.0f),
-	vec2(-1.0f,-1.0f),
-	vec2( 1.0f, 1.0f),
-	vec2(-1.0f, 1.0f));
+struct vertex
+{
+	vec2 Position;
+	vec2 Texcoord;
+};
+
+layout(binding = 0) buffer mesh
+{
+	vertex Vertex[];
+} Mesh;
+
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
+out block
+{
+	vec2 Texcoord;
+} Out;
 
 void main()
 {	
-	gl_Position = Transform.MVP * vec4(Position[gl_VertexID], 0.0, 1.0);
-}
+	int Index = gl_VertexID % Mesh.Vertex.length();
 
+	Out.Texcoord = Mesh.Vertex[gl_VertexID].Texcoord;
+	gl_Position = Transform.MVP * vec4(Mesh.Vertex[gl_VertexID].Position, 0.0, 1.0);
+}

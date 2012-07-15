@@ -188,11 +188,17 @@ bool initFramebuffer()
 
 bool initVertexArray()
 {
+	GLuint Bindingindex(0);
+
 	glGenVertexArrays(1, &VertexArrayName);
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), 0);
-	glVertexArrayVertexAttribOffsetEXT(VertexArrayName, BufferName[buffer::VERTEX], 
-		glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), sizeof(glm::vec2));
+	glVertexArrayBindVertexBufferEXT(VertexArrayName, Bindingindex, BufferName[buffer::VERTEX], 0, sizeof(glf::vertex_v2fv2f));
+
+	glVertexArrayVertexAttribBindingEXT(VertexArrayName, glf::semantic::attr::POSITION, Bindingindex);
+    glVertexArrayVertexAttribFormatEXT(VertexArrayName, glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, 0);
+
+	glVertexArrayVertexAttribBindingEXT(VertexArrayName, glf::semantic::attr::TEXCOORD, Bindingindex);
+    glVertexArrayVertexAttribFormatEXT(VertexArrayName, glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2));
+
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::POSITION);
 	glEnableVertexArrayAttribEXT(VertexArrayName, glf::semantic::attr::TEXCOORD);
 
@@ -216,6 +222,7 @@ bool begin()
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
 	Validated = Validated && glf::checkExtension("GL_EXT_direct_state_access");
 	Validated = Validated && glf::checkExtension("GL_ARB_texture_storage_multisample");
+	Validated = Validated && glf::checkExtension("GL_ARB_vertex_attrib_binding");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
