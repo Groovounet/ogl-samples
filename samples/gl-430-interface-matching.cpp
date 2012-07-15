@@ -11,8 +11,6 @@
 
 #include <glf/glf.hpp>
 
-#define GL_VERTEX_ATTRIB_ARRAY_LONG                         0x874E
-
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Shader Interface Matching");	
@@ -24,7 +22,7 @@ namespace
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(2);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 

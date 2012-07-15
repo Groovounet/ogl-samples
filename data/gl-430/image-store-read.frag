@@ -1,4 +1,4 @@
-#version 420 core
+#version 430 core
 
 #define FRAG_COLOR		0
 #define DIFFUSE			0

@@ -11,6 +11,9 @@ void display();
 
 #if (defined(WIN32))
 
+// OpenGL 4.3
+#define GL_VERTEX_ATTRIB_ARRAY_LONG                         0x874E
+
 // GL_ARB_texture_storage_multisample
 typedef void (GLAPIENTRY * PFNGLTEXSTORAGE2DMULTISAMPLEPROC) (
 	GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);

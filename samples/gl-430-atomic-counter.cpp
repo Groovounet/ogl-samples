@@ -3,7 +3,7 @@
 // ogl-samples.g-truc.net
 //**********************************
 // OpenGL Atomic Counter
-// 23/07/2011 - 23/07/2011
+// 23/07/2011 - 14/07/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -22,7 +22,7 @@ namespace
 	int const SAMPLE_SIZE_WIDTH(1024);
 	int const SAMPLE_SIZE_HEIGHT(768);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(2);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 

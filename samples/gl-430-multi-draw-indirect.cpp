@@ -10,14 +10,14 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME = "OpenGL Multi draw indirect";
+	std::string const SAMPLE_NAME("OpenGL Multi draw indirect");
 	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY +"gl-420/multi-draw-indirect.vert");
 	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/multi-draw-indirect.frag");
     std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
-	int const SAMPLE_MINOR_VERSION(2);
+	int const SAMPLE_MINOR_VERSION(3);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
@@ -321,7 +321,7 @@ bool begin()
 
 	// Validate OpenGL support
 	Success = Success && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Success = Success && glf::checkExtension("GL_AMD_multi_draw_indirect");
+	Success = Success && glf::checkExtension("GL_ARB_multi_draw_indirect");
 
 	// Create and initialize objects
 	if(Success && glf::checkExtension("GL_ARB_debug_output"))

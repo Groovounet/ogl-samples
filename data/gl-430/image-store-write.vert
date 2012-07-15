@@ -1,4 +1,4 @@
-#version 420 core
+#version 430 core
 
 const int VertexCount = 3;
 const vec2 Position[VertexCount] = vec2[](
