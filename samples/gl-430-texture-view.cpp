@@ -163,7 +163,7 @@ bool initTexture()
 			0, 0, 
 			GLsizei(Texture[Level].dimensions().x), 
 			GLsizei(Texture[Level].dimensions().y), 
-			GL_BGR, GL_UNSIGNED_BYTE, 
+			GL_BGR_INTEGER, GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}
 /*
