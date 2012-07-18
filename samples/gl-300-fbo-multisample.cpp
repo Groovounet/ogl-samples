@@ -17,7 +17,7 @@ namespace
 	std::string const VERTEX_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-300/image-2d.vert");
 	std::string const FRAGMENT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-300/image-2d.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken3-bgr8.dds");
-	glm::ivec2 const FRAMEBUFFER_SIZE(320, 240);
+	glm::ivec2 const FRAMEBUFFER_SIZE(160, 120);
 	int const SAMPLE_SIZE_WIDTH = 640;
 	int const SAMPLE_SIZE_HEIGHT = 480;
 	int const SAMPLE_MAJOR_VERSION = 3;
@@ -138,7 +138,7 @@ bool initFramebuffer()
 {
 	glGenRenderbuffers(1, &ColorRenderbufferName);
 	glBindRenderbuffer(GL_RENDERBUFFER, ColorRenderbufferName);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 	// The second parameter is the number of samples.
 
 	glGenFramebuffers(1, &FramebufferRenderName);
@@ -150,8 +150,8 @@ bool initFramebuffer()
 
     glGenTextures(1, &ColorTextureName);
 	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	glGenFramebuffers(1, &FramebufferResolveName);
@@ -279,7 +279,7 @@ void display()
 	glBlitFramebuffer(
 		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
 		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Pass 2

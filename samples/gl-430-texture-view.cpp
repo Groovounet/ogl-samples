@@ -191,8 +191,8 @@ bool initTexture()
 			Texture[Level].data());
 	}
 */
-    glTextureView(TextureName[texture::VIEW_A], GL_TEXTURE_2D_ARRAY, TextureName[texture::TEXTURE], GL_RGBA8, 0, GLuint(Texture.levels()), 0, 0);
-	glTextureView(TextureName[texture::VIEW_B], GL_TEXTURE_2D_ARRAY, TextureName[texture::TEXTURE], GL_RGBA8, 0, 1, 0, 0);
+    glTextureView(TextureName[texture::VIEW_A], GL_TEXTURE_2D_ARRAY, TextureName[texture::TEXTURE], GL_RGBA8, 0, GLuint(Texture.levels()), 0, 1);
+	glTextureView(TextureName[texture::VIEW_B], GL_TEXTURE_2D_ARRAY, TextureName[texture::TEXTURE], GL_RGBA8, 0, 1, 0, 1);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 

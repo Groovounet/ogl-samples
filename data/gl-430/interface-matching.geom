@@ -55,7 +55,7 @@ void main()
 		ColorGNI = st_In[i][0].Color + st_In[i][1].Color;
 		st_Out.Color = st_In[i][0].Color + st_In[i][1].Color;
 		bl_Out.Color = bl_In[i].Color;
-		bl_Pou.Color = st_In[i].Color + bl_In[i].Color;
+		bl_Pou.Color = st_In[i][0].Color + bl_In[i].Color;
 		EmitVertex();
 	}
 	EndPrimitive();
