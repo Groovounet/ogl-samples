@@ -1,4 +1,6 @@
-#version 430 core
+#version 420 core
+#extension GL_ARB_texture_query_levels : require
+#extension GL_ARB_fragment_layer_viewport : require
 
 #define POSITION	0
 #define COLOR		3

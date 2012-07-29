@@ -1,4 +1,5 @@
-#version 430 core
+#version 420 core
+#extension GL_ARB_shader_storage_buffer_object : require
 
 #define TRANSFORM0	1
 
