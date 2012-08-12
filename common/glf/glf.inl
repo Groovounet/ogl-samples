@@ -24,10 +24,10 @@ typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC) (
 typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC) (
 	GLuint texture, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 
-PFNGLTEXSTORAGE2DMULTISAMPLEPROC glTexStorage2DMultisample(0);
-PFNGLTEXSTORAGE3DMULTISAMPLEPROC glTexStorage3DMultisample(0);
-PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisampleEXT(0);
-PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC glTextureStorage3DMultisampleEXT(0);
+//PFNGLTEXSTORAGE2DMULTISAMPLEPROC glTexStorage2DMultisample(0);
+//PFNGLTEXSTORAGE3DMULTISAMPLEPROC glTexStorage3DMultisample(0);
+//PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisampleEXT(0);
+//PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC glTextureStorage3DMultisampleEXT(0);
 
 // GL_ARB_clear_buffer_object
 typedef void (GLAPIENTRY * PFNGLCLEARBUFFERDATAPROC) (
@@ -39,17 +39,17 @@ typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERDATAEXTPROC) (
 typedef void (GLAPIENTRY * PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC) (
 	GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const GLvoid * data);
 
-PFNGLCLEARBUFFERDATAPROC glClearBufferData(0);
-PFNGLCLEARBUFFERSUBDATAPROC glClearBufferSubData(0);
-PFNGLCLEARNAMEDBUFFERDATAEXTPROC glClearNamedBufferDataEXT(0);
-PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC glClearNamedBufferSubDataEXT(0);
+//PFNGLCLEARBUFFERDATAPROC glClearBufferData(0);
+//PFNGLCLEARBUFFERSUBDATAPROC glClearBufferSubData(0);
+//PFNGLCLEARNAMEDBUFFERDATAEXTPROC glClearNamedBufferDataEXT(0);
+//PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC glClearNamedBufferSubDataEXT(0);
 
 // GL_ARB_multi_draw_indirect
 typedef void (GLAPIENTRY * PFNGLMULTIDRAWARRAYSINDIRECTPROC) (GLenum mode, const void* indirect, GLsizei primcount, GLsizei stride);
 typedef void (GLAPIENTRY * PFNGLMULTIDRAWELEMENTSINDIRECTPROC) (GLenum mode, GLenum type, const void* indirect, GLsizei primcount, GLsizei stride);
 
-PFNGLMULTIDRAWARRAYSINDIRECTPROC glMultiDrawArraysIndirect(0);
-PFNGLMULTIDRAWELEMENTSINDIRECTPROC glMultiDrawElementsIndirect(0);
+//PFNGLMULTIDRAWARRAYSINDIRECTPROC glMultiDrawArraysIndirect(0);
+//PFNGLMULTIDRAWELEMENTSINDIRECTPROC glMultiDrawElementsIndirect(0);
 
 // GL_ARB_invalidate_subdata
 
@@ -58,8 +58,8 @@ typedef void (GLAPIENTRY * PFNGLINVALIDATETEXSUBIMAGEPROC) (
 typedef void (GLAPIENTRY * PFNGLINVALIDATETEXIMAGEPROC) (
 	GLuint texture, GLint level);
 
-PFNGLINVALIDATETEXSUBIMAGEPROC glInvalidateTexSubImage(0);
-PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
+//PFNGLINVALIDATETEXSUBIMAGEPROC glInvalidateTexSubImage(0);
+//PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
 
 /*
     void InvalidateBufferSubData(uint buffer, intptr offset, sizeiptr length);
@@ -84,7 +84,7 @@ PFNGLINVALIDATETEXIMAGEPROC glInvalidateTexImage(0);
 typedef void (GLAPIENTRY * PFNGLTEXTUREVIEWPROC) (
 	GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
 
-PFNGLTEXTUREVIEWPROC glTextureView(0);
+//PFNGLTEXTUREVIEWPROC glTextureView(0);
 
 // GL_ARB_shader_storage_buffer_object
 #define GL_SHADER_STORAGE_BUFFER                           0x90D2

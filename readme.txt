@@ -54,6 +54,18 @@ Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Launch the sample from the build output directory
 
 ================================================================================
+OpenGL Samples Pack 4.3.0.0: 2012-08-12
+--------------------------------------------------------------------------------
+- Added 430-texture-copy sample
+- Added 430-program-compute sample
+- Added 430-multi-draw-indirect sample
+- Added 430-interface-matching sample
+- Added 430-image-store sample
+- Added 430-draw-without-vertex-attrib sample
+- Added 430-direct-state-access sample
+- Added 430-atomic-counter sample
+
+================================================================================
 OpenGL Samples Pack 4.2.3.0: 2012-01-28
 --------------------------------------------------------------------------------
 - Added 420-blend-op-amd sample
