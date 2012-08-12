@@ -37,14 +37,18 @@ extern "C" {
 /* cl_khr_dx9_media_sharing                                                   */
 #define cl_khr_dx9_media_sharing 1
 
+typedef cl_uint             cl_dx9_media_adapter_type_khr;
+typedef cl_uint             cl_dx9_media_adapter_set_khr;
+    
+#if defined(_WIN32)
+#include <d3d9.h>
 typedef struct _cl_dx9_surface_info_khr
 {
     IDirect3DSurface9 *resource;
     HANDLE shared_handle;
 } cl_dx9_surface_info_khr;
-    
-typedef cl_uint             cl_media_adapter_type_khr;
-typedef cl_uint             cl_media_adapter_set_khr;
+#endif
+
 
 /******************************************************************************/
 
@@ -81,14 +85,15 @@ typedef cl_uint             cl_media_adapter_set_khr;
 
 /******************************************************************************/
 
-typedef CL_API_ENTRY cl_int (CL_API_CALL *clGetDeviceIDsForDX9MediaAdapterKHR_fn)(
-    cl_platform_id                 platform,
-    cl_dx9_media_adapter_type_khr  media_adapter_type,
-    void *                         media_adapter,
-    cl_dx9_media_adapter_set_khr   media_adapter_set,
-    cl_uint                        num_entries,
-    cl_device_id *                 devices,
-    cl_uint *                      num_devices) CL_API_SUFFIX__VERSION_1_2;
+typedef CL_API_ENTRY cl_int (CL_API_CALL *clGetDeviceIDsFromDX9MediaAdapterKHR_fn)(
+    cl_platform_id                   platform,
+    cl_uint                          num_media_adapters,
+    cl_dx9_media_adapter_type_khr *  media_adapter_type,
+    void *                           media_adapters,
+    cl_dx9_media_adapter_set_khr     media_adapter_set,
+    cl_uint                          num_entries,
+    cl_device_id *                   devices,
+    cl_uint *                        num_devices) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_mem (CL_API_CALL *clCreateFromDX9MediaSurfaceKHR_fn)(
     cl_context                    context,

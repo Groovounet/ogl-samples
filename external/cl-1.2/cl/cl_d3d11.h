@@ -80,27 +80,27 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *clGetDeviceIDsFromD3D11KHR_fn)(
     cl_d3d11_device_set_khr    d3d_device_set,
     cl_uint                    num_entries,
     cl_device_id *             devices,
-    cl_uint *                  num_devices) CL_API_SUFFIX__VERSION_1_0;
+    cl_uint *                  num_devices) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_mem (CL_API_CALL *clCreateFromD3D11BufferKHR_fn)(
     cl_context     context,
     cl_mem_flags   flags,
     ID3D11Buffer * resource,
-    cl_int *       errcode_ret) CL_API_SUFFIX__VERSION_1_0;
+    cl_int *       errcode_ret) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_mem (CL_API_CALL *clCreateFromD3D11Texture2DKHR_fn)(
     cl_context        context,
     cl_mem_flags      flags,
     ID3D11Texture2D * resource,
     UINT              subresource,
-    cl_int *          errcode_ret) CL_API_SUFFIX__VERSION_1_0;
+    cl_int *          errcode_ret) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_mem (CL_API_CALL *clCreateFromD3D11Texture3DKHR_fn)(
     cl_context        context,
     cl_mem_flags      flags,
     ID3D11Texture3D * resource,
     UINT              subresource,
-    cl_int *          errcode_ret) CL_API_SUFFIX__VERSION_1_0;
+    cl_int *          errcode_ret) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_int (CL_API_CALL *clEnqueueAcquireD3D11ObjectsKHR_fn)(
     cl_command_queue command_queue,
@@ -108,7 +108,7 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *clEnqueueAcquireD3D11ObjectsKHR_fn)(
     const cl_mem *   mem_objects,
     cl_uint          num_events_in_wait_list,
     const cl_event * event_wait_list,
-    cl_event *       event) CL_API_SUFFIX__VERSION_1_0;
+    cl_event *       event) CL_API_SUFFIX__VERSION_1_2;
 
 typedef CL_API_ENTRY cl_int (CL_API_CALL *clEnqueueReleaseD3D11ObjectsKHR_fn)(
     cl_command_queue command_queue,
@@ -116,7 +116,7 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *clEnqueueReleaseD3D11ObjectsKHR_fn)(
     const cl_mem *   mem_objects,
     cl_uint          num_events_in_wait_list,
     const cl_event * event_wait_list,
-    cl_event *       event) CL_API_SUFFIX__VERSION_1_0;
+    cl_event *       event) CL_API_SUFFIX__VERSION_1_2;
 
 #ifdef __cplusplus
 }
