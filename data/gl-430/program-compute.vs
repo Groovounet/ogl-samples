@@ -1,19 +1,24 @@
 #version 420 core
 #extension GL_ARB_shader_storage_buffer_object : require
 
-#define TRANSFORM0	1
-#define VERTEX		0
+#define POSITION	0
+#define COLOR		3
+#define TEXCOORD	4
+#define FRAG_COLOR	0
 
-layout(binding = TRANSFORM0) uniform transform
-{
-	mat4 MVP;
-} Transform;
+#define VERTEX		0
+#define TRANSFORM0		1
 
 struct vertex
 {
 	vec2 Position;
 	vec2 Texcoord;
 };
+
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 layout(binding = VERTEX) buffer mesh
 {

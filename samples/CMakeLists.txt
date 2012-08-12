@@ -8,6 +8,13 @@ function(glCreateSampleGTC NAME)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
 	add_executable(${SAMPLE_NAME} ${GL_PROFILE_GTC}-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
+	add_custom_command(
+		TARGET ${NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
+	add_custom_command(
+		TARGET ${NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_BINARY} ${CMAKE_CURRENT_BINARY_DIR})
+
 	add_test(NAME ${SAMPLE_NAME} COMMAND $<TARGET_FILE:${SAMPLE_NAME}>)
 	add_dependencies(${SAMPLE_NAME} ${TARGET_DATA_COPY})
 if(MSVC)
@@ -222,7 +229,7 @@ glCreateSampleGTC(fbo-layered-amd)
 set(GL_SHADER_GTC fbo-srgb-decode.vert fbo-srgb-decode.frag)
 glCreateSampleGTC(fbo-srgb-decode-ext)
 set(GL_SHADER_GTC interop.comp interop.vert interop.frag)
-glCreateSampleGTC(interop)
+#glCreateSampleGTC(interop)
 set(GL_SHADER_GTC interface-matching.vert interface-matching.cont interface-matching.eval interface-matching.geom interface-matching.frag)
 glCreateSampleGTC(interface-matching)
 set(GL_SHADER_GTC image-load.vert image-load.frag)
@@ -250,14 +257,13 @@ glCreateSampleGTC(texture-cube)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-pixel-store)
 set(GL_SHADER_GTC texture-shadow-color.vert texture-shadow-color.frag texture-shadow-depth.vert texture-shadow-depth.frag)
-glCreateSampleGTC(texture-shadow)
+#glCreateSampleGTC(texture-shadow)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-storage)
 set(GL_SHADER_GTC texture-conversion.vert texture-conversion-uint.frag texture-conversion-normalized.frag)
 glCreateSampleGTC(texture-conversion)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(texture-compressed)
-
 set(GL_SHADER_GTC feedback-stream.vert feedback-stream.frag transform-stream.vert transform-stream.geom)
 glCreateSampleGTC(transform-feedback-instanced)
 
@@ -276,6 +282,8 @@ set(GL_SHADER_GTC interface-matching.vert interface-matching.cont interface-matc
 glCreateSampleGTC(interface-matching)
 set(GL_SHADER_GTC multi-draw-indirect.vert multi-draw-indirect.frag)
 glCreateSampleGTC(multi-draw-indirect)
+set(GL_SHADER_GTC program-compute.vs program-compute.fs program-compute.cs)
+glCreateSampleGTC(program-compute)
 set(GL_SHADER_GTC texture-copy.vert texture-copy.frag)
 glCreateSampleGTC(texture-copy)
 set(GL_SHADER_GTC texture-view.vert texture-view.geom texture-view.frag)

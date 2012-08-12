@@ -2,8 +2,8 @@
 // OpenGL Samples Pack 
 // ogl-samples.g-truc.net
 //**********************************
-// OpenGL Immutable Texture 2D
-// 27/06/2011 - 15/08/2011
+// OpenGL Compute Program
+// 12/08/2012 - 12/08/2012
 //**********************************
 // Christophe Riccio
 // ogl-samples@g-truc.net
@@ -16,9 +16,10 @@
 
 namespace
 {
-	std::string const SAMPLE_NAME("OpenGL Immutable Texture 2D");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/texture-2d.frag");
+	std::string const SAMPLE_NAME("OpenGL Compute Program");
+	std::string const VS_SOURCE(glf::DATA_DIRECTORY + "gl-430/program-compute.vs");
+	std::string const FS_SOURCE(glf::DATA_DIRECTORY + "gl-430/program-compute.fs");
+	std::string const CS_SOURCE(glf::DATA_DIRECTORY + "gl-430/program-compute.cs");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
@@ -49,8 +50,8 @@ namespace
 	{
 		enum type
 		{
-			VERTEX,
-			FRAGMENT,
+			GRAPHICS,
+			COMPUTE,
 			MAX
 		};
 	}//namespace program
@@ -59,63 +60,63 @@ namespace
 	{
 		enum type
 		{
-			VERTEX,
 			ELEMENT,
+			INPUT,
+			OUTPUT,
 			TRANSFORM,
 			MAX
 		};
 	}//namespace buffer
-	 
-	GLuint PipelineName(0);
+
+	namespace semantics
+	{
+		enum type
+		{
+			INPUT,
+			OUTPUT
+		};
+	}//namespace semantics
+
+	GLuint PipelineName[program::MAX] = {0, 0};
 	GLuint ProgramName[program::MAX] = {0, 0};
 	GLuint VertexArrayName(0);
-	GLuint BufferName[buffer::MAX] = {0, 0, 0};
+	GLuint BufferName[buffer::MAX] = {0, 0, 0, 0};
 	GLuint TextureName(0);
-	GLuint64 TextureHandle(0);
-	GLuint TextureLocation(0);
-
-	//typedef void (GLAPIENTRY * PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC) (GLuint program, GLint location, GLuint64 value);
-	//typedef void (GLAPIENTRY * PFNGLMAKETEXTUREHANDLERESIDENTNVPROC) (GLuint64 handle);
-	//typedef GLuint64 (GLAPIENTRY * PFNGLTEXTUREHANDLENVPROC) (GLuint texture);
-
-	//PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC glProgramUniformHandleui64NV = 0;
-	//PFNGLMAKETEXTUREHANDLERESIDENTNVPROC glMakeTextureHandleResidentNV = 0;
-	//PFNGLTEXTUREHANDLENVPROC glGetTextureHandleNV = 0;
 }//namespace
 
 bool initProgram()
 {
 	bool Validated(true);
 	
-	glGenProgramPipelines(1, &PipelineName);
+	glGenProgramPipelines(program::MAX, PipelineName);
 
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VS_SOURCE);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FS_SOURCE);
+		GLuint ComputeShaderName = glf::createShader(GL_COMPUTE_SHADER, CS_SOURCE);
 
-		ProgramName[program::VERTEX] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::VERTEX], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::VERTEX], VertShaderName);
-		glLinkProgram(ProgramName[program::VERTEX]);
+		ProgramName[program::GRAPHICS] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::GRAPHICS], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::GRAPHICS], VertShaderName);
+		glAttachShader(ProgramName[program::GRAPHICS], FragShaderName);
+		glLinkProgram(ProgramName[program::GRAPHICS]);
 		glDeleteShader(VertShaderName);
-		Validated = Validated && glf::checkProgram(ProgramName[program::VERTEX]);
+		Validated = Validated && glf::checkProgram(ProgramName[program::GRAPHICS]);
 
-		ProgramName[program::FRAGMENT] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::FRAGMENT], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::FRAGMENT], FragShaderName);
-		glLinkProgram(ProgramName[program::FRAGMENT]);
-		glDeleteShader(FragShaderName);
-		Validated = Validated && glf::checkProgram(ProgramName[program::FRAGMENT]);
+		ProgramName[program::COMPUTE] = glCreateProgram();
+		glProgramParameteri(ProgramName[program::COMPUTE], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[program::COMPUTE], ComputeShaderName);
+		glLinkProgram(ProgramName[program::COMPUTE]);
+		glDeleteShader(ComputeShaderName);
+		Validated = Validated && glf::checkProgram(ProgramName[program::COMPUTE]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
-		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
+		glUseProgramStages(PipelineName[program::GRAPHICS], GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, ProgramName[program::GRAPHICS]);
+		glUseProgramStages(PipelineName[program::COMPUTE], GL_COMPUTE_SHADER_BIT, ProgramName[program::COMPUTE]);
 	}
-
-	TextureLocation = glGetUniformLocation(ProgramName[program::FRAGMENT], "Diffuse");
 
 	return Validated;
 }
@@ -130,8 +131,12 @@ bool initBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::INPUT]);
     glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::OUTPUT]);
+    glBufferData(GL_ARRAY_BUFFER, VertexSize, VertexData, GL_STATIC_COPY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	GLint UniformBufferOffset(0);
@@ -156,8 +161,6 @@ bool initTexture()
 	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, BufferName[buffer::VERTEX]);
 
 	glGenTextures(1, &TextureName);
 	glActiveTexture(GL_TEXTURE0);
@@ -184,12 +187,8 @@ bool initTexture()
 			GL_BGR, GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}
-
+	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-	// Query the texture handle and make the texture resident
-	TextureHandle = glGetTextureHandleNV(TextureName);
-	glMakeTextureHandleResidentNV(TextureHandle);
 
 	return Validated;
 }
@@ -200,7 +199,7 @@ bool initVertexArray()
 
 	glGenVertexArrays(1, &VertexArrayName);
     glBindVertexArray(VertexArrayName);
-		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
+		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::INPUT]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v2fv2f), GLF_BUFFER_OFFSET(sizeof(glm::vec2)));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -229,11 +228,6 @@ bool begin()
 {
 	bool Validated(true);
 	Validated = Validated && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Validated = Validated && glf::checkExtension("GL_NV_bindless_texture");
-
-	//glProgramUniformHandleui64NV = (PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC)glutGetProcAddress("glProgramUniformHandleui64NV");
-	//glMakeTextureHandleResidentNV = (PFNGLMAKETEXTUREHANDLERESIDENTNVPROC)glutGetProcAddress("glMakeTextureHandleResidentNV");
-	//glGetTextureHandleNV = (PFNGLTEXTUREHANDLENVPROC)glutGetProcAddress("glGetTextureHandleNV");
 
 	if(Validated && glf::checkExtension("GL_ARB_debug_output"))
 		Validated = initDebugOutput();
@@ -253,9 +247,9 @@ bool end()
 {
 	bool Validated(true);
 
-	glDeleteProgramPipelines(1, &PipelineName);
-	glDeleteProgram(ProgramName[program::FRAGMENT]);
-	glDeleteProgram(ProgramName[program::VERTEX]);
+	glDeleteProgramPipelines(program::MAX, PipelineName);
+	glDeleteProgram(ProgramName[program::GRAPHICS]);
+	glDeleteProgram(ProgramName[program::COMPUTE]);
 	glDeleteBuffers(buffer::MAX, BufferName);
 	glDeleteTextures(1, &TextureName);
 	glDeleteVertexArrays(1, &VertexArrayName);
@@ -285,18 +279,21 @@ void display()
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
+	glBindProgramPipeline(PipelineName[program::COMPUTE]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, semantics::INPUT, BufferName[buffer::INPUT]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, semantics::OUTPUT, BufferName[buffer::OUTPUT]);
+	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glDispatchCompute(GLuint(VertexCount), 1, 1);
+
 	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	// Bind rendering objects
-	glBindProgramPipeline(PipelineName);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, TextureName);
-
-	glProgramUniformHandleui64NV(ProgramName[program::FRAGMENT], TextureLocation, TextureHandle);
-
+	glBindProgramPipeline(PipelineName[program::GRAPHICS]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glBindVertexArray(VertexArrayName);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, semantics::INPUT, BufferName[buffer::OUTPUT]);
 
 	glDrawElementsInstancedBaseVertexBaseInstance(
 		GL_TRIANGLES, ElementCount, GL_UNSIGNED_SHORT, 0, 1, 0, 0);
