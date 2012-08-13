@@ -19,6 +19,6 @@ layout(binding = 0) uniform sampler2D Diffuse[3];
 
 void main()
 {
-	Color = texture(Diffuse[int(In.Texcoord.p)], In.Texcoord.st);
+	Color = texture(Diffuse[int(In.Texcoord.p + 0.5)], In.Texcoord.st);
 }
 

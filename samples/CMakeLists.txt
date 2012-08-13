@@ -234,6 +234,8 @@ set(GL_SHADER_GTC interface-matching.vert interface-matching.cont interface-matc
 glCreateSampleGTC(interface-matching)
 set(GL_SHADER_GTC image-load.vert image-load.frag)
 glCreateSampleGTC(image-load)
+set(GL_SHADER_GTC image-sampling.vert image-sampling.frag image-library.frag)
+glCreateSampleGTC(image-sampling)
 set(GL_SHADER_GTC image-store-write.vert image-store-write.frag image-store-read.vert image-store-read.frag)
 glCreateSampleGTC(image-store)
 set(GL_SHADER_GTC image-unpack.vert image-unpack.frag)

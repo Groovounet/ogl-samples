@@ -18,19 +18,19 @@ struct vertex
 	vec2 Texcoord;
 };
 
-layout(binding = BUFFER_INPUT) readonly buffer iBuffer
+layout(binding = BUFFER_INPUT) buffer iBuffer
 {
 	vertex Input[];
 } In;
 
-layout(binding = BUFFER_OUTPUT) writeonly buffer oBuffer
+layout(binding = BUFFER_OUTPUT) buffer oBuffer
 {
 	vertex Ouput[];
 } Out;
 
 void main()
 {	
-	Out.Ouput[gl_GlobalInvocationID].Texcoord = In.Input[gl_GlobalInvocationID].Texcoord;
-	Out.Ouput[gl_GlobalInvocationID].Position = In.Input[gl_GlobalInvocationID].Position;
-	//Out.Ouput[gl_GlobalInvocationID].Position = vec2(Transform.MVP * vec4(In.Input[gl_GlobalInvocationID].Position, 0.0, 1.0));
+	Out.Ouput[gl_LocalInvocationIndex].Texcoord = In.Input[gl_LocalInvocationIndex].Texcoord;
+	Out.Ouput[gl_LocalInvocationIndex].Position = In.Input[gl_LocalInvocationIndex].Position;
+	//Out.Ouput[gl_LocalInvocationIndex].Position = vec2(Transform.MVP * vec4(In.Input[gl_LocalInvocationIndex].Position, 0.0, 1.0));
 }
