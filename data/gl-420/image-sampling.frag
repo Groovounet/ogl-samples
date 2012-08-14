@@ -5,11 +5,12 @@
 #define TEXCOORD	4
 #define FRAG_COLOR	0
 
-layout(binding = 0, rgba8) uniform image2D Diffuse;
+layout(binding = 0, rgba8) uniform image2D Diffuse[3];
 
 in block
 {
 	vec2 Texcoord;
+	flat mediump int Instance;
 } In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
@@ -26,9 +27,11 @@ vec4 fetchBilinear(layout(rgba8) in image2D Image, in vec2 Interpolant, in ivec2
 	return mix(Texel0, Texel1, Interpolant.x);
 }
 
-vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord)
+vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord, in mediump int Instance)
 {
-	ivec2 Size = ivec2(256);
+	const ivec2 SizeArray[3] = ivec2[3](ivec2(256), ivec2(128), ivec2(64));
+
+	ivec2 Size = SizeArray[Instance];
 	vec2 Texelcoord = Texcoord * Size - 0.5;
 	ivec2 TexelIndex = ivec2(Texelcoord);
 	
@@ -46,5 +49,5 @@ vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord)
 
 void main()
 {
-	Color = imageBilinear(Diffuse, In.Texcoord);
+	Color = imageBilinear(Diffuse[In.Instance], In.Texcoord, In.Instance);
 }

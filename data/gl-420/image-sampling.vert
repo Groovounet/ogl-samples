@@ -26,10 +26,12 @@ out gl_PerVertex
 out block
 {
 	vec2 Texcoord;
+	flat mediump int Instance;
 } Out;
 
 void main()
 {	
+	Out.Instance = mediump int(gl_InstanceID);
 	Out.Texcoord = Texcoord;
-	gl_Position = Transform.MVP * vec4(Position, 0.0, 1.0);
+	gl_Position = Transform.MVP * vec4(Position.x - 2.0 + float(gl_InstanceID) * 2.0, Position.y, 0.0, 1.0);
 }
