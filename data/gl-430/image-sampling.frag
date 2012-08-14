@@ -1,4 +1,5 @@
 #version 420 core
+#extension GL_ARB_shader_image_size : require
 
 #define POSITION	0
 #define COLOR		3
@@ -27,11 +28,12 @@ vec4 fetchBilinear(layout(rgba8) in image2D Image, in vec2 Interpolant, in ivec2
 	return mix(Texel0, Texel1, Interpolant.x);
 }
 
-vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord, in mediump int Instance)
+vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord)
 {
-	const ivec2 SizeArray[3] = ivec2[3](ivec2(256), ivec2(128), ivec2(64));
+	//const ivec2 SizeArray[3] = ivec2[3](ivec2(256), ivec2(128), ivec2(64));
+	//ivec2 Size = SizeArray[Instance];
 
-	ivec2 Size = SizeArray[Instance];
+	ivec2 Size = imageSize(Image);
 	vec2 Texelcoord = Texcoord * Size - 0.5;
 	ivec2 TexelIndex = ivec2(Texelcoord);
 	
@@ -49,5 +51,5 @@ vec4 imageBilinear(layout(rgba8) in image2D Image, in vec2 Texcoord, in mediump 
 
 void main()
 {
-	Color = imageBilinear(Diffuse[In.Instance], In.Texcoord, In.Instance);
+	Color = imageBilinear(Diffuse[In.Instance], In.Texcoord);
 }
