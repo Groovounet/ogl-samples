@@ -20,7 +20,7 @@ in gl_PerVertex
 	float gl_ClipDistance[];
 } gl_in[];
 
-layout(location = 0) in vertex st_In[][2];
+layout(location = 0) in vertex st_In[];
 
 in block
 {
@@ -53,10 +53,10 @@ void main()
 	for(int i = 0; i < gl_in.length(); ++i)
 	{
 		gl_Position = gl_in[i].gl_Position;
-		ColorGNI = st_In[i][0].Color + st_In[i][1].Color;
-		st_Out.Color = st_In[i][0].Color + st_In[i][1].Color;
+		ColorGNI = st_In[i].Color;
+		st_Out.Color = st_In[i].Color;
 		bl_Out.Color = bl_In[i].Color;
-		bl_Pou.Color = st_In[i][0].Color + bl_In[i].Color;
+		bl_Pou.Color = st_In[i].Color + bl_In[i].Color;
 		EmitVertex();
 	}
 	EndPrimitive();

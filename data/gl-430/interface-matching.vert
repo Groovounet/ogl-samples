@@ -26,7 +26,7 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
-layout(location = 0) out vertex st_Out[2];
+layout(location = 0) out vertex st_Out;
 
 out block
 {
@@ -36,7 +36,6 @@ out block
 void main()
 {	
 	gl_Position = Transform.MVP * vec4((Position[0] + Position[1]) * 0.5, 0.0, 1.0);
-	st_Out[0].Color = Color * 0.25;
-	st_Out[1].Color = Color * 0.50;
+	st_Out.Color = Color * 0.75;
 	bl_Out.Color = Color * 0.25;
 }

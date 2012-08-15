@@ -268,6 +268,12 @@ bool validate(GLuint const & ProgramName)
 
 	for(GLint i = 0; i < ActiveAttribute; ++i)
 	{
+		GLenum Props[3] = {GL_TYPE, GL_ARRAY_SIZE, GL_LOCATION};
+		GLint Params[3];
+		GLsizei Length(0);
+		glGetProgramResourceiv(ProgramName, GL_PROGRAM_INPUT, i, 3, Props, 3, &Length, Params);
+
+		glf::vertexattrib VertexAttrib;
 		glGetActiveAttrib(ProgramName,
  			GLuint(i),
  			GLsizei(ActiveAttributeMaxLength),
@@ -283,7 +289,6 @@ bool validate(GLuint const & ProgramName)
 
 		GLint AttribLocation = glGetAttribLocation(ProgramName, NameString.c_str());
 
-		glf::vertexattrib VertexAttrib;
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &VertexAttrib.Enabled);
 		//glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &VertexAttrib.Binding);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_SIZE, &VertexAttrib.Size);
@@ -291,7 +296,7 @@ bool validate(GLuint const & ProgramName)
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_TYPE, &VertexAttrib.Type);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &VertexAttrib.Normalized);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &VertexAttrib.Integer);
-        glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &VertexAttrib.Divisor);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &VertexAttrib.Divisor);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttrib.Long);
 		glGetVertexAttribPointerv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_POINTER, &VertexAttrib.Pointer);
 
@@ -321,22 +326,22 @@ bool validate(GLuint const & ProgramName)
 			//GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, and GL_DOUBLE
 		}
 		else if(VertexAttrib.Long == GL_TRUE) 
-        {
-            if(!(
+		{
+			if(!(
 				VertexAttrib.Type == GL_DOUBLE || 
-			    VertexAttrib.Type == GL_DOUBLE_VEC2 || 
-			    VertexAttrib.Type == GL_DOUBLE_VEC3 || 
-			    VertexAttrib.Type == GL_DOUBLE_VEC4 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT2 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT3 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT4 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT2x3 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT2x4 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT3x2 ||
-			    VertexAttrib.Type == GL_DOUBLE_MAT3x4 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT4x2 || 
-			    VertexAttrib.Type == GL_DOUBLE_MAT4x3))
-			    return true;
+				VertexAttrib.Type == GL_DOUBLE_VEC2 || 
+				VertexAttrib.Type == GL_DOUBLE_VEC3 || 
+				VertexAttrib.Type == GL_DOUBLE_VEC4 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT2 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT3 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT4 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT2x3 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT2x4 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT3x2 ||
+				VertexAttrib.Type == GL_DOUBLE_MAT3x4 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT4x2 || 
+				VertexAttrib.Type == GL_DOUBLE_MAT4x3))
+				return true;
 		}
 		else// if((VertexAttrib.Normalized == GL_TRUE) || (GL_VERTEX_ATTRIB_ARRAY_FLOAT == GL_TRUE))
 		{
