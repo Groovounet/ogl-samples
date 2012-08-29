@@ -5,7 +5,7 @@
 #define DIFFUSE			0
 
 in vec4 gl_FragCoord;
-layout(binding = 0, rgba8) coherent uniform image2D Diffuse;
+layout(binding = 0, rgba8) uniform image2D Diffuse;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
 
