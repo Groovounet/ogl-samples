@@ -99,7 +99,8 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/${FREEGLUT_DIRECTORY}/lib/
 if(WIN32)
 	set(FREEGLUT_LIBRARY freeglut_static)
 elseif(UNIX)
-	set(FREEGLUT_LIBRARY freeglut)
+	find_package(GLUT)
+	set(FREEGLUT_LIBRARY glut)
 endif(WIN32)
 
 ################################
