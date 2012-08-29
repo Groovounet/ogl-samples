@@ -21,7 +21,6 @@ namespace
 	std::string const FRAG_SHADER_SOURCE_AA(glf::DATA_DIRECTORY + "gl-420/primitive-line-aa.frag");
 	std::string const VERT_SHADER_SOURCE_SPLASH(glf::DATA_DIRECTORY + "gl-420/primitive-line-splash.vert");
 	std::string const FRAG_SHADER_SOURCE_SPLASH(glf::DATA_DIRECTORY + "gl-420/primitive-line-splash.frag");
-	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
@@ -48,7 +47,6 @@ namespace
 		{
 			MULTISAMPLE,
 			COLOR,
-			DIFFUSE,
 			MAX
 		};
 	}//namespace texture
@@ -140,10 +138,12 @@ bool initBuffer()
 {
 	bool Validated(true);
 
-	std::size_t Count(361);
+	std::size_t const Count(360);
+	float const Step(360.f / float(Count));
+
 	VertexData.resize(Count);
 	for(std::size_t i = 0; i < Count; ++i)
-		VertexData[i] = glm::vec2(glm::sin(glm::radians(float(i))), glm::cos(glm::radians(float(i))));
+		VertexData[i] = glm::vec2(glm::sin(glm::radians(Step * float(i))), glm::cos(glm::radians(Step * float(i))));
 
 	glGenBuffers(buffer::MAX, BufferName);
 
@@ -226,38 +226,7 @@ bool initTexture()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	{
-		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
-		assert(!Texture.empty());
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-		for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
-		{
-			glTexSubImage2D(
-				GL_TEXTURE_2D, 
-				GLint(Level), 
-				0, 0, 
-				GLsizei(Texture[Level].dimensions().x), 
-				GLsizei(Texture[Level].dimensions().y), 
-				GL_BGR, GL_UNSIGNED_BYTE, 
-				Texture[Level].data());
-		}
 	
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	}
-
 	return Validated;
 }
 
@@ -342,7 +311,7 @@ void display()
 	glBindVertexArray(VertexArrayName[pipeline::MULTISAMPLE]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
-	glDrawArraysInstancedBaseInstance(GL_LINE_STRIP, 0, GLsizei(VertexData.size()), 3, 0);
+	glDrawArraysInstancedBaseInstance(GL_LINE_LOOP, 0, GLsizei(VertexData.size()), 3, 0);
 
 	//////////////////////////
 	// Resolving multisampling
