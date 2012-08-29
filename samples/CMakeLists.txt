@@ -242,6 +242,8 @@ set(GL_SHADER_GTC memory-barrier-update.vert memory-barrier-update.frag memory-b
 glCreateSampleGTC(memory-barrier)
 set(GL_SHADER_GTC picking.vert picking.frag picking.geom)
 glCreateSampleGTC(picking)
+set(GL_SHADER_GTC primitive-line-aa.vert primitive-line-aa.frag)
+glCreateSampleGTC(primitive-line-aa)
 set(GL_SHADER_GTC texture-2d.vert texture-2d.frag)
 glCreateSampleGTC(primitive-bindless-nv)
 set(GL_SHADER_GTC sampler-fetch.vert sampler-fetch.frag sampler-library.frag)
