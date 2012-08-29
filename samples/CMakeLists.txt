@@ -7,7 +7,7 @@ function(glCreateSampleGTC NAME)
 	endforeach(FILE)
 
 	source_group("Shader Files" FILES ${SHADER_PATH})
-	add_executable(${SAMPLE_NAME} ${GL_PROFILE_GTC}-${GL_VERSION_GTC}-${NAME} ${SHADER_PATH})
+	add_executable(${SAMPLE_NAME} ${GL_PROFILE_GTC}-${GL_VERSION_GTC}-${NAME}.cpp ${SHADER_PATH})
 	add_custom_command(
 		TARGET ${NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
