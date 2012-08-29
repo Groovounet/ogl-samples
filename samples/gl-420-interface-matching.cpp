@@ -270,7 +270,7 @@ bool validate(GLuint const & ProgramName)
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &VertexAttrib.Normalized);
 		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &VertexAttrib.Integer);
         glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &VertexAttrib.Divisor);
-		//glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttrib.Long);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttrib.Long);
 		glGetVertexAttribPointerv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_POINTER, &VertexAttrib.Pointer);
 
 		if(GL_VERTEX_ATTRIB_ARRAY_INTEGER == GL_TRUE)
@@ -298,7 +298,7 @@ bool validate(GLuint const & ProgramName)
 			//if(AttribSize > 1)
 			//GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, and GL_DOUBLE
 		}
-		else //if(VertexAttrib.Long == GL_TRUE) // OpenGL Spec bug 
+		else if(VertexAttrib.Long == GL_TRUE) // OpenGL Spec bug 
         {
             if( VertexAttrib.Type == GL_DOUBLE || 
 			    VertexAttrib.Type == GL_DOUBLE_VEC2 || 

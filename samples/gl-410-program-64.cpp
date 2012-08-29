@@ -157,6 +157,142 @@ bool initVertexArray()
 	return glf::checkError("initVertexArray");
 }
 
+bool validate(GLuint const & ProgramName)
+{
+	bool Error = false;
+
+	// Pipeline object validation
+	{
+		GLint Status(0);
+		GLint LengthMax(0);
+		glValidateProgramPipeline(PipelineName);
+		glGetProgramPipelineiv(PipelineName, GL_VALIDATE_STATUS, &Status);
+		glGetProgramPipelineiv(PipelineName, GL_INFO_LOG_LENGTH, &LengthMax);
+
+		GLsizei LengthQuery(0);
+		std::vector<GLchar> InfoLog(LengthMax + 1, '\0');
+		glGetProgramPipelineInfoLog(PipelineName, GLsizei(InfoLog.size()), &LengthQuery, &InfoLog[0]);
+
+		glDebugMessageInsertARB(
+			GL_DEBUG_SOURCE_APPLICATION_ARB, 
+			GL_DEBUG_TYPE_OTHER_ARB, 76,
+			GL_DEBUG_SEVERITY_LOW_ARB,
+			LengthQuery, 
+			&InfoLog[0]);
+	}
+
+	GLint ActiveAttributeMaxLength(0);
+	GLint ActiveAttribute(0);
+	glGetProgramiv(ProgramName, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveAttributeMaxLength);
+	glGetProgramiv(ProgramName, GL_ACTIVE_ATTRIBUTES, &ActiveAttribute);
+
+	GLsizei AttribLength(0);
+	GLint AttribSize(0);
+	GLenum AttribType(0);
+	std::vector<GLchar> AttribName(ActiveAttributeMaxLength, '\0');
+
+	for(GLint i = 0; i < ActiveAttribute; ++i)
+	{
+		glGetActiveAttrib(ProgramName,
+ 			GLuint(i),
+ 			GLsizei(ActiveAttributeMaxLength),
+ 			&AttribLength,
+ 			&AttribSize,
+ 			&AttribType,
+ 			&AttribName[0]);
+
+		std::string NameString;
+		NameString.insert(NameString.begin(), AttribName.begin(), AttribName.end());
+		std::vector<GLchar> NameSwap(ActiveAttributeMaxLength, '\0');
+		std::swap(AttribName, NameSwap);
+
+		GLint AttribLocation = glGetAttribLocation(ProgramName, NameString.c_str());
+
+		glf::vertexattrib VertexAttrib;
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &VertexAttrib.Enabled);
+		//glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &VertexAttrib.Binding);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_SIZE, &VertexAttrib.Size);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &VertexAttrib.Stride);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_TYPE, &VertexAttrib.Type);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &VertexAttrib.Normalized);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &VertexAttrib.Integer);
+        glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &VertexAttrib.Divisor);
+		glGetVertexAttribiv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_LONG, &VertexAttrib.Long);
+		glGetVertexAttribPointerv(AttribLocation, GL_VERTEX_ATTRIB_ARRAY_POINTER, &VertexAttrib.Pointer);
+
+		if(VertexAttrib.Integer == GL_TRUE)
+		{
+			if(!(
+				VertexAttrib.Type == GL_INT ||  
+				VertexAttrib.Type == GL_INT_VEC2 || 
+				VertexAttrib.Type == GL_INT_VEC3 || 
+				VertexAttrib.Type == GL_INT_VEC4 || 
+				VertexAttrib.Type == GL_UNSIGNED_INT || 
+				VertexAttrib.Type == GL_UNSIGNED_INT_VEC2 || 
+				VertexAttrib.Type == GL_UNSIGNED_INT_VEC3 || 
+				VertexAttrib.Type == GL_UNSIGNED_INT_VEC4))
+				return true;
+
+			if(!(
+				VertexAttrib.Type == GL_BYTE || 
+				VertexAttrib.Type == GL_UNSIGNED_BYTE || 
+				VertexAttrib.Type == GL_SHORT || 
+				VertexAttrib.Type == GL_UNSIGNED_SHORT || 
+				VertexAttrib.Type == GL_INT || 
+				VertexAttrib.Type == GL_UNSIGNED_INT))
+				return true;
+
+			//if(AttribSize > 1)
+			//GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, and GL_DOUBLE
+		}
+		else if(VertexAttrib.Long == GL_TRUE) // OpenGL Spec bug 
+        {
+            if( VertexAttrib.Type == GL_DOUBLE || 
+			    VertexAttrib.Type == GL_DOUBLE_VEC2 || 
+			    VertexAttrib.Type == GL_DOUBLE_VEC3 || 
+			    VertexAttrib.Type == GL_DOUBLE_VEC4 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT2 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT3 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT4 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT2x3 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT2x4 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT3x2 ||
+			    VertexAttrib.Type == GL_DOUBLE_MAT3x4 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT4x2 || 
+			    VertexAttrib.Type == GL_DOUBLE_MAT4x3)
+		    {
+			    if(VertexAttrib.Type != GL_DOUBLE)
+				    return true;
+		    }
+		    else// if((VertexAttrib.Normalized == GL_TRUE) || (GL_VERTEX_ATTRIB_ARRAY_FLOAT == GL_TRUE))
+		    {
+			    if(!(
+				    VertexAttrib.Type == GL_FLOAT ||  
+				    VertexAttrib.Type == GL_FLOAT_VEC2 || 
+				    VertexAttrib.Type == GL_FLOAT_VEC3 || 
+				    VertexAttrib.Type == GL_FLOAT_VEC4 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT2 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT3 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT4 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT2x3 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT2x4 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT3x2 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT3x4 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT4x2 || 
+				    VertexAttrib.Type == GL_FLOAT_MAT4x3))
+				    return true;
+
+			    // It could be any vertex array attribute type
+		    }
+        }
+
+		printf("glGetActiveAttrib(\n\t%d, \n\t%d, \n\t%d, \n\t%d, \n\t%d, \n\t%s)\n", 
+			i, AttribLocation, AttribLength, AttribSize, AttribType, NameString.c_str());
+	}
+
+	return Error;
+}
+
 bool begin()
 {
 	bool Validated = glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
@@ -203,6 +339,8 @@ void display()
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(0.0f)[0]);
 
 	glBindProgramPipeline(PipelineName);
+
+	validate(ProgramName[program::VERT]);
 
 	glBindVertexArray(VertexArrayName);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferName[buffer::ELEMENT]);
