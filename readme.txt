@@ -47,11 +47,20 @@ The samples run only when launched from Visual C++ IDE.
 ================================================================================
 Linux G++ instructions
 --------------------------------------------------------------------------------
-Tested on Ubuntu 11.04 on a NVIDIA platform:
 - Install FreeGLUT package
-- Download GLEW 1.7.0 (http://glew.sourceforge.net) and install depend packages
+- Download GLEW 1.9.0 (http://glew.sourceforge.net) and install depend packages
 - Run CMake to create a makefile for G++
 - Launch the sample from the build output directory
+
+================================================================================
+OpenGL Samples Pack 4.3.0.1: 2012-08-30
+--------------------------------------------------------------------------------
+- Added 430-texture-view sample
+- Added 430-image-sampling sample
+- Added 430-program-subroutine sample
+- Added 420-primitive-line-aa sample
+- Fixed 430-multi-draw-indirect, precision issue
+- Fixed 430-interface-matching
 
 ================================================================================
 OpenGL Samples Pack 4.3.0.0: 2012-08-12
