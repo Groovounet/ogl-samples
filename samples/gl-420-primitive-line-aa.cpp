@@ -17,27 +17,20 @@
 namespace
 {
 	std::string const SAMPLE_NAME("OpenGL Primitive Line AA");
-	std::string const VERT_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/primitive-line-aa.vert");
-	std::string const FRAG_SHADER_SOURCE(glf::DATA_DIRECTORY + "gl-420/primitive-line-aa.frag");
+	std::string const VERT_SHADER_SOURCE_AA(glf::DATA_DIRECTORY + "gl-420/primitive-line-aa.vert");
+	std::string const FRAG_SHADER_SOURCE_AA(glf::DATA_DIRECTORY + "gl-420/primitive-line-aa.frag");
+	std::string const VERT_SHADER_SOURCE_SPLASH(glf::DATA_DIRECTORY + "gl-420/primitive-line-splash.vert");
+	std::string const FRAG_SHADER_SOURCE_SPLASH(glf::DATA_DIRECTORY + "gl-420/primitive-line-splash.frag");
 	std::string const TEXTURE_DIFFUSE(glf::DATA_DIRECTORY + "kueken1-bgr8.dds");
 	int const SAMPLE_SIZE_WIDTH(640);
 	int const SAMPLE_SIZE_HEIGHT(480);
 	int const SAMPLE_MAJOR_VERSION(4);
 	int const SAMPLE_MINOR_VERSION(2);
+	glm::uvec2 const FRAMEBUFFER_SIZE(80, 60);
 
 	glf::window Window(glm::ivec2(SAMPLE_SIZE_WIDTH, SAMPLE_SIZE_HEIGHT));
 
 	std::vector<glm::vec2> VertexData;
-
-	namespace program
-	{
-		enum type
-		{
-			VERTEX,
-			FRAGMENT,
-			MAX
-		};
-	}//namespace program
 
 	namespace buffer
 	{
@@ -54,47 +47,90 @@ namespace
 		enum type
 		{
 			MULTISAMPLE,
-			COLOR
+			COLOR,
+			DIFFUSE,
+			MAX
 		};
 	}//namespace texture
 
-	GLuint PipelineName(0);
-	GLuint ProgramName[program::MAX] = {0, 0};
-	GLuint VertexArrayName(0);
+	namespace framebuffer
+	{
+		enum type
+		{
+			MULTISAMPLE,
+			COLOR,
+			MAX
+		};
+	}//namespace framebuffer
+
+	namespace pipeline
+	{
+		enum type
+		{
+			MULTISAMPLE,
+			SPLASH,
+			MAX
+		};
+	}//namespace pipeline
+
+	GLuint VertexArrayName[pipeline::MAX] = {0, 0};
+	GLuint PipelineName[pipeline::MAX] = {0, 0};
+	GLuint ProgramName[pipeline::MAX] = {0, 0};
+	GLuint FramebufferName[framebuffer::MAX] = {0, 0};
 	GLuint BufferName[buffer::MAX] = {0, 0};
-	GLuint TextureName(0);
+	GLuint TextureName[texture::MAX] = {0, 0};
 }//namespace
 
 bool initProgram()
 {
 	bool Validated(true);
 	
-	glGenProgramPipelines(1, &PipelineName);
+	glGenProgramPipelines(pipeline::MAX, PipelineName);
 
 	if(Validated)
 	{
-		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE);
-		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE);
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_AA);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_AA);
 
-		ProgramName[program::VERTEX] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::VERTEX], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::VERTEX], VertShaderName);
-		glLinkProgram(ProgramName[program::VERTEX]);
+		ProgramName[pipeline::MULTISAMPLE] = glCreateProgram();
+		glProgramParameteri(ProgramName[pipeline::MULTISAMPLE], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[pipeline::MULTISAMPLE], VertShaderName);
+		glAttachShader(ProgramName[pipeline::MULTISAMPLE], FragShaderName);
+		glLinkProgram(ProgramName[pipeline::MULTISAMPLE]);
 		glDeleteShader(VertShaderName);
-		Validated = Validated && glf::checkProgram(ProgramName[program::VERTEX]);
-
-		ProgramName[program::FRAGMENT] = glCreateProgram();
-		glProgramParameteri(ProgramName[program::FRAGMENT], GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glAttachShader(ProgramName[program::FRAGMENT], FragShaderName);
-		glLinkProgram(ProgramName[program::FRAGMENT]);
 		glDeleteShader(FragShaderName);
-		Validated = Validated && glf::checkProgram(ProgramName[program::FRAGMENT]);
+		Validated = Validated && glf::checkProgram(ProgramName[pipeline::MULTISAMPLE]);
 	}
 
 	if(Validated)
 	{
-		glUseProgramStages(PipelineName, GL_VERTEX_SHADER_BIT, ProgramName[program::VERTEX]);
-		glUseProgramStages(PipelineName, GL_FRAGMENT_SHADER_BIT, ProgramName[program::FRAGMENT]);
+		glUseProgramStages(
+			PipelineName[pipeline::MULTISAMPLE], 
+			GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, 
+			ProgramName[pipeline::MULTISAMPLE]);
+	}
+
+	if(Validated)
+	{
+		GLuint VertShaderName = glf::createShader(GL_VERTEX_SHADER, VERT_SHADER_SOURCE_SPLASH);
+		GLuint FragShaderName = glf::createShader(GL_FRAGMENT_SHADER, FRAG_SHADER_SOURCE_SPLASH);
+
+		ProgramName[pipeline::SPLASH] = glCreateProgram();
+		glProgramParameteri(ProgramName[pipeline::SPLASH], GL_PROGRAM_SEPARABLE, GL_TRUE);
+		glAttachShader(ProgramName[pipeline::SPLASH], VertShaderName);
+		glAttachShader(ProgramName[pipeline::SPLASH], FragShaderName);
+		glLinkProgram(ProgramName[pipeline::SPLASH]);
+		glDeleteShader(VertShaderName);
+		glDeleteShader(FragShaderName);
+		Validated = Validated && glf::checkProgram(ProgramName[pipeline::SPLASH]);
+	}
+
+	if(Validated)
+	{
+		glUseProgramStages(
+			PipelineName[pipeline::SPLASH], 
+			GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT, 
+			ProgramName[pipeline::SPLASH]);
 	}
 
 	return Validated;
@@ -130,51 +166,13 @@ bool initBuffer()
 	return Validated;
 }
 
-bool initTexture()
-{
-	bool Validated(true);
-
-	gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glGenTextures(1, &TextureName);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-
-	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
-	{
-		glTexSubImage2D(
-			GL_TEXTURE_2D, 
-			GLint(Level), 
-			0, 0, 
-			GLsizei(Texture[Level].dimensions().x), 
-			GLsizei(Texture[Level].dimensions().y), 
-			GL_BGR, GL_UNSIGNED_BYTE, 
-			Texture[Level].data());
-	}
-	
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-	return Validated;
-}
-
 bool initVertexArray()
 {
 	bool Validated(true);
 
-	glGenVertexArrays(1, &VertexArrayName);
-    glBindVertexArray(VertexArrayName);
+	glGenVertexArrays(pipeline::MAX, VertexArrayName);
+
+    glBindVertexArray(VertexArrayName[pipeline::MULTISAMPLE]);
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), GLF_BUFFER_OFFSET(0));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -182,33 +180,24 @@ bool initVertexArray()
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
 	glBindVertexArray(0);
 
+	glBindVertexArray(VertexArrayName[pipeline::SPLASH]);
+	glBindVertexArray(0);
+
 	return Validated;
 }
 
 bool initFramebuffer()
 {
-	glGenTextures(1, &MultisampleTextureName);
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
+	glGenFramebuffers(framebuffer::MAX, FramebufferName);
 
-	// The second parameter is the number of samples.
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
-
-	glGenFramebuffers(1, &FramebufferRenderName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, MultisampleTextureName, 0);
-
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName[framebuffer::MULTISAMPLE]);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName[texture::MULTISAMPLE], 0);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glGenTextures(1, &ColorTextureName);
-	glBindTexture(GL_TEXTURE_2D, ColorTextureName);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-	glGenFramebuffers(1, &FramebufferResolveName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferResolveName);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ColorTextureName, 0);
-
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName[framebuffer::COLOR]);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TextureName[texture::COLOR], 0);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		return false;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -220,22 +209,54 @@ bool initTexture()
 {
 	bool Validated(true);
 
-	glGenTextures(texture::MAX, &TextureName);
+	glGenTextures(texture::MAX, TextureName);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::MULTISAMPLE]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+	{
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::MULTISAMPLE]);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+	}
 
-	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLOR]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	{
+		glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLOR]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	{
+		gli::texture2D Texture = gli::load(TEXTURE_DIFFUSE);
+		assert(!Texture.empty());
 
-	return Validated;
-}
-
-bool initFramebuffer()
-{
-	bool Validated(true);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureName[texture::DIFFUSE]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
+		for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
+		{
+			glTexSubImage2D(
+				GL_TEXTURE_2D, 
+				GLint(Level), 
+				0, 0, 
+				GLsizei(Texture[Level].dimensions().x), 
+				GLsizei(Texture[Level].dimensions().y), 
+				GL_BGR, GL_UNSIGNED_BYTE, 
+				Texture[Level].data());
+		}
+	
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	}
 
 	return Validated;
 }
@@ -276,11 +297,12 @@ bool end()
 {
 	bool Validated(true);
 
-	glDeleteProgramPipelines(1, &PipelineName);
-	glDeleteProgram(ProgramName[program::FRAGMENT]);
-	glDeleteProgram(ProgramName[program::VERTEX]);
+	glDeleteBuffers(texture::MAX, TextureName);
+	glDeleteProgramPipelines(pipeline::MAX, PipelineName);
+	glDeleteProgram(ProgramName[pipeline::MULTISAMPLE]);
+	glDeleteProgram(ProgramName[pipeline::SPLASH]);
 	glDeleteBuffers(buffer::MAX, BufferName);
-	glDeleteVertexArrays(1, &VertexArrayName);
+	glDeleteVertexArrays(pipeline::MAX, VertexArrayName);
 
 	return Validated;
 }
@@ -307,16 +329,45 @@ void display()
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
-	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
+	//////////////////////////////
+	// Render multisampled texture
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName[framebuffer::MULTISAMPLE]);
+	//glEnable(GL_MULTISAMPLE);
+	glViewportIndexedf(0, 0, 0, GLfloat(FRAMEBUFFER_SIZE.x), GLfloat(FRAMEBUFFER_SIZE.y));
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)[0]);
 
-	// Bind rendering objects
-	glBindProgramPipeline(PipelineName);
-	glBindVertexArray(VertexArrayName);
+	glBindProgramPipeline(PipelineName[pipeline::MULTISAMPLE]);
+	glBindVertexArray(VertexArrayName[pipeline::MULTISAMPLE]);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
 
-	glDrawArraysInstancedBaseInstance(GL_LINE_STRIP, 0, GLsizei(VertexData.size()), 1, 0);
+	glDrawArraysInstancedBaseInstance(GL_LINE_STRIP, 0, GLsizei(VertexData.size()), 3, 0);
 
+	//////////////////////////
+	// Resolving multisampling
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FramebufferName[framebuffer::MULTISAMPLE]);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FramebufferName[framebuffer::COLOR]);
+	glBlitFramebuffer(
+		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
+		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//////////////////////////////////////
+	// Render resolved multisample texture
+
+	glViewportIndexedf(0, 0, 0, GLfloat(Window.Size.x), GLfloat(Window.Size.y));
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glDisable(GL_MULTISAMPLE);
+	glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, TextureName[texture::MULTISAMPLE]);
+	glBindTexture(GL_TEXTURE_2D, TextureName[texture::COLOR]);
+	glBindVertexArray(VertexArrayName[pipeline::SPLASH]);
+	glBindProgramPipeline(PipelineName[pipeline::SPLASH]);
+
+	glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, 6, 1, 0);
+	
 	glf::swapBuffers();
 }
 

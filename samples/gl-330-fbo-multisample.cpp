@@ -159,7 +159,7 @@ bool initFramebuffer()
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MultisampleTextureName);
 
 	// The second parameter is the number of samples.
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, GL_TRUE);
 
 	glGenFramebuffers(1, &FramebufferRenderName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferRenderName);
@@ -310,7 +310,7 @@ void display()
 	glBlitFramebuffer(
 		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
 		0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y, 
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Pass 2

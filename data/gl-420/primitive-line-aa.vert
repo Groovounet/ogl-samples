@@ -21,5 +21,5 @@ out gl_PerVertex
 
 void main()
 {	
-	gl_Position = Transform.MVP * vec4(Position, 0.0, 1.0);
+	gl_Position = Transform.MVP * vec4(Position.x - 1.0 + gl_InstanceID, Position.y, 0.0, 1.0);
 }
