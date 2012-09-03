@@ -123,6 +123,30 @@ PFNGLVERTEXARRAYBINDVERTEXBINDINGDIVISOREXTPROC glVertexArrayVertexBindingDiviso
 
 namespace glf
 {
+	inline std::string format(const char* msg, ...)
+	{
+		std::size_t const STRING_BUFFER(10000);
+		char text[STRING_BUFFER];
+		va_list list;
+
+		if(msg == 0)
+			return std::string();
+
+		va_start(list, msg);
+			vsprintf(text, msg, list);
+		va_end(list);
+
+		return std::string(text);
+	}
+
+	inline void logImplementationDependentLimit(GLenum Value, std::string const & String)
+	{
+		GLint Result(0);
+		glGetIntegerv(Value, &Result);
+		std::string Message(glf::format("%s: %d", String.c_str(), Result));
+		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, 1, GL_DEBUG_SEVERITY_LOW_ARB, GLsizei(Message.size()), Message.c_str());
+	}
+
 	inline void swapBuffers()
 	{
 		glutSwapBuffers();
@@ -504,6 +528,8 @@ namespace glf
 #endif
 	static void keyboard(unsigned char key, int x, int y)
 	{
+		++Window.KeyPressed[32];
+
 		switch(key) 
 		{
 		case 27:
@@ -632,7 +658,11 @@ namespace glf
 		else if(glf::version(Major, Minor) >= 320)
 		{
 			glutInitContextProfile(Profile); // GLUT_COMPATIBILITY_PROFILE GLUT_CORE_PROFILE
-			glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
+#			if NDEBUG
+				glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+#			else
+				glutInitContextFlags(GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
+#			endif
 		}
 #endif//__APPLE__
 		

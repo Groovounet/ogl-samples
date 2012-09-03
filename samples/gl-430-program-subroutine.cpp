@@ -101,6 +101,8 @@ bool initDebugOutput()
 	glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glDebugMessageCallbackARB(&glf::debugOutput, NULL);
 
+	glf::logImplementationDependentLimit(GL_MAX_SUBROUTINES, "GL_MAX_SUBROUTINES");
+
 	return Validated;
 }
 

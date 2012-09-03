@@ -299,6 +299,42 @@ namespace glf
 		glm::u8vec4 Color;
 	};
 
+	struct vertex_v2fv2fv4f
+	{
+		vertex_v2fv2fv4f
+		(
+			glm::vec2 const & Position,
+			glm::vec2 const & Texcoord,
+			glm::vec4 const & Color
+		) :
+			Position(Position),
+			Texcoord(Texcoord),
+			Color(Color)
+		{}
+
+		glm::vec2 Position;
+		glm::vec2 Texcoord;
+		glm::vec4 Color;
+	};
+
+	struct vertex_v4fv4fv4f
+	{
+		vertex_v4fv4fv4f
+		(
+			glm::vec4 const & Position,
+			glm::vec4 const & Texcoord,
+			glm::vec4 const & Color
+		) :
+			Position(Position),
+			Texcoord(Texcoord),
+			Color(Color)
+		{}
+
+		glm::vec4 Position;
+		glm::vec4 Texcoord;
+		glm::vec4 Color;
+	};
+
 	struct vertexattrib
 	{
 		vertexattrib() :
