@@ -10,7 +10,8 @@
 
 in block
 {
-	vec3 Texcoord;
+	vec2 Texcoord;
+	flat uint DrawID;
 } In;
 
 layout(location = FRAG_COLOR, index = 0) out vec4 Color;
@@ -19,6 +20,6 @@ layout(binding = 0) uniform sampler2D Diffuse[3];
 
 void main()
 {
-	Color = texture(Diffuse[int(In.Texcoord.p + 0.5)], In.Texcoord.st);
+	Color = texture(Diffuse[In.DrawID], In.Texcoord.st);
 }
 

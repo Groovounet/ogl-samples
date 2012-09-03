@@ -7,6 +7,8 @@
 
 #define TRANSFORM0	1
 
+layout(binding = 0, offset = 0) uniform atomic_uint DrawID;
+
 layout(binding = TRANSFORM0) uniform transform
 {
 	mat4 MVP;
@@ -22,12 +24,16 @@ out gl_PerVertex
 
 out block
 {
-	vec3 Texcoord;
+	vec2 Texcoord;
+	flat uint DrawID;
 } Out;
 
 void main()
-{	
+{
 	gl_Position = Transform.MVP * vec4(Position, 1.0);
-	Out.Texcoord = Texcoord;
+	Out.Texcoord = Texcoord.st;
+	if((gl_VertexID == 0) && (gl_InstanceID == 0))
+		Out.DrawID = atomicCounterIncrement(DrawID);
+	else
+		Out.DrawID = atomicCounter(DrawID);
 }
-
