@@ -7,15 +7,16 @@
 #define BUFFER_INPUT	0
 #define BUFFER_OUTPUT	1
 
-//layout(binding = TRANSFORM0) uniform transform
-//{
-//	mat4 MVP;
-//} Transform;
+layout(binding = TRANSFORM0) uniform transform
+{
+	mat4 MVP;
+} Transform;
 
 struct vertex
 {
-	vec2 Position;
-	vec2 Texcoord;
+	vec4 Position;
+	vec4 Texcoord;
+	vec4 Color;
 };
 
 layout(binding = BUFFER_INPUT) buffer iBuffer
@@ -30,7 +31,8 @@ layout(binding = BUFFER_OUTPUT) buffer oBuffer
 
 void main()
 {	
-	Out.Ouput[gl_LocalInvocationIndex].Texcoord = In.Input[gl_LocalInvocationIndex].Texcoord;
 	Out.Ouput[gl_LocalInvocationIndex].Position = In.Input[gl_LocalInvocationIndex].Position;
-	//Out.Ouput[gl_LocalInvocationIndex].Position = vec2(Transform.MVP * vec4(In.Input[gl_LocalInvocationIndex].Position, 0.0, 1.0));
+	//Out.Ouput[gl_LocalInvocationIndex].Position = Transform.MVP * In.Input[gl_LocalInvocationIndex].Position;
+	Out.Ouput[gl_LocalInvocationIndex].Texcoord = In.Input[gl_LocalInvocationIndex].Texcoord;
+	Out.Ouput[gl_LocalInvocationIndex].Color = In.Input[gl_LocalInvocationIndex].Color;
 }

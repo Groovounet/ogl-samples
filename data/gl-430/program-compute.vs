@@ -11,8 +11,9 @@
 
 struct vertex
 {
-	vec2 Position;
-	vec2 Texcoord;
+	vec4 Position;
+	vec4 Texcoord;
+	vec4 Color;
 };
 
 layout(binding = TRANSFORM0) uniform transform
@@ -32,11 +33,16 @@ out gl_PerVertex
 
 out block
 {
-	vec2 Texcoord;
+	vec4 Texcoord;
+	vec4 Color;
 } Out;
 
 void main()
 {	
 	Out.Texcoord = Mesh.Vertex[gl_VertexID].Texcoord;
-	gl_Position = Transform.MVP * vec4(Mesh.Vertex[gl_VertexID].Position, 0.0, 1.0);
+	if(gl_VertexID % 2 != 0)
+		Out.Color = vec4(1.0);
+	else
+		Out.Color = Mesh.Vertex[gl_VertexID].Color;
+	gl_Position = Transform.MVP * Mesh.Vertex[gl_VertexID].Position;
 }
