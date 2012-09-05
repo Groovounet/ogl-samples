@@ -25,15 +25,24 @@ out gl_PerVertex
 out block
 {
 	vec2 Texcoord;
+	vec4 Color;
 	flat uint DrawID;
 } Out;
 
 void main()
 {
-	gl_Position = Transform.MVP * vec4(Position, 1.0);
-	Out.Texcoord = Texcoord.st;
-	if((gl_VertexID == 0) && (gl_InstanceID == 0))
+	if(gl_VertexID == 0 && gl_InstanceID == 0)
+	{
 		Out.DrawID = atomicCounterIncrement(DrawID);
+		Out.Color = vec4(1.0, 0.5, 0.0, 1.0);
+	}
 	else
+	{
 		Out.DrawID = atomicCounter(DrawID);
+		Out.Color = vec4(0.0, 0.5, 1.0, 1.0);
+	}
+	Out.Texcoord = Texcoord.st;
+	gl_Position = Transform.MVP * vec4(Position, 1.0);
+
+	memoryBarrier();
 }

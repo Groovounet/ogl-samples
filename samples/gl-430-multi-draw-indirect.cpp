@@ -206,7 +206,6 @@ bool initVertexArray()
 		glBindBuffer(GL_ARRAY_BUFFER, BufferName[buffer::VERTEX]);
 		glVertexAttribPointer(glf::semantic::attr::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v3fv3f), GLF_BUFFER_OFFSET(0));
 		glVertexAttribPointer(glf::semantic::attr::TEXCOORD, 3, GL_FLOAT, GL_FALSE, sizeof(glf::vertex_v3fv3f), GLF_BUFFER_OFFSET(sizeof(glm::vec3)));
-		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		glEnableVertexAttribArray(glf::semantic::attr::POSITION);
@@ -237,9 +236,7 @@ bool initTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-
 	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
 	{
 		glTexSubImage2D(
@@ -263,9 +260,7 @@ bool initTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-
 	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
 	{
 		glTexSubImage2D(
@@ -277,7 +272,6 @@ bool initTexture()
 			GL_BGR, GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}
-	
 	
 	///////////////////////////////////////////
 
@@ -290,9 +284,7 @@ bool initTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GLint(Texture.levels() - 1));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glTexStorage2D(GL_TEXTURE_2D, GLint(Texture.levels()), GL_RGBA8, GLsizei(Texture[0].dimensions().x), GLsizei(Texture[0].dimensions().y));
-
 	for(gli::texture2D::level_type Level = 0; Level < Texture.levels(); ++Level)
 	{
 		glTexSubImage2D(
@@ -304,7 +296,6 @@ bool initTexture()
 			GL_BGR, GL_UNSIGNED_BYTE, 
 			Texture[Level].data());
 	}
-	
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -326,7 +317,7 @@ bool begin()
 
 	// Validate OpenGL support
 	Success = Success && glf::checkGLVersion(SAMPLE_MAJOR_VERSION, SAMPLE_MINOR_VERSION);
-	Success = Success && glf::checkExtension("GL_ARB_multi_draw_indirect");
+	//Success = Success && glf::checkExtension("GL_ARB_multi_draw_indirect");
 
 	// Create and initialize objects
 	if(Success && glf::checkExtension("GL_ARB_debug_output"))
@@ -346,6 +337,7 @@ bool begin()
 	glBindProgramPipeline(PipelineName);
 	glBindVertexArray(VertexArrayName);
 	glBindBufferBase(GL_UNIFORM_BUFFER, glf::semantic::uniform::TRANSFORM0, BufferName[buffer::TRANSFORM]);
+	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 
 	return Success;
 }
@@ -373,24 +365,41 @@ void display()
 	float Depth(1.0f);
 	glClearBufferfv(GL_DEPTH, 0, &Depth);
 	glClearBufferfv(GL_COLOR, 0, &glm::vec4(1.0f)[0]);
-
+/*
+	glm::uint Value(0);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
-	glClearBufferSubData(GL_ATOMIC_COUNTER_BUFFER, GL_R8UI, 0, sizeof(glm::uint), GL_RGBA, GL_UNSIGNED_INT, NULL);
+	glClearBufferSubData(GL_ATOMIC_COUNTER_BUFFER, GL_R8UI, 0, sizeof(glm::uint), GL_RGBA, GL_UNSIGNED_INT, &Value);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+*/
+	{
+		// Initialize the atomic counter
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, BufferName[buffer::ATOMIC_COUNTER]);
+		glm::uint* Pointer = (glm::uint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(glm::uint), 
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
-	// Update the transformation matrix
-	glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
-	glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), 
-		GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+		*Pointer = 0;
+		glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	}
 
-	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
-	glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y + 45.0f, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x + 45.0f, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Model = glm::mat4(1.0f);
-	glm::mat4 MVP = Projection * View * Model;
+	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
-	*Pointer = MVP;
-	glUnmapBuffer(GL_UNIFORM_BUFFER);
+	{
+		// Update the transformation matrix
+		glBindBuffer(GL_UNIFORM_BUFFER, BufferName[buffer::TRANSFORM]);
+		glm::mat4* Pointer = (glm::mat4*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), 
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+
+		glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Window.TranlationCurrent.y));
+		glm::mat4 ViewRotateX = glm::rotate(ViewTranslate, Window.RotationCurrent.y + 45.0f, glm::vec3(1.f, 0.f, 0.f));
+		glm::mat4 View = glm::rotate(ViewRotateX, Window.RotationCurrent.x + 45.0f, glm::vec3(0.f, 1.f, 0.f));
+		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 MVP = Projection * View * Model;
+
+		*Pointer = MVP;
+		glUnmapBuffer(GL_UNIFORM_BUFFER);
+	}
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, TextureName[texture::TEXTURE_A]);
@@ -403,7 +412,9 @@ void display()
 
 	// Draw
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, BufferName[buffer::INDIRECT_A] + GLuint(IndirectBufferIndex));
-	glMultiDrawElementsIndirectAMD(GL_TRIANGLES, GL_UNSIGNED_INT, 0, DrawCount[IndirectBufferIndex], sizeof(DrawElementsIndirectCommand));
+	glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, DrawCount[IndirectBufferIndex], sizeof(DrawElementsIndirectCommand));
+
+	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
 	// Swap framebuffers
 	glf::swapBuffers();
